@@ -1,0 +1,10 @@
+{% extends "builder/base.html" %}
+{% block title %}No encontrado | Trove Builder{% endblock %}
+{% block content %}
+
+<section class="hero" style="text-align:center;">
+    <h1>404 — No encontrado</h1>
+    <p>Esta build no existe, o es privada y no tienes permiso para verla.</p>
+    <a href="{% url 'builder:build_list' %}" class="btn" style="margin-top:12px; display:inline-block;">← Volver a explorar builds</a>
+</section>
+{% endblock %}

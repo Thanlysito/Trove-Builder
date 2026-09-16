@@ -1,0 +1,287 @@
+{% extends "builder/base.html" %}
+{% load builder_extras static %}
+{% block title %}{{ build.name }} — Trove Builder{% endblock %}
+{% block meta_description %}Build de {{ build.primary_class.name }}{% if build.subclass %} / {{ build.subclass.name }}{% endif %} para Trove — {{ build.tags|join:", " }}. Creada por {{ build.owner.username }}.{% endblock %}
+{% block og_title %}{{ build.name }} — {{ build.primary_class.name }}{% endblock %}
+{% block og_description %}{{ build.description|default:"Build de Trove hecha con Trove Builder."|truncatechars:160 }}{% endblock %}
+{% block og_image %}{% if build.primary_class.icon_url %}<meta property="og:image" content="{{ build.primary_class.icon_url }}">{% endif %}{% endblock %}
+{% block content %}
+
+<div class="detail-header">
+    <div>
+        <h1>{{ build.name }}</h1>
+        <div class="class-line">
+            {{ build.primary_class.name }}
+            {% if build.secondary_class %}/ {{ build.secondary_class.name }}{% endif %}
+            {% if build.subclass %}— subclase: {{ build.subclass.name }} ({{ build.subclass.game_class.name }}){% endif %}
+        </div>
+        {% for t in build.tags %}<span class="chip">{{ t }}</span>{% endfor %}
+    </div>
+    <div style="text-align:right;">
+        <div class="score" style="font-size:1.4rem;">PR score {{ build.score }}</div>
+        <div class="vote-buttons">
+            {% if user.is_authenticated %}
+            <form method="post" action="{% url 'builder:build_vote' build.slug %}">
+                {% csrf_token %}
+                <input type="hidden" name="value" value="1">
+                <button type="submit" class="vote-btn up {% if user_vote == 1 %}active{% endif %}" title="Votar a favor">▲ {{ upvotes }}</button>
+            </form>
+            <form method="post" action="{% url 'builder:build_vote' build.slug %}">
+                {% csrf_token %}
+                <input type="hidden" name="value" value="-1">
+                <button type="submit" class="vote-btn down {% if user_vote == -1 %}active{% endif %}" title="Votar en contra">▼ {{ downvotes }}</button>
+            </form>
+            <form method="post" action="{% url 'builder:build_favorite_toggle' build.slug %}">
+                {% csrf_token %}
+                <button type="submit" class="vote-btn fav-btn {% if is_favorited %}active{% endif %}" title="{% if is_favorited %}Quitar de favoritas{% else %}Marcar como favorita{% endif %}">{% if is_favorited %}♥{% else %}♡{% endif %} Favorita</button>
+            </form>
+            {% else %}
+            <a href="{% url 'login' %}" style="font-size:0.78rem; color:var(--text-dim);">Inicia sesión para votar</a>
+            {% endif %}
+        </div>
+        {% if user.is_authenticated %}
+        <form method="post" action="{% url 'builder:build_duplicate' build.slug %}" style="margin-top:8px;">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-ghost" title="Crea una copia editable en tu cuenta">⧉ Duplicar build</button>
+        </form>
+        {% endif %}
+        {% if user.is_authenticated and build.owner_id == user.id %}
+        <a href="{% url 'builder:build_edit' build.slug %}" class="btn btn-ghost" style="margin-top:8px; display:inline-block;">✎ Editar build</a>
+        <form method="post" action="{% url 'builder:build_delete' build.slug %}" class="delete-form"
+              onsubmit="return confirm('¿Eliminar la build \'{{ build.name|escapejs }}\'? Esta acción no se puede deshacer.');">
+            {% csrf_token %}
+            <button type="submit" class="btn-delete">🗑 Eliminar build</button>
+        </form>
+        {% endif %}
+    </div>
+</div>
+
+{% if build.description %}<p>{{ build.description }}</p>{% endif %}
+
+{% if build.subclass %}
+<section class="detail-section">
+    <h3>Subclase</h3>
+    <p style="margin-bottom:6px;">{{ build.subclass.name }} — bono base: {{ build.subclass.bonus_stat }} ({{ build.subclass.bonus_range }})</p>
+    <details>
+        <summary>Ver progresión completa por Power Rank y nivel</summary>
+        <table>
+            <tr><th>Tier</th><th>Power Rank</th><th>Efecto</th></tr>
+            {% for t in build.subclass.tier_progression %}
+            <tr><td>{{ t.tier }}</td><td>{{ t.power_rank }}</td><td>{{ t.effect }}</td></tr>
+            {% endfor %}
+        </table>
+        <table>
+            <tr><th>Nivel de subclase</th><th>Bono</th></tr>
+            {% for l in build.subclass.level_bonus_progression %}
+            <tr><td>{{ l.level }}</td><td>{{ l.bonus }}</td></tr>
+            {% endfor %}
+        </table>
+    </details>
+</section>
+{% endif %}
+
+<section class="detail-section">
+    <h3>Gemas</h3>
+
+    <div class="gem-legend">4 slots grandes (Empoderadas/Class) + 8 slots pequeños (Lesser Fierce/Arcane)</div>
+    <details>
+        <summary>Ver qué gemas grandes puede usar {{ build.primary_class.name }}</summary>
+        <ul class="item-stats" style="margin-top:8px;">
+            {% if class_gem %}
+            <li><strong style="color:var(--rarity-green);">{{ class_gem.name }}</strong> — Class Gem exclusiva de {{ build.primary_class.name }}</li>
+            {% else %}
+            <li>{{ build.primary_class.name }} no tiene una Class Gem exclusiva documentada todavía.</li>
+            {% endif %}
+            {% for g in universal_big_gems %}
+            <li>{{ g.name }} — Empowered universal (sirve para cualquier clase)</li>
+            {% endfor %}
+        </ul>
+        <p style="font-size:0.75rem; color:var(--text-dim); margin-top:6px;">
+            Cualquier otra Class Gem (de otra clase) no se puede usar con {{ build.primary_class.name }}.
+        </p>
+    </details>
+    <div class="gem-grid">
+        <div class="gem-row">
+            {% for slot in big_slots %}
+            <div class="gem-cell big {% if slot %}filled{% else %}empty{% endif %}" tabindex="{% if slot %}0{% endif %}">
+                <div class="gem-slot big {% if slot %}filled element-{{ slot.gem.element|default:'none' }}{% else %}empty{% endif %}">
+                    {% with icon=slot.gem|gem_icon_path:"big" %}
+                    {% if icon %}
+                    <img src="{% static icon %}" class="gem-img" alt="{{ slot.gem.name }}">
+                    {% else %}
+                    <span class="gem-shape"></span>
+                    {% endif %}
+                    {% endwith %}
+                    {% if slot %}<span class="slot-rank">{{ slot.rank }}</span>{% endif %}
+                </div>
+                <span class="gem-label">{% if slot %}{{ slot.gem.name }}{% else %}Vacío{% endif %}</span>
+                {% if slot %}
+                <div class="gem-tooltip">
+                    <span class="tt-name">{{ slot.gem.name }}</span>
+                    <span class="tt-stats">{{ slot.gem|gem_tooltip_stats }}</span>
+                </div>
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+        <div class="gem-row">
+            {% for slot in small_slots %}
+            {% with mismatch=slot.gem|gem_damage_mismatch:build.primary_class %}
+            <div class="gem-cell {% if slot %}filled{% else %}empty{% endif %} {% if mismatch %}mismatch{% endif %}" tabindex="{% if slot %}0{% endif %}">
+                <div class="gem-slot small {% if slot %}filled element-{{ slot.gem.element|default:'none' }}{% else %}empty{% endif %}">
+                    {% with icon=slot.gem|gem_icon_path:"small" %}
+                    {% if icon %}
+                    <img src="{% static icon %}" class="gem-img" alt="{{ slot.gem.name }}">
+                    {% else %}
+                    <span class="gem-shape"></span>
+                    {% endif %}
+                    {% endwith %}
+                    {% if slot %}<span class="slot-rank">{{ slot.rank }}</span>{% endif %}
+                    {% if mismatch %}<span class="slot-warn">⚠</span>{% endif %}
+                </div>
+                <span class="gem-label">{% if slot %}{{ slot.gem.name }}{% else %}Vacío{% endif %}</span>
+                {% if slot %}
+                <div class="gem-tooltip">
+                    <span class="tt-name">{{ slot.gem.name }}</span>
+                    {% with guaranteed=slot.gem|damage_stat_for %}
+                    {% if guaranteed %}<span class="tt-guaranteed">{{ guaranteed }}</span><br>{% endif %}
+                    {% endwith %}
+                    {% if slot.chosen_stats %}
+                    <span class="tt-guaranteed">{{ slot.chosen_stats|join:", " }}</span>
+                    {% else %}
+                    <span class="tt-stats">Sin elegir — posibles: {{ slot.gem|gem_tooltip_stats }}</span>
+                    {% endif %}
+                    {% if mismatch %}<br><span class="tt-warn">⚠ {{ mismatch }} no le sirve a {{ build.primary_class.name }}</span>{% endif %}
+                </div>
+                {% endif %}
+            </div>
+            {% endwith %}
+            {% endfor %}
+        </div>
+    </div>
+
+    {% for slot in build.gem_slots.all %}
+    <div class="item-card">
+        <div class="item-card-header">
+            <span class="item-name">{{ slot.gem.name }}</span>
+            <span class="item-power-rank">Slot {{ slot.slot_number }} · Rango {{ slot.rank }} / {{ slot.gem.max_rank }}</span>
+        </div>
+        {% if slot.gem.description %}<div class="item-desc">{{ slot.gem.description }}</div>{% endif %}
+
+        {% with guaranteed=slot.gem|damage_stat_for %}
+        {% if guaranteed or slot.chosen_stats or slot.gem.stat_scaling %}
+        <div class="stat-chips">
+            {% if guaranteed %}
+            <span class="stat-chip guaranteed">{{ guaranteed }} <span class="stat-chip-label">(garantizado)</span></span>
+            {% endif %}
+
+            {% if slot.chosen_stats %}
+            {% for stat in slot.chosen_stats %}
+            <span class="stat-chip guaranteed">{{ stat }} <span class="stat-chip-label">(elegido)</span></span>
+            {% endfor %}
+            {% elif slot.gem.stat_scaling.rollable_stats %}
+            <span class="stat-chip" style="opacity:0.6;">Sin stats elegidos todavía — posibles: {{ slot.gem.stat_scaling.rollable_stats|join:", " }}</span>
+            {% endif %}
+
+            {% for key, value in slot.gem.stat_scaling.items %}
+                {% if key != "rollable_stats" %}
+                <span class="stat-chip"><span class="stat-chip-label">{{ key|humanize_key }}:</span> <span class="stat-chip-value">{{ value }}</span></span>
+                {% endif %}
+            {% endfor %}
+        </div>
+        {% endif %}
+        {% with mismatch=slot.gem|gem_damage_mismatch:build.primary_class %}
+        {% if mismatch %}
+        <div class="warn">⚠ {{ mismatch }} no le sirve a {{ build.primary_class.name }} ({{ build.primary_class.get_damage_type_display }})</div>
+        {% endif %}
+        {% endwith %}
+        {% endwith %}
+    </div>
+    {% empty %}
+    <div class="empty-state">Sin gemas configuradas.</div>
+    {% endfor %}
+</section>
+
+<section class="detail-section">
+    <h3>Equipo</h3>
+    {% for eq in build.equipment.all %}
+    {% with bad=eq|equip_damage_mismatch:build.primary_class icon=eq.slot|equipment_icon_path %}
+    <div class="item-card equip-card">
+        {% if icon %}
+        <div class="equip-icon {% if eq.slot.tier == 'crystal' %}crystal{% endif %}">
+            <img src="{% static icon %}" alt="{{ eq.slot }}">
+        </div>
+        {% endif %}
+        <div class="equip-card-body">
+            <div class="item-card-header">
+                <span class="item-name">{{ eq.slot }}</span>
+            </div>
+            {% if eq.slot.fixed_stats %}<div class="item-desc">Fijo: {{ eq.slot.fixed_stats|join:", " }}</div>{% endif %}
+            {% if eq.chosen_stats %}
+            <div class="stat-chips">
+                {% for stat in eq.chosen_stats %}
+                <span class="stat-chip guaranteed">{{ stat }} <span class="stat-chip-label">(elegido)</span></span>
+                {% endfor %}
+            </div>
+            {% endif %}
+            {% if bad %}<div class="warn">⚠ {{ bad }} no le sirve a {{ build.primary_class.name }}</div>{% endif %}
+            {% if eq.slot.slot_type == "ring" and ring_hidden_effects %}
+            <div class="item-desc" style="margin-top:8px; padding-top:8px; border-top:1px dashed var(--border);">
+                <strong style="color:var(--rarity-green);">Hidden Effects disponibles ({{ build.primary_class.name }}):</strong>
+                <small style="display:block; color:var(--text-dim); margin:2px 0 6px;">Un anillo solo puede activar UNO a la vez con el Ring Polisher.</small>
+                <ul class="item-stats">
+                    {% for effect in ring_hidden_effects %}
+                    <li><strong>{{ effect.name }}</strong> ({{ effect.get_availability_display }}) — {{ effect.description }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+    {% endwith %}
+    {% empty %}
+    <div class="empty-state">Sin equipo configurado.</div>
+    {% endfor %}
+</section>
+
+<section class="detail-section">
+    <h3>Comentarios ({{ comments|length }})</h3>
+
+    {% for c in comments %}
+    <div class="comment">
+        <div class="comment-header">
+            <span class="comment-author">{{ c.user.username }}</span>
+            <span class="comment-date">{{ c.created_at|date:"d/m/Y H:i" }}</span>
+        </div>
+        <p class="comment-text">{{ c.text }}</p>
+        {% if user.is_authenticated and c.user_id == user.id %}
+        <form method="post" action="{% url 'builder:build_delete_comment' c.id %}"
+              onsubmit="return confirm('¿Eliminar tu comentario?');">
+            {% csrf_token %}
+            <button type="submit" class="comment-delete">🗑 Eliminar</button>
+        </form>
+        {% elif user.is_authenticated and build.owner_id == user.id %}
+        <form method="post" action="{% url 'builder:build_delete_comment' c.id %}"
+              onsubmit="return confirm('¿Eliminar este comentario de tu build? Es una acción de moderación.');">
+            {% csrf_token %}
+            <button type="submit" class="comment-delete" title="Moderar: eliminar comentario ajeno de tu build">🛡 Moderar</button>
+        </form>
+        {% endif %}
+    </div>
+    {% empty %}
+    <div class="empty-state">Todavía no hay comentarios. ¡Sé el primero!</div>
+    {% endfor %}
+
+    {% if user.is_authenticated %}
+    <form method="post" action="{% url 'builder:build_add_comment' build.slug %}" class="comment-form">
+        {% csrf_token %}
+        <textarea name="text" placeholder="Escribe un comentario..." maxlength="1000" required></textarea>
+        <button type="submit" class="btn">Comentar</button>
+    </form>
+    {% else %}
+    <p><a href="{% url 'login' %}">Inicia sesión</a> para comentar.</p>
+    {% endif %}
+</section>
+
+<p><small>Creado por <a href="{% url 'builder:user_profile' build.owner.username %}">{{ build.owner.username }}</a> el {{ build.created_at|date:"d/m/Y" }}</small></p>
+{% endblock %}

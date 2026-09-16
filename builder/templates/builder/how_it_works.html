@@ -1,0 +1,252 @@
+{% extends "builder/base.html" %}
+
+{% block title %}Cómo funciona | Trove Builder{% endblock %}
+
+{% block content %}
+<section class="hero how-it-works-hero">
+    <h1>Cómo funciona Trove Builder</h1>
+    <p>
+        Si eres nuevo en Trove, esta guía te explica de forma rápida las mecánicas
+        principales que usa el builder para armar tu personaje: clases, gemas,
+        equipo, anillos y dragones.
+    </p>
+</section>
+
+<nav class="item-card how-it-works-toc" aria-label="Índice de la página">
+    <ul>
+        <li><a href="#que-es-una-build">¿Qué es una build?</a></li>
+        <li><a href="#clases-subclases">Clases y subclases</a></li>
+        <li><a href="#gemas">Gemas</a></li>
+        <li><a href="#equipo">Equipo</a></li>
+        <li><a href="#anillos">Anillos</a></li>
+        <li><a href="#dragones">Dragones</a></li>
+        <li><a href="#primera-build">Armando tu primera build</a></li>
+        <li><a href="#glosario">Glosario</a></li>
+        <li><a href="#faq">Preguntas frecuentes</a></li>
+    </ul>
+</nav>
+
+<section id="que-es-una-build" class="detail-section">
+    <h2>¿Qué es una build?</h2>
+    <p>
+        Una <strong>build</strong> es la combinación de todas las decisiones que
+        tomas sobre tu personaje: qué clase juegas, cómo levantas tus gemas, qué
+        equipo usas, qué anillos llevas puestos y qué dragón te acompaña. Todo
+        esto en conjunto define tu <strong>Power Rank (PR)</strong> —el número
+        que mide qué tan fuerte es tu personaje— y también tu estilo de juego:
+        si vas más enfocado a hacer daño, a tanquear, o a apoyar a tu equipo.
+    </p>
+    <p>
+        Trove Builder te deja armar y guardar estas combinaciones, compartirlas
+        con otros jugadores y explorar las builds que arma la comunidad para
+        inspirarte o copiar una que te funcione.
+    </p>
+</section>
+
+<section id="clases-subclases" class="detail-section">
+    <h2>Clases y subclases</h2>
+    <p>
+        Cada personaje en Trove pertenece a una <strong>clase</strong> (Neon
+        Ninja, Shadow Hunter, Candy Barbarian, Dracolyte, etc.), y cada clase
+        tiene su propio set de habilidades, tipo de daño (físico o mágico) y rol
+        natural en el equipo (daño, tanque o soporte).
+    </p>
+    <ul>
+        <li>
+            <strong>Subclase (Mastery):</strong> a partir de cierto nivel puedes
+            elegir una subclase, que es esencialmente una segunda clase cuyas
+            habilidades pasivas se combinan con las de tu clase principal. Esto
+            te permite personalizar cómo juega tu personaje más allá de lo que
+            ofrece la clase base.
+        </li>
+        <li>
+            <strong>Gema de clase:</strong> además de la subclase, existen gemas
+            especiales que modifican directamente una de las habilidades de tu
+            clase (por ejemplo, cambiar cómo se comporta tu ataque especial).
+            Se obtienen con llaves específicas y se equipan como cualquier otra
+            gema.
+        </li>
+    </ul>
+</section>
+
+<section id="gemas" class="detail-section">
+    <h2>Gemas</h2>
+    <p>
+        Las gemas son el sistema que más Power Rank aporta a tu build. Se
+        equipan en slots del panel de personaje y otorgan bonificaciones de
+        stats según su rareza, sus estadísticas y su nivel.
+    </p>
+    <ul>
+        <li>
+            <strong>Tipos:</strong> existen gemas normales (obtenidas en mundos
+            elementales) y gemas empoderadas (obtenidas en cajas especiales),
+            además de variantes elementales de Agua, Aire, Fuego y Cósmica. Las
+            gemas Stellar son las de mayor calidad y se consiguen en los mundos
+            Uber más altos del juego.
+        </li>
+        <li>
+            <strong>Stats y subida de nivel:</strong> cada gema empieza con 1 a 3
+            estadísticas al azar y sube de nivel usando materiales como Polvo de
+            Gema y Reforzadores. En los niveles 5, 10 y 15 recibe "boosts
+            grandes" que definen buena parte de su calidad final.
+        </li>
+        <li>
+            <strong>Combinación ideal:</strong> para la mayoría de clases, la
+            combinación de stats más buscada es daño (físico o mágico según tu
+            clase), Golpe Crítico y Daño Crítico, complementado con algo de Vida
+            Máxima para no morir tan fácil.
+        </li>
+    </ul>
+</section>
+
+<section id="equipo" class="detail-section">
+    <h2>Equipo</h2>
+    <p>
+        El equipo son las piezas que visten a tu personaje: casco, cara, arma
+        principal y arma secundaria, entre otras según la clase. Cada pieza
+        aporta Power Rank y estadísticas propias, y muchas pueden reforzarse
+        con gemas o subir de nivel para aumentar su aporte.
+    </p>
+    <p>
+        Al armar tu build en Trove Builder, elegir bien tu equipo es tan
+        importante como elegir tus gemas: ambos sistemas se complementan para
+        llegar al Power Rank objetivo del contenido que quieras jugar.
+    </p>
+</section>
+
+<section id="anillos" class="detail-section">
+    <h2>Anillos</h2>
+    <p>
+        Los anillos son una pieza extra de equipo que se fabrica con la
+        profesión de <strong>Ringcrafting</strong> (a diferencia de las gemas,
+        no se encuentran explorando el mundo). Cada anillo aporta Power Rank
+        más dos estadísticas: una principal garantizada y una secundaria al
+        azar.
+    </p>
+    <ul>
+        <li>
+            <strong>Stat principal:</strong> depende del tipo de caja que uses
+            para craftear el anillo —Daño Físico, Daño Mágico, Vida Máxima o
+            Lasermancy—.
+        </li>
+        <li>
+            <strong>Stat secundaria:</strong> puede ser Salto, Estabilidad, Golpe
+            Crítico, Regeneración de Vida, Regeneración de Energía o Suerte
+            Mágica, y sale al azar al abrir la caja.
+        </li>
+        <li>
+            <strong>Cómo se consiguen:</strong> se craftean en un Banco de
+            Ringcrafting con materiales como Flux y Piedraforma, y luego se
+            "lanzan" para abrir la caja y obtener el anillo.
+        </li>
+    </ul>
+</section>
+
+<section id="dragones" class="detail-section">
+    <h2>Dragones</h2>
+    <p>
+        Los dragones son monturas de fin de juego que, a diferencia de la
+        mayoría de monturas cosméticas, también otorgan bonificaciones de
+        estadísticas permanentes una vez que los desbloqueas —por eso son parte
+        de una build seria—.
+    </p>
+    <ul>
+        <li>
+            <strong>Etapas de crecimiento:</strong> un dragón puede pasar por
+            varias etapas (cría, joven, adulto y ancestral), donde cada etapa
+            gana nuevas habilidades como volar o disparar proyectiles que
+            destruyen bloques.
+        </li>
+        <li>
+            <strong>Dragones primordiales:</strong> son la versión más avanzada,
+            con habilidades únicas y un bono permanente de Power Rank sobre las
+            gemas del elemento con el que tienen afinidad. Son también los más
+            costosos de craftear.
+        </li>
+        <li>
+            <strong>En tu build:</strong> el dragón que elijas no cambia tu
+            forma de jugar tanto como la clase o las gemas, pero sí suma stats
+            permanentes que Trove Builder tiene en cuenta al calcular tu build.
+        </li>
+    </ul>
+</section>
+
+<section id="primera-build" class="detail-section">
+    <h2>Armando tu primera build</h2>
+    <ol>
+        <li>Elige tu clase (y, si ya la tienes, tu subclase).</li>
+        <li>Agrega las gemas que planeas usar, con sus stats principales.</li>
+        <li>Selecciona tu equipo: casco, cara, armas y demás piezas.</li>
+        <li>Añade tus anillos y el dragón que quieras llevar en la build.</li>
+        <li>Guarda tu build y compártela para que otros jugadores la vean, comenten y voten.</li>
+    </ol>
+    <p>
+        No necesitas tener todo perfecto desde el inicio: puedes editar tu
+        build en cualquier momento a medida que consigues mejores gemas,
+        equipo o anillos.
+    </p>
+    <a href="{% url 'builder:build_create' %}" class="btn">Crear mi primera build</a>
+</section>
+
+<section id="glosario" class="detail-section">
+    <h2>Glosario</h2>
+    <p>Términos que vas a ver seguido en el formulario de build y que quizá no conozcas todavía.</p>
+    <div class="item-card">
+        <strong>Power Rank (PR)</strong>
+        <p class="item-desc">El número que mide qué tan fuerte es tu personaje. Sube con gemas, equipo, anillos y dragones. Determina a qué mundos y contenido puedes entrar.</p>
+    </div>
+    <div class="item-card">
+        <strong>Mastery / Subclase</strong>
+        <p class="item-desc">La pasiva de otra clase que equipas junto a tu clase principal. Se elige por separado y se combina con tus habilidades normales.</p>
+    </div>
+    <div class="item-card">
+        <strong>Lesser / Stellar / Empowered</strong>
+        <p class="item-desc">Niveles de calidad de gema, de menor a mayor: Lesser (básica), Stellar (la mejor gema "normal", de mundos Uber altos) y Empowered (obtenida en cajas especiales, con más Power Rank por nivel).</p>
+    </div>
+    <div class="item-card">
+        <strong>Crystal (equipo)</strong>
+        <p class="item-desc">La versión de mayor calidad de una pieza de equipo (Weapon/Hat/Face), con más stats que la versión No-Crystal.</p>
+    </div>
+    <div class="item-card">
+        <strong>Signatory / Mystic Ring</strong>
+        <p class="item-desc">Tipos de anillo de tu propia clase que, a diferencia de los anillos de stat simple (Power, Wisdom, Vitality, Delving), pueden usar Efectos Ocultos.</p>
+    </div>
+    <div class="item-card">
+        <strong>Efecto Oculto (Hidden Effect)</strong>
+        <p class="item-desc">Una habilidad especial de anillo que modifica una de las habilidades de tu clase. Se activa llevando el anillo a un Ring Polisher; cada anillo solo puede tener un par de efectos activos a la vez.</p>
+    </div>
+    <div class="item-card">
+        <strong>Lasermancy</strong>
+        <p class="item-desc">Un stat de daño distinto a Physical/Magic Damage, usado por algunas clases específicas (como Lunar Lancer). Los anillos tipo Delving lo aumentan.</p>
+    </div>
+</section>
+
+<section id="faq" class="detail-section">
+    <h2>Preguntas frecuentes</h2>
+
+    <details>
+        <summary>¿Necesito tener todo perfecto para empezar a jugar?</summary>
+        <p>No. Puedes crear tu build con lo que tengas ahora y editarla después, a medida que consigues mejores gemas, equipo o anillos. No hay que esperar a tener la build "perfecta" para empezar.</p>
+    </details>
+
+    <details>
+        <summary>¿Puedo cambiar de clase después de crear mi build?</summary>
+        <p>Sí. Puedes editar tu build en cualquier momento y cambiar la clase principal, la clase secundaria o la subclase — tus gemas y equipo se mantienen, pero revisa que sigan combinando bien con el nuevo tipo de daño.</p>
+    </details>
+
+    <details>
+        <summary>¿Qué debería subir primero, gemas o equipo?</summary>
+        <p>Depende de dónde estés parado, pero en general las gemas grandes (Empoderadas/Class) suelen dar más Power Rank por esfuerzo invertido al inicio. El equipo Crystal ayuda después, cuando ya tienes una base sólida de gemas.</p>
+    </details>
+
+    <details>
+        <summary>¿Puedo tener varias builds guardadas a la vez?</summary>
+        <p>Sí, puedes crear todas las que quieras — por ejemplo, una por clase o una por estilo de juego (daño vs. tanque) — y verlas todas desde "Mis builds".</p>
+    </details>
+
+    <details>
+        <summary>¿Qué pasa si no hago pública mi build?</summary>
+        <p>Solo tú puedes verla y editarla. Márcala como pública cuando quieras que otros jugadores la vean, la comenten y la voten.</p>
+    </details>
+</section>
+{% endblock %}

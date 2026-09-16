@@ -1,0 +1,88 @@
+{% extends "builder/base.html" %}
+{% block title %}{{ game_class.name }} | Trove Builder{% endblock %}
+{% block meta_description %}Guía de {{ game_class.name }} en Trove: rol, tipo de daño, subclase (Mastery), gemas de clase y Efectos Ocultos de anillo.{% endblock %}
+{% block og_title %}{{ game_class.name }} — Trove Builder{% endblock %}
+{% block content %}
+
+<div class="detail-header">
+    <div>
+        <h1>{{ game_class.name }}</h1>
+        <div class="class-line">
+            {% if game_class.primary_role %}{{ game_class.get_primary_role_display }}{% endif %}
+            {% if game_class.damage_type %} — {{ game_class.get_damage_type_display }}{% endif %}
+        </div>
+    </div>
+    <div>
+        <a href="{% url 'builder:build_create' %}" class="btn">+ Crear build con esta clase</a>
+    </div>
+</div>
+
+{% if game_class.description %}<p>{{ game_class.description }}</p>{% endif %}
+
+<section class="detail-section">
+    <h2>Mastery (subclase propia)</h2>
+    {% if subclass %}
+    <div class="item-card">
+        <strong>{{ subclass.name }}</strong>
+        <p class="item-desc">{{ subclass.passive_description }}</p>
+        <p class="item-desc">Bono de stat al equiparla como subclase: <strong>{{ subclass.bonus_stat }}</strong>{% if subclass.bonus_range %} ({{ subclass.bonus_range }}){% endif %}.</p>
+    </div>
+    <p style="font-size:0.85rem; color:var(--text-dim);">
+        Cualquier otra clase puede equipar "{{ subclass.name }}" como su subclase (Mastery) — {{ game_class.name }} en cambio, nunca puede usar la suya propia.
+    </p>
+    {% else %}
+    <div class="empty-state">Sin información de subclase cargada.</div>
+    {% endif %}
+</section>
+
+<section class="detail-section">
+    <h2>Gema de clase</h2>
+    {% if class_gems %}
+    {% for g in class_gems %}
+    <div class="item-card">
+        <strong>{{ g.name }}</strong>
+        {% if g.description %}<p class="item-desc">{{ g.description }}</p>{% endif %}
+    </div>
+    {% endfor %}
+    {% else %}
+    <div class="empty-state">Sin gema de clase cargada todavía.</div>
+    {% endif %}
+</section>
+
+<section class="detail-section">
+    <h2>Efectos Ocultos de anillo</h2>
+    <p style="font-size:0.85rem; color:var(--text-dim); margin-top:-6px;">
+        Se activan llevando un anillo Signatory o Mystic de esta clase a un Ring Polisher.
+    </p>
+    {% if ring_hidden_effects %}
+    {% for e in ring_hidden_effects %}
+    <div class="item-card">
+        <strong>{{ e.name }}</strong>
+        <span class="chip" style="font-size:0.65rem;">{{ e.get_availability_display }}</span>
+        <p class="item-desc">{{ e.description }}</p>
+    </div>
+    {% endfor %}
+    {% else %}
+    <div class="empty-state">Sin Efectos Ocultos cargados para esta clase.</div>
+    {% endif %}
+</section>
+
+<section class="detail-section">
+    <h2>Builds públicas recientes con {{ game_class.name }}</h2>
+    {% if public_builds %}
+    <div class="build-grid">
+        {% for build in public_builds %}
+        <a class="build-card role-{{ build.primary_class.primary_role }}" href="{% url 'builder:build_detail' build.slug %}" style="text-decoration:none; display:block;">
+            <span class="name">{{ build.name }}</span>
+            <span class="meta">por {{ build.owner.username }}</span>
+            <div class="build-card-footer">
+                <span class="score">PR score {{ build.score }}</span>
+            </div>
+        </a>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="empty-state">Todavía no hay builds públicas con esta clase. ¡Crea la primera!</div>
+    {% endif %}
+</section>
+{% endblock %}

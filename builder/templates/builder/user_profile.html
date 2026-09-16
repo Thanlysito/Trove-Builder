@@ -1,0 +1,80 @@
+{% extends "builder/base.html" %}
+{% block title %}{{ profile_user.username }} | Trove Builder{% endblock %}
+{% block meta_description %}Builds de Trove creadas por {{ profile_user.username }} en Trove Builder.{% endblock %}
+{% block og_title %}{{ profile_user.username }} — Trove Builder{% endblock %}
+{% block content %}
+
+<section class="hero">
+    <h1>{{ profile_user.username }}</h1>
+    <p>
+        {{ public_build_count }} build{{ public_build_count|pluralize }} pública{{ public_build_count|pluralize }} ·
+        en Trove Builder desde {{ profile_user.date_joined|date:"d/m/Y" }}
+    </p>
+</section>
+
+<div class="explorer">
+    <aside class="filters">
+        <h3>Ordenar</h3>
+        <form method="get">
+            <select name="sort" onchange="this.form.submit()">
+                {% for key, label in sort_options.items %}
+                <option value="{{ key }}" {% if current_sort == key %}selected{% endif %}>{{ label }}</option>
+                {% endfor %}
+            </select>
+        </form>
+    </aside>
+
+    <section>
+        <div class="build-grid">
+            {% for build in builds %}
+            <div class="build-card role-{{ build.primary_class.primary_role }}">
+                <a class="build-card-link" href="{% url 'builder:build_detail' build.slug %}">
+                    <span class="name">{{ build.name }}{% if not build.is_public %} <span class="chip" style="font-size:0.65rem; padding:2px 7px;">Privada</span>{% endif %}</span>
+                    <span class="meta">
+                        {{ build.primary_class.name }}{% if build.secondary_class %} / {{ build.secondary_class.name }}{% endif %}
+                    </span>
+                </a>
+                <div class="build-card-footer">
+                    <span class="score">PR score {{ build.score }}</span>
+                    {% if user.is_authenticated %}
+                    <div class="vote-buttons vote-buttons-sm">
+                        <form method="post" action="{% url 'builder:build_vote' build.slug %}">
+                            {% csrf_token %}
+                            <input type="hidden" name="value" value="1">
+                            <button type="submit" class="vote-btn up {% if build.my_vote == 1 %}active{% endif %}" title="Votar a favor">▲</button>
+                        </form>
+                        <form method="post" action="{% url 'builder:build_vote' build.slug %}">
+                            {% csrf_token %}
+                            <input type="hidden" name="value" value="-1">
+                            <button type="submit" class="vote-btn down {% if build.my_vote == -1 %}active{% endif %}" title="Votar en contra">▼</button>
+                        </form>
+                        <form method="post" action="{% url 'builder:build_favorite_toggle' build.slug %}">
+                            {% csrf_token %}
+                            <button type="submit" class="vote-btn fav-btn {% if build.my_favorite %}active{% endif %}" title="{% if build.my_favorite %}Quitar de favoritas{% else %}Marcar como favorita{% endif %}">{% if build.my_favorite %}♥{% else %}♡{% endif %}</button>
+                        </form>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            {% empty %}
+            <div class="empty-state">
+                {% if is_own_profile %}Todavía no has creado ninguna build. <a href="{% url 'builder:build_create' %}">¡Crea la primera!</a>
+                {% else %}{{ profile_user.username }} todavía no tiene builds públicas.{% endif %}
+            </div>
+            {% endfor %}
+        </div>
+
+        {% if page_obj.paginator.num_pages > 1 %}
+        <div class="pagination">
+            {% if page_obj.has_previous %}
+            <a href="?{% if querystring %}{{ querystring }}&{% endif %}page={{ page_obj.previous_page_number }}" class="btn-ghost btn">‹ Anterior</a>
+            {% endif %}
+            <span class="pagination-info">Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}</span>
+            {% if page_obj.has_next %}
+            <a href="?{% if querystring %}{{ querystring }}&{% endif %}page={{ page_obj.next_page_number }}" class="btn-ghost btn">Siguiente ›</a>
+            {% endif %}
+        </div>
+        {% endif %}
+    </section>
+</div>
+{% endblock %}

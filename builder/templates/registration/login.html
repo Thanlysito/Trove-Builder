@@ -1,0 +1,12 @@
+{% extends "builder/base.html" %}
+{% block title %}Iniciar sesión — Trove Builder{% endblock %}
+{% block content %}
+<h1>Iniciar sesión</h1>
+<form method="post" style="max-width:360px;">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" class="btn">Entrar</button>
+</form>
+<p style="margin-top:14px;"><small>¿No tienes cuenta? <a href="{% url 'signup' %}">Crear una</a></small></p>
+<p><small><a href="{% url 'password_reset' %}">¿Olvidaste tu contraseña?</a></small></p>
+{% endblock %}

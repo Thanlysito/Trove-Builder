@@ -1,0 +1,11 @@
+{% extends "builder/base.html" %}
+{% block title %}Crear cuenta — Trove Builder{% endblock %}
+{% block content %}
+<h1>Crear cuenta</h1>
+<form method="post" style="max-width:360px;">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" class="btn">Crear cuenta</button>
+</form>
+<p style="margin-top:14px;"><small>¿Ya tienes cuenta? <a href="{% url 'login' %}">Inicia sesión</a></small></p>
+{% endblock %}

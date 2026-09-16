@@ -1,0 +1,136 @@
+{% extends "builder/base.html" %}
+{% block title %}{% if favorites_mode %}Mis favoritas{% elif mine %}Mis builds{% else %}Explorar builds{% endif %} — Trove Builder{% endblock %}
+{% block content %}
+
+<section class="hero">
+    {% if favorites_mode %}
+    <h1>Mis favoritas</h1>
+    <p>Las builds (propias o de otros jugadores) que marcaste con ♥.</p>
+    {% elif mine %}
+    <h1>Mis builds</h1>
+    <p>Todas tus builds, públicas y privadas, en un solo lugar.</p>
+    {% else %}
+    <h1>Arma tu build de Trove</h1>
+    <p>Explora builds de la comunidad o crea la tuya: clase, subclase, gemas y equipo, con las reglas reales del juego.</p>
+    {% endif %}
+</section>
+
+<div class="explorer">
+    <aside class="filters">
+        {% if mine or favorites_mode %}
+        {% if mine %}
+        <a href="{% url 'builder:build_create' %}" class="btn" style="width:100%; display:block; text-align:center; box-sizing:border-box;">+ Nueva build</a>
+        {% endif %}
+        <h3>Ordenar</h3>
+        <form method="get">
+            <select name="sort" onchange="this.form.submit()">
+                {% for key, label in sort_options.items %}
+                <option value="{{ key }}" {% if current_sort == key %}selected{% endif %}>{{ label }}</option>
+                {% endfor %}
+            </select>
+        </form>
+        {% else %}
+        <form method="get">
+            <h3>Buscar</h3>
+            <label>
+                <input type="text" name="q" placeholder="Nombre de la build..." value="{{ request.GET.q }}">
+            </label>
+
+            <h3>Clase</h3>
+            <label>
+                <select name="class">
+                    <option value="">Todas</option>
+                    {% for c in classes %}
+                    <option value="{{ c.slug }}" {% if request.GET.class == c.slug %}selected{% endif %}>{{ c.name }}</option>
+                    {% endfor %}
+                </select>
+            </label>
+
+            <h3>Tag</h3>
+            <label>
+                <select name="tag">
+                    <option value="">Todos</option>
+                    {% for key, label in tag_choices %}
+                    <option value="{{ key }}" {% if request.GET.tag == key %}selected{% endif %}>{{ label }}</option>
+                    {% endfor %}
+                </select>
+            </label>
+
+            <h3>Ordenar</h3>
+            <label>
+                <select name="sort">
+                    {% for key, label in sort_options.items %}
+                    <option value="{{ key }}" {% if current_sort == key %}selected{% endif %}>{{ label }}</option>
+                    {% endfor %}
+                </select>
+            </label>
+
+            <button type="submit" class="btn" style="width:100%">Filtrar</button>
+        </form>
+        {% endif %}
+    </aside>
+
+    <section>
+        <div class="build-grid">
+            {% for build in builds %}
+            <div class="build-card role-{{ build.primary_class.primary_role }}">
+                <a class="build-card-link" href="{% url 'builder:build_detail' build.slug %}">
+                    <span class="name">{{ build.name }}{% if not build.is_public %} <span class="chip" style="font-size:0.65rem; padding:2px 7px;">Privada</span>{% endif %}</span>
+                    <span class="meta">
+                        {{ build.primary_class.name }}{% if build.secondary_class %} / {{ build.secondary_class.name }}{% endif %}
+                        {% if not mine %}— por <a href="{% url 'builder:user_profile' build.owner.username %}" onclick="event.stopPropagation()">{{ build.owner.username }}</a>{% endif %}
+                    </span>
+                </a>
+                <div class="build-card-footer">
+                    <span class="score">PR score {{ build.score }}</span>
+                    {% if user.is_authenticated %}
+                    <div class="vote-buttons vote-buttons-sm">
+                        <form method="post" action="{% url 'builder:build_vote' build.slug %}">
+                            {% csrf_token %}
+                            <input type="hidden" name="value" value="1">
+                            <button type="submit" class="vote-btn up {% if build.my_vote == 1 %}active{% endif %}" title="Votar a favor">▲</button>
+                        </form>
+                        <form method="post" action="{% url 'builder:build_vote' build.slug %}">
+                            {% csrf_token %}
+                            <input type="hidden" name="value" value="-1">
+                            <button type="submit" class="vote-btn down {% if build.my_vote == -1 %}active{% endif %}" title="Votar en contra">▼</button>
+                        </form>
+                        <form method="post" action="{% url 'builder:build_favorite_toggle' build.slug %}">
+                            {% csrf_token %}
+                            <button type="submit" class="vote-btn fav-btn {% if build.my_favorite %}active{% endif %}" title="{% if build.my_favorite %}Quitar de favoritas{% else %}Marcar como favorita{% endif %}">{% if build.my_favorite %}♥{% else %}♡{% endif %}</button>
+                        </form>
+                    </div>
+                    {% endif %}
+                    {% if user.is_authenticated and build.owner_id == user.id %}
+                    <a href="{% url 'builder:build_edit' build.slug %}" class="btn-delete btn-delete-sm" title="Editar build" style="text-decoration:none;">✎</a>
+                    <form method="post" action="{% url 'builder:build_delete' build.slug %}"
+                          onsubmit="return confirm('¿Eliminar la build \'{{ build.name|escapejs }}\'? Esta acción no se puede deshacer.');">
+                        {% csrf_token %}
+                        <button type="submit" class="btn-delete btn-delete-sm" title="Eliminar build">🗑</button>
+                    </form>
+                    {% endif %}
+                </div>
+            </div>
+            {% empty %}
+            <div class="empty-state">
+                {% if favorites_mode %}Todavía no has marcado ninguna build como favorita.
+                {% elif mine %}Todavía no has creado ninguna build. <a href="{% url 'builder:build_create' %}">¡Crea la primera!</a>
+                {% else %}Todavía no hay builds públicas. ¡Sé el primero en crear una!{% endif %}
+            </div>
+            {% endfor %}
+        </div>
+
+        {% if page_obj.paginator.num_pages > 1 %}
+        <div class="pagination">
+            {% if page_obj.has_previous %}
+            <a href="?{% if querystring %}{{ querystring }}&{% endif %}page={{ page_obj.previous_page_number }}" class="btn-ghost btn">‹ Anterior</a>
+            {% endif %}
+            <span class="pagination-info">Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}</span>
+            {% if page_obj.has_next %}
+            <a href="?{% if querystring %}{{ querystring }}&{% endif %}page={{ page_obj.next_page_number }}" class="btn-ghost btn">Siguiente ›</a>
+            {% endif %}
+        </div>
+        {% endif %}
+    </section>
+</div>
+{% endblock %}
