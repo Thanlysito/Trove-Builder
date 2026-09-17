@@ -459,6 +459,7 @@ class EquipmentItem(models.Model):
         ("ally", "Ally"),
         ("emblem", "Emblem"),
         ("flask", "Flask"),
+        ("banner", "Banner"),
     ]
     kind = models.CharField(max_length=10, choices=KIND_CHOICES)
     name = models.CharField(max_length=150)

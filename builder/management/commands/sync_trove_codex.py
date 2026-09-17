@@ -12,14 +12,21 @@ Uso:
     python manage.py sync_trove_codex --dry-run        # no escribe en DB
 
 Notas:
-- Ally viene de su propio tipo de codex ("ally").
-- Emblem y Flask NO son tipos de codex propios ni categorias separadas: en
-  los archivos del juego ambos viven bajo la misma carpeta
-  "prefabs/item/flask/..." y la categoria generica "Items" de la Kiwi API.
-  Se distinguen solo porque el "name" de cada Emblem viene prefijado con
-  "Emblem: " (ej. "Emblem: Beamer Emblem") mientras que un Flask real no
-  trae ese prefijo (ej. "Elysian Flask"). Confirmado inspeccionando datos
-  reales con --inspect.
+- Ally, Flask y Emblem se resuelven distinto entre si:
+  - Ally: tipo de codex propio ("ally").
+  - Flask: TAMBIEN tiene su propio tipo de codex propio ("flask", ~49
+    entradas) - lo usamos directo, es mas limpio que filtrar por path.
+  - Emblem: NO es un tipo propio. Vive dentro del tipo "item", en la misma
+    carpeta que los flasks legacy ("prefabs/item/flask/..."), categoria
+    "Items". Se distingue porque el "name" viene prefijado "Emblem: ".
+  - Banner: tampoco es un tipo propio, es un "style" (tipo "style"),
+    casi siempre con category="Banner" (algunos viejos de evento quedan
+    mal categorizados como "Equipment"), bajo los paths
+    "prefabs/equipment/banner/..." o "prefabs/equipment/delve/...".
+    Este comando combina la busqueda por categoria + por texto "Banner"
+    y se queda con lo que tenga "banner" en el path, para no perder esos
+    casos mal categorizados.
+  Todo esto se confirmo inspeccionando datos reales con --inspect.
 - La API no expone URLs de icono directamente, asi que icon_url queda en
   blanco por ahora; se puede completar despues cruzando con trovesaurus.com
   si hace falta.
@@ -43,8 +50,8 @@ class Command(BaseCommand):
     def add_arguments(self, parser):
         parser.add_argument(
             "--kind",
-            choices=["ally", "emblem", "flask"],
-            help="Sincronizar solo un tipo en vez de los tres.",
+            choices=["ally", "emblem", "flask", "banner"],
+            help="Sincronizar solo un tipo en vez de los cuatro.",
         )
         parser.add_argument(
             "--dry-run",
@@ -63,25 +70,29 @@ class Command(BaseCommand):
             self._inspect()
             return
 
-        kinds = [options["kind"]] if options["kind"] else ["ally", "emblem", "flask"]
+        kinds = [options["kind"]] if options["kind"] else ["ally", "emblem", "flask", "banner"]
         dry_run = options["dry_run"]
 
-        flask_folder_items = None  # cache: se pide una sola vez si hace falta emblem y/o flask
+        items_folder_cache = None  # cache de type=item/category=Items, usado solo por "emblem"
 
         for kind in kinds:
             if kind == "ally":
                 entries = self._fetch_codex_type("ally")
-            else:
-                if flask_folder_items is None:
+            elif kind == "flask":
+                entries = self._fetch_codex_type("flask")
+            elif kind == "emblem":
+                if items_folder_cache is None:
                     all_items = self._fetch_codex_type("item", category="Items")
-                    flask_folder_items = [
+                    items_folder_cache = [
                         e for e in all_items
                         if e.get("path", "").startswith("prefabs/item/flask/")
                     ]
-                if kind == "emblem":
-                    entries = [e for e in flask_folder_items if e.get("name", "").startswith("Emblem: ")]
-                else:  # flask
-                    entries = [e for e in flask_folder_items if not e.get("name", "").startswith("Emblem: ")]
+                entries = [e for e in items_folder_cache if e.get("name", "").startswith("Emblem: ")]
+            elif kind == "banner":
+                by_category = self._fetch_codex_type("style", category="Banner")
+                by_search = self._fetch_codex_type("style", search="Banner")
+                merged = {e["path"]: e for e in by_category + by_search}
+                entries = [e for e in merged.values() if "banner" in e.get("path", "").lower()]
 
             self.stdout.write(f"{kind}: {len(entries)} entradas encontradas")
 
@@ -101,13 +112,16 @@ class Command(BaseCommand):
         resp.raise_for_status()
         return resp.json()
 
-    def _fetch_codex_type(self, codex_type, category=None):
+    def _fetch_codex_type(self, codex_type, category=None, search=None):
         entries = []
         offset = 0
+        total = 0
         while True:
             params = {"limit": PAGE_SIZE, "offset": offset}
             if category:
                 params["category"] = category
+            if search:
+                params["search"] = search
             data = self._get(f"/v1/codexes/{codex_type}", params=params)
             page = data.get("items", [])
             entries.extend(page)
@@ -172,7 +186,7 @@ class Command(BaseCommand):
             self.stdout.write(f"  path={e.get('path')!r}  category={e.get('category')!r}  name={e.get('name')!r}")
         self.stdout.write(f"  total en categoria Equipment: {data.get('total')}")
 
-        for term in ("Emblem", "Flask"):
+        for term in ("Emblem", "Flask", "Banner"):
             self.stdout.write(f"\n--- busqueda type=item q={term} ---")
             data = self._get("/v1/codexes/search", params={"type": "item", "q": term, "limit": 10})
             items = data.get("items", [])
@@ -180,3 +194,16 @@ class Command(BaseCommand):
                 self.stdout.write("  (sin resultados)")
             for e in items:
                 self.stdout.write(f"  path={e.get('path')!r}  category={e.get('category')!r}  name={e.get('name')!r}")
+
+        self.stdout.write("\n--- busqueda type=style q=Banner (por si son estilos, no items) ---")
+        data = self._get("/v1/codexes/search", params={"type": "style", "q": "Banner", "limit": 10})
+        items = data.get("items", [])
+        if not items:
+            self.stdout.write("  (sin resultados)")
+        for e in items:
+            self.stdout.write(f"  path={e.get('path')!r}  category={e.get('category')!r}  name={e.get('name')!r}")
+
+        self.stdout.write("\n--- tipos de codex disponibles (/v1/codexes/types) ---")
+        data = self._get("/v1/codexes/types")
+        for row in data.get("items", []):
+            self.stdout.write(f"  {row.get('type')}: {row.get('count')}")
