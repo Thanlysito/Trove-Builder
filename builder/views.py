@@ -13,7 +13,7 @@ from django.urls import reverse
 from .forms import SignupForm
 from .models import (
     Build, GameClass, Gem, BuildGem, Subclass, EquipmentSlot, BuildEquipment, BuildVote,
-    BuildComment, RingHiddenEffect, BuildFavorite, Notification, Suggestion
+    BuildComment, RingHiddenEffect, BuildFavorite, Notification, Suggestion, EquipmentItem,
 )
 
 # Pool de stats roleables compartido por TODAS las gemas menores (Fierce/Arcane),
@@ -686,6 +686,23 @@ def _save_gems_and_equipment(build, request, errors):
 
         BuildEquipment.objects.create(build=build, slot=equip_slot, chosen_stats=picked)
 
+    # Ally / Emblem / Flask / Banner: son items completos (no se elige stat,
+    # ya vienen con sus stats fijos desde la Kiwi API), asi que solo hace
+    # falta guardar el id elegido, validando que sea del kind correcto.
+    for field_name in ("ally", "emblem", "flask", "banner"):
+        item_id = request.POST.get(f"{field_name}_id")
+        if not item_id:
+            setattr(build, f"{field_name}_id", None)
+            continue
+        try:
+            item = EquipmentItem.objects.get(id=item_id, kind=field_name)
+        except EquipmentItem.DoesNotExist:
+            errors.append(f"El {field_name} elegido no es válido.")
+            setattr(build, f"{field_name}_id", None)
+            continue
+        setattr(build, f"{field_name}_id", item.id)
+    build.save(update_fields=["ally_id", "emblem_id", "flask_id", "banner_id"])
+
 
 def _build_form_context(build=None):
     """Contexto compartido por el formulario de crear y editar build."""
@@ -710,6 +727,10 @@ def _build_form_context(build=None):
         "small_slot_numbers": SMALL_SLOT_NUMBERS,
         "build": build,
         "editing": build is not None,
+        "allies": EquipmentItem.objects.filter(kind="ally").order_by("name"),
+        "emblems": EquipmentItem.objects.filter(kind="emblem").order_by("name"),
+        "flasks": EquipmentItem.objects.filter(kind="flask").order_by("name"),
+        "banners": EquipmentItem.objects.filter(kind="banner").order_by("name"),
     }
 
     if build is not None:

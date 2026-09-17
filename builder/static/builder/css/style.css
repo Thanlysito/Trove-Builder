@@ -755,6 +755,20 @@ td {
   margin: 10px 0 22px;
 }
 
+.equip-item-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 12px;
+  margin: 10px 0 22px;
+}
+
+.item-kind-label {
+  font-size: 0.75em;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
 .gem-row {
   display: flex;
   gap: 14px;

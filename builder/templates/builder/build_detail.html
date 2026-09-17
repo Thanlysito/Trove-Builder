@@ -245,6 +245,35 @@
 </section>
 
 <section class="detail-section">
+    <h3>Ally, Emblem, Flask y Banner</h3>
+    <div class="equip-item-grid">
+        {% for item in build.equipment_items_list %}
+        {% with mismatch=item|equipment_item_mismatch:build.primary_class %}
+        <div class="item-card equip-card">
+            <div class="equip-card-body">
+                <div class="item-card-header">
+                    <span class="item-name">{{ item.name }}</span>
+                    <span class="item-kind-label">{{ item.get_kind_display }}</span>
+                </div>
+                {% if item.description %}<div class="item-desc">{{ item.description }}</div>{% endif %}
+                {% if item.stats %}
+                <div class="stat-chips">
+                    {% for s in item.stats %}
+                    <span class="stat-chip guaranteed">{{ s.stat_name|default:s.label }}{% if s.amount %}: {{ s.amount }}{% if s.is_percent %}%{% endif %}{% endif %}</span>
+                    {% endfor %}
+                </div>
+                {% endif %}
+                {% if mismatch %}<div class="warn">⚠ {{ mismatch }} no le sirve a {{ build.primary_class.name }}</div>{% endif %}
+            </div>
+        </div>
+        {% endwith %}
+        {% empty %}
+        <div class="empty-state">Sin Ally, Emblem, Flask ni Banner elegidos.</div>
+        {% endfor %}
+    </div>
+</section>
+
+<section class="detail-section">
     <h3>Comentarios ({{ comments|length }})</h3>
 
     {% for c in comments %}

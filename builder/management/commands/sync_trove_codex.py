@@ -220,3 +220,18 @@ class Command(BaseCommand):
         data = self._get("/v1/codexes/types")
         for row in data.get("items", []):
             self.stdout.write(f"  {row.get('type')}: {row.get('count')}")
+
+        self.stdout.write("\n--- listado completo de type=flask (49 esperadas) ---")
+        flask_entries = self._fetch_codex_type("flask")
+        for e in sorted(flask_entries, key=lambda x: x.get("name", "")):
+            tag = "EMBLEM" if e.get("name", "").strip().endswith("Emblem") else "flask "
+            self.stdout.write(f"  [{tag}] {e.get('name')!r}  path={e.get('path')!r}")
+
+        self.stdout.write("\n--- type=item search=Emblem, EXCLUYENDO paths ya cubiertos por type=flask ---")
+        flask_paths = {e["path"] for e in flask_entries}
+        item_emblem_hits = self._fetch_codex_type("item", search="Emblem")
+        extra = [e for e in item_emblem_hits if e["path"] not in flask_paths]
+        if not extra:
+            self.stdout.write("  (ninguno - el tipo 'flask' ya cubre todos los Emblems)")
+        for e in extra[:30]:
+            self.stdout.write(f"  path={e.get('path')!r}  category={e.get('category')!r}  name={e.get('name')!r}")

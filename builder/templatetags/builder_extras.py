@@ -29,6 +29,25 @@ def equip_damage_mismatch(build_equipment, game_class):
 
 
 @register.filter
+def equipment_item_mismatch(item, game_class):
+    """
+    Para Ally/Emblem/Flask/Banner: si el item da Physical o Magic Damage y
+    no combina con el damage_type de la clase, devuelve el nombre del stat
+    desperdiciado. None si combina o si el item es neutral (no da ninguno
+    de los dos). Uso: {{ build.banner|equipment_item_mismatch:build.primary_class }}
+    """
+    if not item or game_class is None:
+        return None
+    hint = item.damage_type_hint()
+    if not hint:
+        return None
+    expected = "physical" if game_class.damage_type == "physical" else "magic"
+    if hint == expected:
+        return None
+    return "Physical Damage" if hint == "physical" else "Magic Damage"
+
+
+@register.filter
 def dict_get(d, key):
     """Busca `key` en un diccionario dentro del template. Uso: {{ mydict|dict_get:key }}"""
     if not d:

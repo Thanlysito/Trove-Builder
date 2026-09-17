@@ -199,6 +199,54 @@
             </div>
             {% endwith %}
         </div>
+
+        <p class="tab-hint">
+            Ally, Emblem, Flask y Banner: cada uno viene con sus propios stats fijos
+            (no se eligen aquí, ya vienen del juego). En Banner, ✓ significa que
+            combina con el damage_type de tu clase; — significa que da el tipo de
+            daño contrario (Physical/Magic) y no te va a servir tanto.
+        </p>
+        <div class="slot-grid slot-grid-equip">
+            <div class="slot-card">
+                <div class="slot-card-head">Ally</div>
+                <select name="ally_id" id="id_ally">
+                    <option value="">-- Ninguno --</option>
+                    {% for a in allies %}
+                    <option value="{{ a.id }}" {% if build and build.ally_id == a.id %}selected{% endif %}>{{ a.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="slot-card">
+                <div class="slot-card-head">Emblem</div>
+                <select name="emblem_id" id="id_emblem">
+                    <option value="">-- Ninguno --</option>
+                    {% for e in emblems %}
+                    <option value="{{ e.id }}" {% if build and build.emblem_id == e.id %}selected{% endif %}>{{ e.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="slot-card">
+                <div class="slot-card-head">Flask</div>
+                <select name="flask_id" id="id_flask">
+                    <option value="">-- Ninguno --</option>
+                    {% for f in flasks %}
+                    <option value="{{ f.id }}" {% if build and build.flask_id == f.id %}selected{% endif %}>{{ f.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="slot-card">
+                <div class="slot-card-head">Banner</div>
+                <select name="banner_id" id="id_banner" class="banner-select">
+                    <option value="">-- Ninguno --</option>
+                    {% for b in banners %}
+                    <option value="{{ b.id }}" data-damage="{{ b.damage_type_hint }}" {% if build and build.banner_id == b.id %}selected{% endif %}>{{ b.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
     </div>
 
     <div class="form-footer">
@@ -350,6 +398,25 @@
     classSelect.addEventListener('change', markSmallGems);
     markBigGems();
     markSmallGems();
+
+    // --- Banners: marcar segun si dan Physical/Magic Damage y combinan con la clase ---
+    function markBanners() {
+        var selectedClassOption = classSelect.options[classSelect.selectedIndex];
+        var currentDamageType = selectedClassOption ? selectedClassOption.getAttribute('data-damage-type') : '';
+        document.querySelectorAll('.banner-select option[value]').forEach(function (opt) {
+            if (!opt.value) return; // "-- Ninguno --"
+            var damage = opt.getAttribute('data-damage'); // 'physical' | 'magic' | ''
+            var baseText = opt.textContent.replace(/^(✓ |— )/, '');
+            if (!damage) {
+                opt.textContent = baseText; // banner neutral, sirve para cualquier clase
+            } else {
+                opt.textContent = (damage === currentDamageType ? '✓ ' : '— ') + baseText;
+            }
+        });
+    }
+
+    classSelect.addEventListener('change', markBanners);
+    markBanners();
 })();
 </script>
 {% endblock %}

@@ -303,6 +303,24 @@ class Build(models.Model):
         help_text="Subclase equipada (la habilidad pasiva de OTRA clase). Nunca "
                    "puede ser la subclase de la propia primary_class."
     )
+    ally = models.ForeignKey(
+        "EquipmentItem", on_delete=models.SET_NULL, null=True, blank=True,
+        related_name="builds_as_ally", limit_choices_to={"kind": "ally"},
+    )
+    emblem = models.ForeignKey(
+        "EquipmentItem", on_delete=models.SET_NULL, null=True, blank=True,
+        related_name="builds_as_emblem", limit_choices_to={"kind": "emblem"},
+    )
+    flask = models.ForeignKey(
+        "EquipmentItem", on_delete=models.SET_NULL, null=True, blank=True,
+        related_name="builds_as_flask", limit_choices_to={"kind": "flask"},
+    )
+    banner = models.ForeignKey(
+        "EquipmentItem", on_delete=models.SET_NULL, null=True, blank=True,
+        related_name="builds_as_banner", limit_choices_to={"kind": "banner"},
+        help_text="Algunos banners dan Physical Damage o Magic Damage: conviene "
+                   "elegir el que combine con el damage_type de la clase.",
+    )
     description = models.TextField(blank=True)
     tags = models.JSONField(default=list, blank=True)  # lista de strings de TAG_CHOICES
     is_public = models.BooleanField(default=True)
@@ -323,6 +341,11 @@ class Build(models.Model):
     def score(self):
         agg = self.votes.aggregate(total=models.Sum("value"))
         return agg["total"] or 0
+
+    @property
+    def equipment_items_list(self):
+        """Ally/Emblem/Flask/Banner elegidos, solo los que estan seteados."""
+        return [i for i in (self.ally, self.emblem, self.flask, self.banner) if i]
 
 
 class BuildGem(models.Model):
@@ -496,3 +519,22 @@ class EquipmentItem(models.Model):
 
     def __str__(self):
         return f"{self.name} ({self.get_kind_display()})"
+
+    def damage_type_hint(self):
+        """
+        Revisa los stats reales (traidos de la Kiwi API) y devuelve 'physical'
+        si el item da Physical Damage, 'magic' si da Magic Damage, o '' si no
+        da ninguno de los dos (neutral, sirve para cualquier clase). Se usa
+        para marcar en el formulario de build si un Banner/Ally/etc. combina
+        con el damage_type de la clase elegida.
+        """
+        names = " ".join(
+            str(s.get("stat_name") or s.get("label") or "") for s in (self.stats or [])
+        ).lower()
+        has_physical = "physical damage" in names
+        has_magic = "magic damage" in names
+        if has_physical and not has_magic:
+            return "physical"
+        if has_magic and not has_physical:
+            return "magic"
+        return ""
