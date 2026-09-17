@@ -445,3 +445,53 @@ class Suggestion(models.Model):
 
     def __str__(self):
         return f"[{self.get_category_display()}] {self.title} ({self.user.username})"
+
+
+class EquipmentItem(models.Model):
+    """
+    Ally, Emblem o Flask real del juego (no una regla generica como
+    EquipmentSlot, sino un item concreto con nombre y stats propios).
+    Se puebla automaticamente desde la Kiwi API de Better Trove Tools
+    (api.aallyn.net/v1/codexes/...), que expone estos datos ya parseados
+    del cliente del juego. Ver: builder/management/commands/sync_trove_codex.py
+    """
+    KIND_CHOICES = [
+        ("ally", "Ally"),
+        ("emblem", "Emblem"),
+        ("flask", "Flask"),
+    ]
+    kind = models.CharField(max_length=10, choices=KIND_CHOICES)
+    name = models.CharField(max_length=150)
+    slug = models.SlugField(max_length=170)
+    # "path" del codex (ej: "item/emblem/masterchick"), es el id estable que
+    # usamos para actualizar en vez de duplicar cuando se vuelve a sincronizar.
+    source_path = models.CharField(max_length=255)
+    category = models.CharField(
+        max_length=100, blank=True,
+        help_text="Subcategoria tal como la reporta el codex (ej: 'minion', 'buff')."
+    )
+    description = models.TextField(blank=True)
+    icon_url = models.URLField(blank=True)
+    tradable = models.BooleanField(default=False)
+    mastery = models.PositiveIntegerField(null=True, blank=True)
+    power_rank = models.PositiveIntegerField(null=True, blank=True)
+    # Bonos numericos tal como los reporta el codex:
+    # [{"stat_name": "Physical Damage", "amount": 10, "is_percent": True, ...}, ...]
+    stats = models.JSONField(default=list, blank=True)
+    # Habilidades/efectos (ej: lo que dispara un Emblem al usar el Flask):
+    # [{"name": "...", "description": "..."}, ...]
+    abilities = models.JSONField(default=list, blank=True)
+    # Blob completo de "data" del codex, por si se necesita algo no modelado arriba.
+    raw_data = models.JSONField(default=dict, blank=True)
+    synced_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ["kind", "name"]
+        constraints = [
+            models.UniqueConstraint(
+                fields=["kind", "source_path"], name="unique_equipmentitem_kind_source_path"
+            )
+        ]
+
+    def __str__(self):
+        return f"{self.name} ({self.get_kind_display()})"
