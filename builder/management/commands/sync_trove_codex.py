@@ -12,20 +12,24 @@ Uso:
     python manage.py sync_trove_codex --dry-run        # no escribe en DB
 
 Notas:
-- Ally, Flask y Emblem se resuelven distinto entre si:
-  - Ally: tipo de codex propio ("ally").
-  - Flask: TAMBIEN tiene su propio tipo de codex propio ("flask", ~49
-    entradas) - lo usamos directo, es mas limpio que filtrar por path.
-  - Emblem: NO es un tipo propio. Vive dentro del tipo "item", en la misma
-    carpeta que los flasks legacy ("prefabs/item/flask/..."), categoria
-    "Items". Se distingue porque el "name" viene prefijado "Emblem: ".
-  - Banner: tampoco es un tipo propio, es un "style" (tipo "style"),
-    casi siempre con category="Banner" (algunos viejos de evento quedan
-    mal categorizados como "Equipment"), bajo los paths
-    "prefabs/equipment/banner/..." o "prefabs/equipment/delve/...".
-    Este comando combina la busqueda por categoria + por texto "Banner"
-    y se queda con lo que tenga "banner" en el path, para no perder esos
-    casos mal categorizados.
+- Ally: tipo de codex propio ("ally").
+- Flask y Emblem SALEN DEL MISMO tipo de codex ("flask", ~49 entradas) -
+  ese tipo en realidad mezcla ambos (confirmado viendo datos reales: trae
+  "Arcane Emblem" junto con "Elysian Flask"). Se separan por el nombre:
+  si termina en la palabra "Emblem" es un Emblem, si no, es un Flask real.
+  (Ojo: esto reemplaza un intento anterior que buscaba "Emblem: " como
+  prefijo dentro del tipo "item" - ese metodo quedo obsoleto y se limpia
+  solo gracias al pruning de mas abajo.)
+- Banner: no es un tipo propio, es un "style" (tipo "style"), casi
+  siempre con category="Banner" (algunos viejos de evento quedan mal
+  categorizados como "Equipment"), bajo los paths
+  "prefabs/equipment/banner/..." o "prefabs/equipment/delve/...".
+  Este comando combina la busqueda por categoria + por texto "Banner" y
+  se queda con lo que tenga "banner" en el path.
+- Cada sync PRUNEA (borra) los EquipmentItem de un kind que ya no
+  aparezcan en la respuesta actual de la API. Esto limpia solo cualquier
+  entrada obsoleta que haya quedado de una version anterior del comando
+  con una logica de deteccion distinta.
   Todo esto se confirmo inspeccionando datos reales con --inspect.
 - La API no expone URLs de icono directamente, asi que icon_url queda en
   blanco por ahora; se puede completar despues cruzando con trovesaurus.com
@@ -73,21 +77,19 @@ class Command(BaseCommand):
         kinds = [options["kind"]] if options["kind"] else ["ally", "emblem", "flask", "banner"]
         dry_run = options["dry_run"]
 
-        items_folder_cache = None  # cache de type=item/category=Items, usado solo por "emblem"
+        flask_codex_cache = None  # cache: type=flask, usado por "flask" y "emblem" (vienen mezclados)
 
         for kind in kinds:
             if kind == "ally":
                 entries = self._fetch_codex_type("ally")
-            elif kind == "flask":
-                entries = self._fetch_codex_type("flask")
-            elif kind == "emblem":
-                if items_folder_cache is None:
-                    all_items = self._fetch_codex_type("item", category="Items")
-                    items_folder_cache = [
-                        e for e in all_items
-                        if e.get("path", "").startswith("prefabs/item/flask/")
-                    ]
-                entries = [e for e in items_folder_cache if e.get("name", "").startswith("Emblem: ")]
+            elif kind in ("flask", "emblem"):
+                if flask_codex_cache is None:
+                    flask_codex_cache = self._fetch_codex_type("flask")
+                is_emblem = lambda e: e.get("name", "").strip().endswith("Emblem")
+                if kind == "emblem":
+                    entries = [e for e in flask_codex_cache if is_emblem(e)]
+                else:
+                    entries = [e for e in flask_codex_cache if not is_emblem(e)]
             elif kind == "banner":
                 by_category = self._fetch_codex_type("style", category="Banner")
                 by_search = self._fetch_codex_type("style", search="Banner")
@@ -141,13 +143,13 @@ class Command(BaseCommand):
         used_slugs = set(
             EquipmentItem.objects.filter(kind=kind).values_list("slug", flat=True)
         )
+        seen_paths = set()
         for entry in entries:
             data_blob = entry.get("data") or {}
-            name = entry.get("name") or entry.get("path")
-            if kind == "emblem" and name.startswith("Emblem: "):
-                name = name[len("Emblem: "):]
+            path = entry["path"]
+            seen_paths.add(path)
             defaults = {
-                "name": name,
+                "name": entry.get("name") or path,
                 "category": entry.get("category") or "",
                 "description": entry.get("description") or "",
                 "tradable": bool(entry.get("tradable")),
@@ -158,7 +160,7 @@ class Command(BaseCommand):
                 "raw_data": data_blob,
             }
             obj, was_created = EquipmentItem.objects.update_or_create(
-                kind=kind, source_path=entry["path"], defaults=defaults
+                kind=kind, source_path=path, defaults=defaults
             )
             if was_created or not obj.slug:
                 obj.slug = self._unique_slug(obj.name, used_slugs)
@@ -168,6 +170,17 @@ class Command(BaseCommand):
                 created += 1
             else:
                 updated += 1
+
+        # Prunea cualquier registro de este kind que ya no venga en la
+        # respuesta actual de la API (ej: quedo de una version anterior
+        # del comando con otra logica de deteccion, o el item se elimino
+        # del juego).
+        deleted, _ = EquipmentItem.objects.filter(kind=kind).exclude(
+            source_path__in=seen_paths
+        ).delete()
+        if deleted:
+            self.stdout.write(self.style.WARNING(f"{kind}: {deleted} registros obsoletos borrados"))
+
         return created, updated
 
     def _unique_slug(self, name, used_slugs):
