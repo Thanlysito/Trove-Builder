@@ -24,6 +24,7 @@
         <nav class="site-nav">
             <a href="{% url 'builder:class_list' %}" class="nav-link">Clases</a>
             <a href="{% url 'builder:how_it_works' %}" class="nav-link">Cómo funciona</a>
+            <a href="{% url 'builder:suggestions' %}" class="nav-link">💡 Sugerencias</a>
 
             {% if user.is_authenticated %}
                 <a href="{% url 'builder:build_create' %}" class="btn">+ Nueva build</a>
@@ -37,7 +38,6 @@
                         <a href="{% url 'builder:user_profile' user.username %}">Mi perfil</a>
                         <a href="{% url 'builder:my_builds' %}">Mis builds</a>
                         <a href="{% url 'builder:my_favorites' %}">Favoritas</a>
-                        <a href="{% url 'builder:suggestions' %}">Sugerencias</a>
                         <hr>
                         <form method="post" action="{% url 'logout' %}">{% csrf_token %}<button type="submit">Salir</button></form>
                     </div>
