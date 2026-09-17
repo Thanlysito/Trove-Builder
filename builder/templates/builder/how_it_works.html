@@ -1,4 +1,5 @@
 {% extends "builder/base.html" %}
+{% load static %}
 
 {% block title %}Cómo funciona | Trove Builder{% endblock %}
 
@@ -28,6 +29,11 @@
 
 <section id="que-es-una-build" class="detail-section">
     <h2>¿Qué es una build?</h2>
+    <div class="how-it-works-gallery how-it-works-gallery-single">
+        <figure>
+            <img src="{% static 'builder/img/misc/build-concept.png' %}" alt="Concepto de build: pergamino de stats con una gema">
+        </figure>
+    </div>
     <p>
         Una <strong>build</strong> es la combinación de todas las decisiones que
         tomas sobre tu personaje: qué clase juegas, cómo levantas tus gemas, qué
@@ -67,6 +73,24 @@
             gema.
         </li>
     </ul>
+    <div class="how-it-works-gallery">
+        <figure>
+            <img src="{% static 'builder/img/class-gems/aegis-assault.png' %}" alt="Gema de clase: Aegis Assault">
+            <figcaption>Ejemplo: Aegis Assault</figcaption>
+        </figure>
+        <figure>
+            <img src="{% static 'builder/img/class-gems/lunar-echo.png' %}" alt="Gema de clase: Lunar Echo">
+            <figcaption>Ejemplo: Lunar Echo</figcaption>
+        </figure>
+        <figure>
+            <img src="{% static 'builder/img/class-gems/blizzard-barrage.png' %}" alt="Gema de clase: Blizzard Barrage">
+            <figcaption>Ejemplo: Blizzard Barrage</figcaption>
+        </figure>
+        <figure>
+            <img src="{% static 'builder/img/class-gems/spirit-squire.png' %}" alt="Gema de clase: Spirit Squire">
+            <figcaption>Ejemplo: Spirit Squire</figcaption>
+        </figure>
+    </div>
 </section>
 
 <section id="gemas" class="detail-section">
@@ -76,6 +100,28 @@
         equipan en slots del panel de personaje y otorgan bonificaciones de
         stats según su rareza, sus estadísticas y su nivel.
     </p>
+    <div class="how-it-works-gallery">
+        <figure>
+            <img src="{% static 'builder/img/gems/gem-fire-big.png' %}" alt="Gema grande (Empoderada/Class) de Fuego">
+            <figcaption>Gema grande<br>(Empoderada/Class)</figcaption>
+        </figure>
+        <figure>
+            <img src="{% static 'builder/img/gems/gem-fire-small.png' %}" alt="Gema pequeña (Lesser) de Fuego">
+            <figcaption>Gema pequeña<br>(Lesser)</figcaption>
+        </figure>
+        <figure>
+            <img src="{% static 'builder/img/gems/gem-water-big.png' %}" alt="Gema del elemento Agua">
+            <figcaption>Elemento Agua</figcaption>
+        </figure>
+        <figure>
+            <img src="{% static 'builder/img/gems/gem-air-big.png' %}" alt="Gema del elemento Aire">
+            <figcaption>Elemento Aire</figcaption>
+        </figure>
+        <figure>
+            <img src="{% static 'builder/img/gems/gem-cosmic-big.png' %}" alt="Gema del elemento Cósmico">
+            <figcaption>Elemento Cósmico</figcaption>
+        </figure>
+    </div>
     <ul>
         <li>
             <strong>Tipos:</strong> existen gemas normales (obtenidas en mundos
@@ -107,6 +153,24 @@
         aporta Power Rank y estadísticas propias, y muchas pueden reforzarse
         con gemas o subir de nivel para aumentar su aporte.
     </p>
+    <div class="how-it-works-gallery">
+        <figure>
+            <img src="{% static 'builder/img/equipment/equip-weapon.png' %}" alt="Arma (Weapon)">
+            <figcaption>Weapon</figcaption>
+        </figure>
+        <figure>
+            <img src="{% static 'builder/img/equipment/equip-hat.png' %}" alt="Casco (Hat)">
+            <figcaption>Hat</figcaption>
+        </figure>
+        <figure>
+            <img src="{% static 'builder/img/equipment/equip-face.png' %}" alt="Cara (Face)">
+            <figcaption>Face</figcaption>
+        </figure>
+        <figure>
+            <img src="{% static 'builder/img/equipment/equip-ring.png' %}" alt="Anillo (Ring)">
+            <figcaption>Ring</figcaption>
+        </figure>
+    </div>
     <p>
         Al armar tu build en Trove Builder, elegir bien tu equipo es tan
         importante como elegir tus gemas: ambos sistemas se complementan para
@@ -116,6 +180,11 @@
 
 <section id="anillos" class="detail-section">
     <h2>Anillos</h2>
+    <div class="how-it-works-gallery how-it-works-gallery-single">
+        <figure>
+            <img src="{% static 'builder/img/equipment/equip-ring.png' %}" alt="Anillo (Ring)">
+        </figure>
+    </div>
     <p>
         Los anillos son una pieza extra de equipo que se fabrica con la
         profesión de <strong>Ringcrafting</strong> (a diferencia de las gemas,
@@ -144,6 +213,11 @@
 
 <section id="dragones" class="detail-section">
     <h2>Dragones</h2>
+    <div class="how-it-works-gallery how-it-works-gallery-single">
+        <figure>
+            <img src="{% static 'builder/img/misc/dragon.png' %}" alt="Dragón montura enroscado">
+        </figure>
+    </div>
     <p>
         Los dragones son monturas de fin de juego que, a diferencia de la
         mayoría de monturas cosméticas, también otorgan bonificaciones de
@@ -173,6 +247,11 @@
 
 <section id="primera-build" class="detail-section">
     <h2>Armando tu primera build</h2>
+    <div class="how-it-works-gallery how-it-works-gallery-single">
+        <figure>
+            <img src="{% static 'builder/img/misc/crafting.png' %}" alt="Yunque forjando equipo">
+        </figure>
+    </div>
     <ol>
         <li>Elige tu clase (y, si ya la tienes, tu subclase).</li>
         <li>Agrega las gemas que planeas usar, con sus stats principales.</li>
@@ -190,6 +269,11 @@
 
 <section id="glosario" class="detail-section">
     <h2>Glosario</h2>
+    <div class="how-it-works-gallery how-it-works-gallery-single">
+        <figure>
+            <img src="{% static 'builder/img/misc/glossary.png' %}" alt="Libro mágico de glosario">
+        </figure>
+    </div>
     <p>Términos que vas a ver seguido en el formulario de build y que quizá no conozcas todavía.</p>
     <div class="item-card">
         <strong>Power Rank (PR)</strong>
@@ -223,6 +307,11 @@
 
 <section id="faq" class="detail-section">
     <h2>Preguntas frecuentes</h2>
+    <div class="how-it-works-gallery how-it-works-gallery-single">
+        <figure>
+            <img src="{% static 'builder/img/misc/faq.png' %}" alt="Signo de pregunta dorado">
+        </figure>
+    </div>
 
     <details>
         <summary>¿Necesito tener todo perfecto para empezar a jugar?</summary>
