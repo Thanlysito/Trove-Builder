@@ -260,7 +260,7 @@ class Dragon(models.Model):
     dragon_type = models.CharField(max_length=15, choices=DRAGON_TYPE_CHOICES)
     description = models.TextField(blank=True)
     power_rank_bonus = models.CharField(
-        max_length=120,
+        max_length=300,
         help_text="Bono de Power Rank que otorga una vez desbloqueado, ej: "
                    "'+30 PR fijo' o '+10% del PR total de gemas'."
     )
