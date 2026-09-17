@@ -37,6 +37,7 @@
                         <a href="{% url 'builder:user_profile' user.username %}">Mi perfil</a>
                         <a href="{% url 'builder:my_builds' %}">Mis builds</a>
                         <a href="{% url 'builder:my_favorites' %}">Favoritas</a>
+                        <a href="{% url 'builder:suggestions' %}">Sugerencias</a>
                         <hr>
                         <form method="post" action="{% url 'logout' %}">{% csrf_token %}<button type="submit">Salir</button></form>
                     </div>

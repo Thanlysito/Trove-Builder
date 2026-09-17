@@ -13,7 +13,7 @@ from django.urls import reverse
 from .forms import SignupForm
 from .models import (
     Build, GameClass, Gem, BuildGem, Subclass, EquipmentSlot, BuildEquipment, BuildVote,
-    BuildComment, RingHiddenEffect, BuildFavorite, Notification
+    BuildComment, RingHiddenEffect, BuildFavorite, Notification, Suggestion
 )
 
 # Pool de stats roleables compartido por TODAS las gemas menores (Fierce/Arcane),
@@ -334,6 +334,35 @@ def notifications_view(request):
         Notification.objects.filter(id__in=unread_ids).update(is_read=True)
 
     return render(request, "builder/notifications.html", {"notifications": notifications})
+
+
+@login_required
+def suggestions_view(request):
+    """Formulario para mandar sugerencias/reportes, y lista de las propias."""
+    if request.method == "POST":
+        title = request.POST.get("title", "").strip()
+        description = request.POST.get("description", "").strip()
+        category = request.POST.get("category", "idea")
+        if category not in dict(Suggestion.CATEGORY_CHOICES):
+            category = "idea"
+
+        if not title or not description:
+            messages.warning(request, "Completa el título y la descripción.")
+        elif _rate_limited(request, "suggestion", seconds=10):
+            messages.warning(request, "Espera unos segundos antes de enviar otra sugerencia.")
+        else:
+            Suggestion.objects.create(
+                user=request.user, category=category,
+                title=title[:120], description=description[:2000],
+            )
+            messages.success(request, "¡Gracias! Tu sugerencia fue enviada.")
+            return redirect("builder:suggestions")
+
+    my_suggestions = request.user.suggestions.all()[:20]
+    return render(request, "builder/suggestions.html", {
+        "my_suggestions": my_suggestions,
+        "category_choices": Suggestion.CATEGORY_CHOICES,
+    })
 
 
 def build_detail(request, slug):

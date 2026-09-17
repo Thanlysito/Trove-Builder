@@ -1,7 +1,7 @@
 from django.contrib import admin
 from .models import (
     GameClass, Gem, Build, BuildGem, BuildVote, EquipmentSlot, BuildEquipment,
-    Subclass, Dragon, RingHiddenEffect, BuildComment, BuildFavorite, Notification
+    Subclass, Dragon, RingHiddenEffect, BuildComment, BuildFavorite, Notification, Suggestion
 )
 
 
@@ -120,5 +120,16 @@ class NotificationAdmin(admin.ModelAdmin):
     list_filter = ("verb", "is_read", "created_at")
     search_fields = ("recipient__username", "actor__username", "build__name")
     date_hierarchy = "created_at"
+
+
+@admin.register(Suggestion)
+class SuggestionAdmin(admin.ModelAdmin):
+    list_display = ("title", "user", "category", "status", "created_at")
+    list_filter = ("category", "status", "created_at")
+    search_fields = ("title", "description", "user__username")
+    date_hierarchy = "created_at"
+    list_editable = ("status",)
+    readonly_fields = ("user", "category", "title", "description", "created_at")
+    fields = ("user", "category", "title", "description", "status", "created_at")
 
 

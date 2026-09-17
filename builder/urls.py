@@ -14,6 +14,7 @@ urlpatterns = [
     path("clases/", views.class_list, name="class_list"),
     path("clases/<slug:class_slug>/", views.class_detail, name="class_detail"),
     path("notificaciones/", views.notifications_view, name="notifications"),
+    path("sugerencias/", views.suggestions_view, name="suggestions"),
     path("usuario/<str:username>/", views.user_profile, name="user_profile"),
     path("comment/<int:comment_id>/delete/", views.build_delete_comment, name="build_delete_comment"),
     path("<slug:slug>/vote/", views.build_vote, name="build_vote"),

@@ -419,3 +419,29 @@ class Notification(models.Model):
     def __str__(self):
         actor_name = self.actor.username if self.actor else "Alguien"
         return f"{actor_name} {self.get_verb_display()} '{self.build.name}' (para {self.recipient.username})"
+
+
+class Suggestion(models.Model):
+    """Sugerencia o reporte de bug que un usuario manda sobre el sitio."""
+    CATEGORY_CHOICES = [
+        ("bug", "Reportar un problema"),
+        ("idea", "Sugerir una idea"),
+        ("other", "Otro"),
+    ]
+    STATUS_CHOICES = [
+        ("new", "Nueva"),
+        ("reviewed", "Revisada"),
+        ("done", "Hecha"),
+    ]
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="suggestions")
+    category = models.CharField(max_length=10, choices=CATEGORY_CHOICES, default="idea")
+    title = models.CharField(max_length=120)
+    description = models.TextField(max_length=2000)
+    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default="new")
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["-created_at"]
+
+    def __str__(self):
+        return f"[{self.get_category_display()}] {self.title} ({self.user.username})"
