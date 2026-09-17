@@ -130,6 +130,34 @@ small { color: var(--text-dim); }
 
 .nav-link:hover { color: var(--accent); text-decoration: none; }
 
+/* ---------- campanita de notificaciones ---------- */
+
+.nav-bell {
+  position: relative;
+  font-size: 1.05rem;
+  line-height: 1;
+  padding: 6px 4px;
+  color: var(--text-muted);
+  text-decoration: none !important;
+}
+
+.nav-bell:hover { color: var(--accent); }
+
+.nav-bell-badge {
+  position: absolute;
+  top: -2px;
+  right: -6px;
+  background: var(--el-fire);
+  color: #fff;
+  font-size: 0.62rem;
+  font-weight: 700;
+  line-height: 1;
+  padding: 2px 5px;
+  border-radius: 999px;
+  min-width: 14px;
+  text-align: center;
+}
+
 /* ---------- menú de cuenta (desplegable) ---------- */
 
 .account-menu { position: relative; }

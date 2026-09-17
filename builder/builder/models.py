@@ -394,3 +394,28 @@ class BuildFavorite(models.Model):
 
     def __str__(self):
         return f"{self.user.username} ♥ {self.build.name}"
+
+
+class Notification(models.Model):
+    """
+    Aviso simple para el dueño de una build cuando alguien mas comenta o
+    vota en ella. No se genera cuando el dueño interactua con su propia
+    build.
+    """
+    VERB_CHOICES = [
+        ("comment", "comentó en tu build"),
+        ("vote", "votó tu build"),
+    ]
+    recipient = models.ForeignKey(User, on_delete=models.CASCADE, related_name="notifications")
+    actor = models.ForeignKey(User, on_delete=models.CASCADE, related_name="+", null=True, blank=True)
+    verb = models.CharField(max_length=10, choices=VERB_CHOICES)
+    build = models.ForeignKey(Build, on_delete=models.CASCADE, related_name="notifications")
+    is_read = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["-created_at"]
+
+    def __str__(self):
+        actor_name = self.actor.username if self.actor else "Alguien"
+        return f"{actor_name} {self.get_verb_display()} '{self.build.name}' (para {self.recipient.username})"

@@ -206,3 +206,48 @@ class PageLoadTests(BaseBuilderTestCase):
         build = self.make_build()
         response = self.client.get(reverse("builder:build_detail", args=[build.slug]))
         self.assertEqual(response.status_code, 200)
+
+    def test_robots_txt_loads(self):
+        response = self.client.get("/robots.txt")
+        self.assertEqual(response.status_code, 200)
+        self.assertIn(b"Sitemap:", response.content)
+
+    def test_sitemap_xml_loads_and_lists_public_build(self):
+        build = self.make_build(is_public=True)
+        response = self.client.get("/sitemap.xml")
+        self.assertEqual(response.status_code, 200)
+        self.assertIn(build.slug.encode(), response.content)
+
+
+class NotificationTests(BaseBuilderTestCase):
+    def test_comment_notifies_build_owner(self):
+        build = self.make_build(owner=self.owner)
+        self.client.login(username="other", password="testpass123")
+        self.client.post(reverse("builder:build_add_comment", args=[build.slug]), {"text": "hola"})
+        self.assertEqual(self.owner.notifications.count(), 1)
+        notif = self.owner.notifications.first()
+        self.assertEqual(notif.verb, "comment")
+        self.assertEqual(notif.actor, self.other)
+        self.assertFalse(notif.is_read)
+
+    def test_vote_notifies_build_owner(self):
+        build = self.make_build(owner=self.owner)
+        self.client.login(username="other", password="testpass123")
+        self.client.post(reverse("builder:build_vote", args=[build.slug]), {"value": "1"})
+        self.assertEqual(self.owner.notifications.filter(verb="vote").count(), 1)
+
+    def test_no_self_notification(self):
+        build = self.make_build(owner=self.owner)
+        self.client.login(username="owner", password="testpass123")
+        self.client.post(reverse("builder:build_add_comment", args=[build.slug]), {"text": "mi propio comentario"})
+        self.assertEqual(self.owner.notifications.count(), 0)
+
+    def test_visiting_notifications_page_marks_as_read(self):
+        build = self.make_build(owner=self.owner)
+        self.client.login(username="other", password="testpass123")
+        self.client.post(reverse("builder:build_add_comment", args=[build.slug]), {"text": "hola"})
+        self.client.logout()
+
+        self.client.login(username="owner", password="testpass123")
+        self.client.get(reverse("builder:notifications"))
+        self.assertEqual(self.owner.notifications.filter(is_read=False).count(), 0)

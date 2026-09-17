@@ -167,3 +167,12 @@ def equipment_icon_path(equipment_slot):
     if not slot_type or slot_type not in EQUIPMENT_ICON_TYPES:
         return None
     return f"builder/img/equipment/equip-{slot_type}.png"
+
+
+@register.simple_tag
+def unread_notification_count(user):
+    """Uso en template: {% unread_notification_count user as unread_count %}"""
+    if not user or not user.is_authenticated:
+        return 0
+    return user.notifications.filter(is_read=False).count()
+

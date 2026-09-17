@@ -7,12 +7,13 @@ from django.db.models import Q, Sum, Count
 from django.core.cache import cache
 from django.utils.text import slugify
 from django.utils.http import url_has_allowed_host_and_scheme
-from django.http import HttpResponseForbidden
+from django.http import HttpResponseForbidden, HttpResponse
 from django.core.paginator import Paginator
+from django.urls import reverse
 from .forms import SignupForm
 from .models import (
     Build, GameClass, Gem, BuildGem, Subclass, EquipmentSlot, BuildEquipment, BuildVote,
-    BuildComment, RingHiddenEffect, BuildFavorite
+    BuildComment, RingHiddenEffect, BuildFavorite, Notification
 )
 
 # Pool de stats roleables compartido por TODAS las gemas menores (Fierce/Arcane),
@@ -318,6 +319,23 @@ def class_detail(request, class_slug):
     })
 
 
+@login_required
+def notifications_view(request):
+    """
+    Lista las notificaciones del usuario (comentarios/votos en sus builds).
+    Al abrir esta pagina, las notificaciones que se muestran quedan
+    marcadas como leidas (asi la campanita del nav vuelve a 0).
+    """
+    notifications = list(
+        request.user.notifications.select_related("actor", "build")[:30]
+    )
+    unread_ids = [n.id for n in notifications if not n.is_read]
+    if unread_ids:
+        Notification.objects.filter(id__in=unread_ids).update(is_read=True)
+
+    return render(request, "builder/notifications.html", {"notifications": notifications})
+
+
 def build_detail(request, slug):
     build = get_object_or_404(Build, slug=slug)
     if not build.is_public and build.owner != request.user:
@@ -401,6 +419,10 @@ def build_vote(request, slug):
         existing.save(update_fields=["value"])
     else:
         BuildVote.objects.create(build=build, user=request.user, value=value)
+        if build.owner_id != request.user.id:
+            Notification.objects.create(
+                recipient=build.owner, actor=request.user, verb="vote", build=build
+            )
 
     # Vuelve a donde se voto (lista con sus filtros, o el detalle), no siempre
     # al detalle, para que votar desde la lista no te saque de ahi.
@@ -504,6 +526,10 @@ def build_add_comment(request, slug):
         return redirect(build.get_absolute_url())
 
     BuildComment.objects.create(build=build, user=request.user, text=text[:1000])
+    if build.owner_id != request.user.id:
+        Notification.objects.create(
+            recipient=build.owner, actor=request.user, verb="comment", build=build
+        )
     return redirect(build.get_absolute_url())
 
 
@@ -759,6 +785,51 @@ def build_edit(request, slug):
         return redirect(build.get_absolute_url())
 
     return render(request, "builder/build_form.html", _build_form_context(build))
+
+
+def robots_txt(request):
+    """robots.txt para buscadores: permite indexar el sitio, bloquea rutas
+    privadas/de accion (admin, editar, borrar, etc.) y apunta al sitemap."""
+    base = request.build_absolute_uri("/").rstrip("/")
+    lines = [
+        "User-agent: *",
+        "Allow: /",
+        "Disallow: /admin/",
+        "Disallow: /new/",
+        "Disallow: /my-builds/",
+        "Disallow: /favoritas/",
+        "Disallow: /notificaciones/",
+        "Disallow: /accounts/",
+        "",
+        f"Sitemap: {base}/sitemap.xml",
+    ]
+    return HttpResponse("\n".join(lines), content_type="text/plain")
+
+
+def sitemap_xml(request):
+    """
+    Sitemap XML simple, generado a mano (sin django.contrib.sitemaps) para
+    no tener que agregar django.contrib.sites al proyecto. Incluye las
+    paginas estaticas, el catalogo de clases y todas las builds publicas.
+    """
+    base = request.build_absolute_uri("/").rstrip("/")
+    entries = [
+        {"loc": base + reverse("builder:build_list"), "changefreq": "daily", "priority": "1.0"},
+        {"loc": base + reverse("builder:class_list"), "changefreq": "monthly", "priority": "0.6"},
+        {"loc": base + reverse("builder:how_it_works"), "changefreq": "monthly", "priority": "0.5"},
+    ]
+    for gc in GameClass.objects.all():
+        entries.append({
+            "loc": base + reverse("builder:class_detail", args=[gc.slug]),
+            "changefreq": "monthly", "priority": "0.5",
+        })
+    for b in Build.objects.filter(is_public=True).only("slug", "updated_at"):
+        entries.append({
+            "loc": base + reverse("builder:build_detail", args=[b.slug]),
+            "changefreq": "weekly", "priority": "0.4",
+            "lastmod": b.updated_at.date().isoformat(),
+        })
+    return render(request, "builder/sitemap.xml", {"entries": entries}, content_type="application/xml")
 
 
 

@@ -1,0 +1,23 @@
+{% extends "builder/base.html" %}
+{% block title %}Notificaciones | Trove Builder{% endblock %}
+{% block content %}
+
+<section class="hero">
+    <h1>Notificaciones</h1>
+    <p>Avisos de comentarios y votos en tus builds.</p>
+</section>
+
+<div class="build-grid">
+    {% for n in notifications %}
+    <a class="build-card" href="{{ n.build.get_absolute_url }}" style="text-decoration:none; display:block;">
+        <span class="name">
+            {% if n.verb == "comment" %}💬{% else %}▲{% endif %}
+            {{ n.actor.username|default:"Alguien" }} {{ n.get_verb_display }}
+        </span>
+        <span class="meta">"{{ n.build.name }}" — {{ n.created_at|date:"d/m/Y H:i" }}</span>
+    </a>
+    {% empty %}
+    <div class="empty-state">Todavía no tienes notificaciones. Cuando alguien comente o vote una de tus builds, aparecerá aquí.</div>
+    {% endfor %}
+</div>
+{% endblock %}
