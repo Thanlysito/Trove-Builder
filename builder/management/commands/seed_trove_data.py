@@ -942,6 +942,11 @@ CLASS_GEMS = [
     ("Lunar Echo", "Lunar Lancer",
      "Aumenta la pasiva de lunancia: al activarse invoca un clon del Lunar Lancer que "
      "también inflige daño al enemigo."),
+    ("Prismatic Link", "Solarion",
+     "Class Gem Empoderada del Solarion. Prismatic Blast ahora también pulsa "
+     "alrededor del Phoenix además del Solarion, permitiendo mantener distancia "
+     "mientras se ataca y dañar en área alrededor del Phoenix. Solo se puede "
+     "socketear una de estas gemas a la vez."),
 ]
 
 

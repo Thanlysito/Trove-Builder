@@ -194,4 +194,3 @@ def unread_notification_count(user):
     if not user or not user.is_authenticated:
         return 0
     return user.notifications.filter(is_read=False).count()
-
