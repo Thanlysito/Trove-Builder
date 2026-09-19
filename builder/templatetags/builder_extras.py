@@ -147,7 +147,7 @@ CLASS_GEM_ICON_SLUGS = {
     "shadow-blitz-gem", "bawk-bomb", "aegis-assault", "scoop-n-gloop",
     "heuristic-hackstar", "faerocious-facsimile", "overcharged", "spirit-squire",
     "dragonling-ember", "leafy-lasher-overgrowth", "blizzard-barrage",
-    "twin-cannon-command", "banshees-communion", "lunar-echo",
+    "twin-cannon-command", "banshees-communion", "lunar-echo", "prismatic-link",
 }
 
 
