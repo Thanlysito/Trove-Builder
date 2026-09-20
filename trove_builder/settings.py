@@ -77,6 +77,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
+    'anymail',
 ]
 
 MIDDLEWARE = [
@@ -198,18 +199,27 @@ LOGOUT_REDIRECT_URL = '/'
 # enviarse de verdad. En cuanto pones tus credenciales reales en el .env,
 # se envían por Gmail SMTP tal como ya lo probaste.
 
-EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_PORT = 587
-EMAIL_USE_TLS = True
-EMAIL_HOST_USER = os.environ.get("EMAIL_HOST_USER", "")
-EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_HOST_PASSWORD", "")
-DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+# Railway bloquea las conexiones salientes por SMTP (puertos 25/587/465),
+# asi que Gmail SMTP nunca va a poder conectarse desde ahi (se probo y da
+# "OSError: Network is unreachable"). La solucion es enviar por la API HTTP
+# de Resend en vez de SMTP crudo — HTTPS si esta permitido.
+#
+# RESEND_API_KEY se crea gratis en https://resend.com (sin tarjeta). Una vez
+# verificado el dominio trovebuilder.me ahi, se puede mandar desde
+# noreply@trovebuilder.me a cualquier destinatario.
+RESEND_API_KEY = os.environ.get("RESEND_API_KEY", "")
+DEFAULT_FROM_EMAIL = os.environ.get("DEFAULT_FROM_EMAIL", "Trove Builder <noreply@trovebuilder.me>")
 
-# Sin esto, si Railway bloquea o demora la conexión SMTP saliente, Django se
-# queda esperando indefinidamente hasta que gunicorn mata el worker a la
-# fuerza (eso se veia en Sentry como "SystemExit" en vez del error real).
-# Con el timeout, en 10 segundos falla con un error normal y manejable.
-EMAIL_TIMEOUT = 10
+if RESEND_API_KEY:
+    EMAIL_BACKEND = "anymail.backends.resend.EmailBackend"
+    ANYMAIL = {
+        "RESEND_API_KEY": RESEND_API_KEY,
+    }
+else:
+    # Sin la API key configurada (por ejemplo en desarrollo local), los
+    # correos se imprimen en la terminal en vez de fallar o de intentar
+    # mandar de verdad.
+    EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 if EMAIL_HOST_USER and EMAIL_HOST_PASSWORD:
     EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
