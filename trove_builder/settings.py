@@ -205,6 +205,12 @@ EMAIL_HOST_USER = os.environ.get("EMAIL_HOST_USER", "")
 EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_HOST_PASSWORD", "")
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
+# Sin esto, si Railway bloquea o demora la conexión SMTP saliente, Django se
+# queda esperando indefinidamente hasta que gunicorn mata el worker a la
+# fuerza (eso se veia en Sentry como "SystemExit" en vez del error real).
+# Con el timeout, en 10 segundos falla con un error normal y manejable.
+EMAIL_TIMEOUT = 10
+
 if EMAIL_HOST_USER and EMAIL_HOST_PASSWORD:
     EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 else:
