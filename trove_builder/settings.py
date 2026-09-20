@@ -194,11 +194,6 @@ LOGOUT_REDIRECT_URL = '/'
 
 # Email
 # https://docs.djangoproject.com/en/6.1/topics/email/#topic-email-configuration
-# En desarrollo, si no defines EMAIL_HOST_PASSWORD en el .env, los correos
-# (como el de "recuperar contraseña") se imprimen en la terminal en vez de
-# enviarse de verdad. En cuanto pones tus credenciales reales en el .env,
-# se envían por Gmail SMTP tal como ya lo probaste.
-
 # Railway bloquea las conexiones salientes por SMTP (puertos 25/587/465),
 # asi que Gmail SMTP nunca va a poder conectarse desde ahi (se probo y da
 # "OSError: Network is unreachable"). La solucion es enviar por la API HTTP
@@ -219,13 +214,6 @@ else:
     # Sin la API key configurada (por ejemplo en desarrollo local), los
     # correos se imprimen en la terminal en vez de fallar o de intentar
     # mandar de verdad.
-    EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
-
-if EMAIL_HOST_USER and EMAIL_HOST_PASSWORD:
-    EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-else:
-    # Sin credenciales configuradas, cae a imprimir el correo en la consola
-    # en vez de fallar o enviar con campos vacíos.
     EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 # Seguridad extra que solo se activa en producción real (DEBUG=False), para
