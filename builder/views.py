@@ -881,5 +881,9 @@ def sitemap_xml(request):
         })
     return render(request, "builder/sitemap.xml", {"entries": entries}, content_type="application/xml")
 
+def trigger_error(request):
+    """Ruta temporal solo para probar que Sentry captura errores en produccion."""
+    division_by_zero = 1 / 0
+
 
 

@@ -23,5 +23,6 @@ urlpatterns = [
     path("<slug:slug>/edit/", views.build_edit, name="build_edit"),
     path("<slug:slug>/duplicate/", views.build_duplicate, name="build_duplicate"),
     path("<slug:slug>/comment/", views.build_add_comment, name="build_add_comment"),
+     path("sentry-debug/", views.trigger_error, name="trigger_error"),
     path("<slug:slug>/", views.build_detail, name="build_detail"),
 ]
