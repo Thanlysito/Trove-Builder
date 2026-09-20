@@ -18,7 +18,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{% static 'builder/css/style.css' %}">
 </head>
-<body>
+<body class="{% block body_class %}{% endblock %}">
     <header class="site-header">
         <a class="logo" href="/"><span class="cube"></span> Trove Builder</a>
         <nav class="site-nav">
@@ -68,5 +68,6 @@
         });
     });
     </script>
+    {% block extra_js %}{% endblock %}
 </body>
 </html>

@@ -400,6 +400,20 @@ def build_detail(request, slug):
         user_vote = vote.value if vote else None
         is_favorited = BuildFavorite.objects.filter(build=build, user=request.user).exists()
 
+    # Otras builds de la misma clase, para el panel lateral tipo "Builds" de
+    # Questlog. Solo publicas (o propias, si es el dueno viendola), ordenadas
+    # por PR score (se calcula en Python porque score es una @property).
+    sibling_qs = Build.objects.filter(primary_class=build.primary_class).exclude(pk=build.pk)
+    if request.user.is_authenticated:
+        sibling_qs = sibling_qs.filter(Q(is_public=True) | Q(owner=request.user))
+    else:
+        sibling_qs = sibling_qs.filter(is_public=True)
+    sibling_builds = sorted(
+        sibling_qs.select_related("owner", "subclass")[:30],
+        key=lambda b: b.score,
+        reverse=True,
+    )[:8]
+
     return render(request, "builder/build_detail.html", {
         "build": build,
         "big_slots": big_slots,
@@ -412,6 +426,7 @@ def build_detail(request, slug):
         "upvotes": build.votes.filter(value=1).count(),
         "downvotes": build.votes.filter(value=-1).count(),
         "comments": build.comments.select_related("user"),
+        "sibling_builds": sibling_builds,
     })
 
 
