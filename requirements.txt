@@ -6,3 +6,4 @@ whitenoise>=6.8
 dj-database-url>=3.0
 psycopg[binary]>=3.2
 requests>=2.32
+sentry-sdk

@@ -23,6 +23,13 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # .gitignore y .env.example.
 load_dotenv(BASE_DIR / ".env")
 
+import sentry_sdk
+
+sentry_sdk.init(
+    dsn=os.environ.get("SENTRY_DSN", ""),
+    send_default_pii=True,
+)
+
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/6.1/howto/deployment/checklist/
