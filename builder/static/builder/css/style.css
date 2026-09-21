@@ -150,6 +150,13 @@ small { color: var(--text-dim); }
   transform: rotate(-8deg);
 }
 
+.site-header .logo .logo-img {
+  width: 30px;
+  height: 30px;
+  object-fit: contain;
+  filter: drop-shadow(0 0 10px var(--accent-glow));
+}
+
 .site-header .logo:hover { color: var(--text); }
 
 .site-nav {
