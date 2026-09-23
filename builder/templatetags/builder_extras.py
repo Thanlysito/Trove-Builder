@@ -1,6 +1,15 @@
 from django import template
 
+from builder.game_text import tr
+
 register = template.Library()
+
+
+@register.filter
+def tr_data(value):
+    """Traduce datos del juego (descripciones, bonos...) cuando la pagina esta
+    en ingles. Uso: {{ gem.description|tr_data }}"""
+    return tr(value)
 
 
 @register.filter
@@ -111,7 +120,7 @@ def gem_tooltip_stats(gem):
         return ", ".join(gem.stat_scaling["rollable_stats"])
     parts = []
     for key, value in list(gem.stat_scaling.items())[:3]:
-        parts.append(f"{humanize_key(key)}: {value}")
+        parts.append(f"{humanize_key(key)}: {tr(value)}")
     return " · ".join(parts)
 
 

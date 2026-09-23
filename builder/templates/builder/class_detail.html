@@ -1,5 +1,5 @@
 {% extends "builder/base.html" %}
-{% load i18n %}
+{% load i18n builder_extras %}
 {% block title %}{{ game_class.name }} | Trove Builder{% endblock %}
 {% block meta_description %}{% blocktranslate with name=game_class.name %}Guía de {{ name }} en Trove: rol, tipo de daño, subclase (Mastery), gemas de clase y Efectos Ocultos de anillo.{% endblocktranslate %}{% endblock %}
 {% block og_title %}{{ game_class.name }} — Trove Builder{% endblock %}
@@ -18,15 +18,15 @@
     </div>
 </div>
 
-{% if game_class.description %}<p>{{ game_class.description }}</p>{% endif %}
+{% if game_class.description %}<p>{{ game_class.description|tr_data }}</p>{% endif %}
 
 <section class="detail-section">
     <h2>{% translate "Mastery (subclase propia)" %}</h2>
     {% if subclass %}
     <div class="item-card">
         <strong>{{ subclass.name }}</strong>
-        <p class="item-desc">{{ subclass.passive_description }}</p>
-        <p class="item-desc">{% translate "Bono de stat al equiparla como subclase:" %} <strong>{{ subclass.bonus_stat }}</strong>{% if subclass.bonus_range %} ({{ subclass.bonus_range }}){% endif %}.</p>
+        <p class="item-desc">{{ subclass.passive_description|tr_data }}</p>
+        <p class="item-desc">{% translate "Bono de stat al equiparla como subclase:" %} <strong>{{ subclass.bonus_stat }}</strong>{% if subclass.bonus_range %} ({{ subclass.bonus_range|tr_data }}){% endif %}.</p>
     </div>
     <p style="font-size:0.85rem; color:var(--text-dim);">
         {% blocktranslate with sub=subclass.name cls=game_class.name %}Cualquier otra clase puede equipar "{{ sub }}" como su subclase (Mastery) — {{ cls }} en cambio, nunca puede usar la suya propia.{% endblocktranslate %}
@@ -42,7 +42,7 @@
     {% for g in class_gems %}
     <div class="item-card">
         <strong>{{ g.name }}</strong>
-        {% if g.description %}<p class="item-desc">{{ g.description }}</p>{% endif %}
+        {% if g.description %}<p class="item-desc">{{ g.description|tr_data }}</p>{% endif %}
     </div>
     {% endfor %}
     {% else %}
@@ -60,7 +60,7 @@
     <div class="item-card">
         <strong>{{ e.name }}</strong>
         <span class="chip" style="font-size:0.65rem;">{{ e.get_availability_display }}</span>
-        <p class="item-desc">{{ e.description }}</p>
+        <p class="item-desc">{{ e.description|tr_data }}</p>
     </div>
     {% endfor %}
     {% else %}

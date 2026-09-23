@@ -505,3 +505,47 @@ class LanguageTests(BaseBuilderTestCase):
         )
         self.assertContains(response, "Build updated.")
         self.assertContains(response, "Up to date")
+
+    def test_translate_link_only_when_languages_differ(self):
+        build = self.make_build(owner=self.owner, name="Guia")
+        build.description = "Usa gemas de fuego"
+        build.save()
+        url = reverse("builder:build_detail", args=[build.slug])
+        self.assertNotContains(self.client.get(url), "translate.google.com/?sl=auto&amp;tl=es&amp;op=translate&amp;text=Usa")
+        self.client.post(reverse("set_language"), {"language": "en", "next": "/"})
+        response = self.client.get(url)
+        self.assertContains(response, "Translate with Google")
+        self.assertContains(response, "text=Usa%20gemas%20de%20fuego")
+
+    def test_all_template_text_is_translatable(self):
+        """Falla si alguna plantilla tiene texto en español sin {% translate %}."""
+        from .i18n_check import untranslated_texts
+        problems = untranslated_texts()
+        detail = "\n".join(f"  {name}, línea {line}: {text!r}" for name, line, text in problems)
+        self.assertEqual(
+            problems, [],
+            "Estos textos están en español pero no se van a traducir. "
+            "Envuélvelos en {% translate \"...\" %}:\n" + detail,
+        )
+
+    def test_game_data_is_translated_in_english(self):
+        """Los datos del juego usan locale/en/game_data.json cuando la página está en inglés."""
+        import json
+        import tempfile
+        from pathlib import Path
+        from unittest import mock
+        from . import game_text
+
+        self.game_class.description = "Guerrero cuerpo a cuerpo."
+        self.game_class.save()
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "game_data.json"
+            path.write_text(json.dumps({"Guerrero cuerpo a cuerpo.": "Melee warrior."}), encoding="utf-8")
+            with mock.patch.object(game_text, "GAME_DATA_PATH", path), \
+                    mock.patch.dict(game_text._cache, {"mtime": None, "data": {}}):
+                url = reverse("builder:class_detail", args=[self.game_class.slug])
+                self.assertContains(self.client.get(url), "Guerrero cuerpo a cuerpo.")
+                self.client.post(reverse("set_language"), {"language": "en", "next": "/"})
+                response = self.client.get(url)
+                self.assertContains(response, "Melee warrior.")
+                self.assertNotContains(response, "Guerrero cuerpo a cuerpo.")

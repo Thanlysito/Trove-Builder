@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Trove Builder\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-23 19:14+0000\n"
+"POT-Creation-Date: 2026-09-23 19:27+0000\n"
 "PO-Revision-Date: 2026-09-23 14:20-0500\n"
 "Last-Translator: Juan Jose Parra Florez\n"
 "Language-Team: English\n"
@@ -122,14 +122,13 @@ msgstr "Reviewed"
 msgid "Hecha"
 msgstr "Done"
 
-#: builder/templates/builder/base.html:8
-#: builder/templates/builder/base.html:12
+#: builder/templates/builder/base.html:8 builder/templates/builder/base.html:12
 msgid ""
 "Arma y comparte builds de personaje para Trove: clases, gemas, equipo, "
 "anillos y dragones."
 msgstr ""
-"Create and share Trove character builds: classes, gems, equipment, rings and"
-" dragons."
+"Create and share Trove character builds: classes, gems, equipment, rings and "
+"dragons."
 
 #: builder/templates/builder/base.html:31
 #: builder/templates/builder/class_list.html:3
@@ -231,7 +230,7 @@ msgid "Remix de"
 msgstr "Remix of"
 
 #: builder/templates/builder/build_detail.html:29
-#: builder/templates/builder/build_detail.html:143
+#: builder/templates/builder/build_detail.html:147
 #: builder/templates/builder/build_list.html:82
 #: builder/templates/builder/class_detail.html:78
 msgid "por"
@@ -286,7 +285,7 @@ msgid "Equipo"
 msgstr "Equipment"
 
 #: builder/templates/builder/build_detail.html:63
-#: builder/templates/builder/build_detail.html:341
+#: builder/templates/builder/build_detail.html:345
 msgid "Comentarios"
 msgstr "Comments"
 
@@ -305,7 +304,7 @@ msgid "¿Eliminar la build «%(name)s»? Esta acción no se puede deshacer."
 msgstr "Delete the build “%(name)s”? This cannot be undone."
 
 #: builder/templates/builder/build_detail.html:78
-#: builder/templates/builder/build_detail.html:354
+#: builder/templates/builder/build_detail.html:359
 msgid "Eliminar"
 msgstr "Delete"
 
@@ -318,218 +317,224 @@ msgstr "%(cls)s builds"
 msgid "Todavía no hay más builds públicas de esta clase."
 msgstr "There are no other public builds for this class yet."
 
-#: builder/templates/builder/build_detail.html:112
+#: builder/templates/builder/build_detail.html:114
+msgid "Traducir con Google"
+msgstr "Translate with Google"
+
+#: builder/templates/builder/build_detail.html:116
 msgid "Esta build no tiene descripción todavía."
 msgstr "This build has no description yet."
 
-#: builder/templates/builder/build_detail.html:116
-#: builder/templates/builder/build_detail.html:424
+#: builder/templates/builder/build_detail.html:120
+#: builder/templates/builder/build_detail.html:429
 #: builder/templates/builder/class_list.html:22
 msgid "Subclase"
 msgstr "Subclass"
 
-#: builder/templates/builder/build_detail.html:117
+#: builder/templates/builder/build_detail.html:121
 msgid "bono base:"
 msgstr "base bonus:"
 
-#: builder/templates/builder/build_detail.html:119
+#: builder/templates/builder/build_detail.html:123
 msgid "Ver progresión completa por Power Rank y nivel"
 msgstr "See full progression by Power Rank and level"
 
-#: builder/templates/builder/build_detail.html:121
+#: builder/templates/builder/build_detail.html:125
 msgid "Efecto"
 msgstr "Effect"
 
-#: builder/templates/builder/build_detail.html:127
+#: builder/templates/builder/build_detail.html:131
 msgid "Nivel de subclase"
 msgstr "Subclass level"
 
-#: builder/templates/builder/build_detail.html:127
+#: builder/templates/builder/build_detail.html:131
 msgid "Bono"
 msgstr "Bonus"
 
-#: builder/templates/builder/build_detail.html:136
+#: builder/templates/builder/build_detail.html:140
 msgid "Creado por"
 msgstr "Created by"
 
-#: builder/templates/builder/build_detail.html:140
+#: builder/templates/builder/build_detail.html:144
 msgid "Remixes de la comunidad"
 msgstr "Community remixes"
 
-#: builder/templates/builder/build_detail.html:151
+#: builder/templates/builder/build_detail.html:155
 msgid ""
-"4 slots grandes (Empoderadas/Class) + 8 slots pequeños (Lesser "
-"Fierce/Arcane)"
-msgstr ""
-"4 large slots (Empowered/Class) + 8 small slots (Lesser Fierce/Arcane)"
+"4 slots grandes (Empoderadas/Class) + 8 slots pequeños (Lesser Fierce/Arcane)"
+msgstr "4 large slots (Empowered/Class) + 8 small slots (Lesser Fierce/Arcane)"
 
-#: builder/templates/builder/build_detail.html:153
+#: builder/templates/builder/build_detail.html:157
 #, python-format
 msgid "Ver qué gemas grandes puede usar %(cls)s"
 msgstr "See which large gems %(cls)s can use"
 
-#: builder/templates/builder/build_detail.html:156
+#: builder/templates/builder/build_detail.html:160
 #, python-format
 msgid "Class Gem exclusiva de %(cls)s"
 msgstr "Class Gem exclusive to %(cls)s"
 
-#: builder/templates/builder/build_detail.html:158
+#: builder/templates/builder/build_detail.html:162
 #, python-format
 msgid "%(cls)s no tiene una Class Gem exclusiva documentada todavía."
 msgstr "%(cls)s has no documented exclusive Class Gem yet."
 
-#: builder/templates/builder/build_detail.html:161
+#: builder/templates/builder/build_detail.html:165
 msgid "Empowered universal (sirve para cualquier clase)"
 msgstr "Universal Empowered (works for any class)"
 
-#: builder/templates/builder/build_detail.html:165
+#: builder/templates/builder/build_detail.html:169
 #, python-format
 msgid "Cualquier otra Class Gem (de otra clase) no se puede usar con %(cls)s."
 msgstr "Any other Class Gem (from another class) can’t be used with %(cls)s."
 
-#: builder/templates/builder/build_detail.html:182
-#: builder/templates/builder/build_detail.html:207
+#: builder/templates/builder/build_detail.html:186
+#: builder/templates/builder/build_detail.html:211
 msgid "Vacío"
 msgstr "Empty"
 
-#: builder/templates/builder/build_detail.html:217
+#: builder/templates/builder/build_detail.html:221
 msgid "Sin elegir — posibles:"
 msgstr "Not chosen — possible:"
 
-#: builder/templates/builder/build_detail.html:219
-#: builder/templates/builder/build_detail.html:260
-#: builder/templates/builder/build_detail.html:291
-#: builder/templates/builder/build_detail.html:329
+#: builder/templates/builder/build_detail.html:223
+#: builder/templates/builder/build_detail.html:264
+#: builder/templates/builder/build_detail.html:295
+#: builder/templates/builder/build_detail.html:333
 #, python-format
 msgid "%(stat)s no le sirve a %(cls)s"
 msgstr "%(stat)s doesn’t help %(cls)s"
 
-#: builder/templates/builder/build_detail.html:232
+#: builder/templates/builder/build_detail.html:236
 msgid "Rango"
 msgstr "Rank"
 
-#: builder/templates/builder/build_detail.html:240
+#: builder/templates/builder/build_detail.html:244
 msgid "garantizado"
 msgstr "guaranteed"
 
-#: builder/templates/builder/build_detail.html:245
-#: builder/templates/builder/build_detail.html:287
+#: builder/templates/builder/build_detail.html:249
+#: builder/templates/builder/build_detail.html:291
 msgid "elegido"
 msgstr "chosen"
 
-#: builder/templates/builder/build_detail.html:248
+#: builder/templates/builder/build_detail.html:252
 msgid "Sin stats elegidos todavía — posibles:"
 msgstr "No stats chosen yet — possible:"
 
-#: builder/templates/builder/build_detail.html:266
+#: builder/templates/builder/build_detail.html:270
 msgid "Sin gemas configuradas."
 msgstr "No gems set up."
 
-#: builder/templates/builder/build_detail.html:283
+#: builder/templates/builder/build_detail.html:287
 msgid "Fijo:"
 msgstr "Fixed:"
 
-#: builder/templates/builder/build_detail.html:294
+#: builder/templates/builder/build_detail.html:298
 #, python-format
 msgid "Hidden Effects disponibles (%(cls)s):"
 msgstr "Available Hidden Effects (%(cls)s):"
 
-#: builder/templates/builder/build_detail.html:295
+#: builder/templates/builder/build_detail.html:299
 msgid "Un anillo solo puede activar UNO a la vez con el Ring Polisher."
 msgstr "A ring can only activate ONE at a time with the Ring Polisher."
 
-#: builder/templates/builder/build_detail.html:307
+#: builder/templates/builder/build_detail.html:311
 msgid "Sin equipo configurado."
 msgstr "No equipment set up."
 
-#: builder/templates/builder/build_detail.html:334
+#: builder/templates/builder/build_detail.html:338
 msgid "Sin Ally, Emblem, Flask ni Banner elegidos."
 msgstr "No Ally, Emblem, Flask or Banner chosen."
 
-#: builder/templates/builder/build_detail.html:352
+#: builder/templates/builder/build_detail.html:354
+msgid "Traducir"
+msgstr "Translate"
+
+#: builder/templates/builder/build_detail.html:357
 msgid "¿Eliminar tu comentario?"
 msgstr "Delete your comment?"
 
-#: builder/templates/builder/build_detail.html:358
+#: builder/templates/builder/build_detail.html:363
 msgid "¿Eliminar este comentario de tu build? Es una acción de moderación."
 msgstr "Delete this comment from your build? This is a moderation action."
 
-#: builder/templates/builder/build_detail.html:360
+#: builder/templates/builder/build_detail.html:365
 msgid "Moderar: eliminar comentario ajeno de tu build"
 msgstr "Moderate: remove someone else’s comment from your build"
 
-#: builder/templates/builder/build_detail.html:360
+#: builder/templates/builder/build_detail.html:365
 msgid "Moderar"
 msgstr "Moderate"
 
-#: builder/templates/builder/build_detail.html:365
+#: builder/templates/builder/build_detail.html:370
 msgid "Todavía no hay comentarios. ¡Sé el primero!"
 msgstr "No comments yet. Be the first!"
 
-#: builder/templates/builder/build_detail.html:371
+#: builder/templates/builder/build_detail.html:376
 msgid "Escribe un comentario..."
 msgstr "Write a comment..."
 
-#: builder/templates/builder/build_detail.html:372
+#: builder/templates/builder/build_detail.html:377
 msgid "Comentar"
 msgstr "Comment"
 
-#: builder/templates/builder/build_detail.html:375
+#: builder/templates/builder/build_detail.html:380
 #: builder/templates/registration/signup.html:11
 msgid "Inicia sesión"
 msgstr "Log in"
 
-#: builder/templates/builder/build_detail.html:375
+#: builder/templates/builder/build_detail.html:380
 msgid "para comentar."
 msgstr "to comment."
 
-#: builder/templates/builder/build_detail.html:395
+#: builder/templates/builder/build_detail.html:400
 #: builder/templates/builder/build_list.html:92
 #: builder/templates/builder/user_profile.html:45
 msgid "Votar a favor"
 msgstr "Upvote"
 
-#: builder/templates/builder/build_detail.html:400
+#: builder/templates/builder/build_detail.html:405
 #: builder/templates/builder/build_list.html:97
 #: builder/templates/builder/user_profile.html:50
 msgid "Votar en contra"
 msgstr "Downvote"
 
-#: builder/templates/builder/build_detail.html:404
+#: builder/templates/builder/build_detail.html:409
 #: builder/templates/builder/build_list.html:101
 #: builder/templates/builder/user_profile.html:54
 msgid "Quitar de favoritas"
 msgstr "Remove from favorites"
 
-#: builder/templates/builder/build_detail.html:404
+#: builder/templates/builder/build_detail.html:409
 #: builder/templates/builder/build_list.html:101
 #: builder/templates/builder/user_profile.html:54
 msgid "Marcar como favorita"
 msgstr "Add to favorites"
 
-#: builder/templates/builder/build_detail.html:404
+#: builder/templates/builder/build_detail.html:409
 msgid "Favorita"
 msgstr "Favorite"
 
-#: builder/templates/builder/build_detail.html:407
+#: builder/templates/builder/build_detail.html:412
 msgid "Inicia sesión para votar"
 msgstr "Log in to vote"
 
-#: builder/templates/builder/build_detail.html:413
+#: builder/templates/builder/build_detail.html:418
 #: builder/templates/builder/build_form.html:9
 #: builder/templates/builder/build_list.html:40
 msgid "Clase"
 msgstr "Class"
 
-#: builder/templates/builder/build_detail.html:418
+#: builder/templates/builder/build_detail.html:423
 msgid "Clase secundaria"
 msgstr "Secondary class"
 
-#: builder/templates/builder/build_detail.html:435
+#: builder/templates/builder/build_detail.html:440
 msgid "Autor"
 msgstr "Author"
 
-#: builder/templates/builder/build_detail.html:439
+#: builder/templates/builder/build_detail.html:444
 msgid "Creada"
 msgstr "Created"
 
@@ -623,8 +628,8 @@ msgstr "Small gems (Lesser Fierce/Arcane) — 8 slots"
 
 #: builder/templates/builder/build_form.html:103
 msgid ""
-"El 3er stat (Physical o Magic Damage) viene garantizado por ser "
-"Fierce/Arcane. Elige los otros 2."
+"El 3er stat (Physical o Magic Damage) viene garantizado por ser Fierce/"
+"Arcane. Elige los otros 2."
 msgstr ""
 "The 3rd stat (Physical or Magic Damage) is guaranteed because the gem is "
 "Fierce/Arcane. Pick the other 2."
@@ -634,8 +639,8 @@ msgid ""
 "✓ = combina con tu tipo de daño. — = sigue siendo válida, pero el 3er stat "
 "no te beneficia tanto."
 msgstr ""
-"✓ = matches your damage type. — = still valid, but the 3rd stat doesn’t help"
-" you as much."
+"✓ = matches your damage type. — = still valid, but the 3rd stat doesn’t help "
+"you as much."
 
 #: builder/templates/builder/build_form.html:141
 msgid ""
@@ -659,13 +664,13 @@ msgstr "Signatory (your class — gives Light and Hidden Effects)"
 
 #: builder/templates/builder/build_form.html:209
 msgid ""
-"Ally, Emblem, Flask y Banner: cada uno viene con sus propios stats fijos (no"
-" se eligen aquí, ya vienen del juego). En Banner, ✓ significa que combina "
-"con el tipo de daño de tu clase; — significa que da el tipo de daño "
-"contrario (Physical/Magic) y no te va a servir tanto."
+"Ally, Emblem, Flask y Banner: cada uno viene con sus propios stats fijos (no "
+"se eligen aquí, ya vienen del juego). En Banner, ✓ significa que combina con "
+"el tipo de daño de tu clase; — significa que da el tipo de daño contrario "
+"(Physical/Magic) y no te va a servir tanto."
 msgstr ""
-"Ally, Emblem, Flask and Banner: each one comes with its own fixed stats (you"
-" don’t pick them here, they come from the game). For Banners, ✓ means it "
+"Ally, Emblem, Flask and Banner: each one comes with its own fixed stats (you "
+"don’t pick them here, they come from the game). For Banners, ✓ means it "
 "matches your class’s damage type; — means it gives the opposite damage type "
 "(Physical/Magic) and won’t help you as much."
 
@@ -873,8 +878,7 @@ msgid ""
 "Catálogo de las clases jugables de Trove: rol, tipo de daño y subclase de "
 "cada una."
 msgstr ""
-"Catalog of Trove’s playable classes: role, damage type and subclass for "
-"each."
+"Catalog of Trove’s playable classes: role, damage type and subclass for each."
 
 #: builder/templates/builder/class_list.html:8
 msgid "Clases de Trove"
@@ -882,8 +886,8 @@ msgstr "Trove classes"
 
 #: builder/templates/builder/class_list.html:9
 msgid ""
-"Todas las clases jugables, con su rol, tipo de daño y su Mastery (subclase)."
-" Haz clic en una para ver el detalle."
+"Todas las clases jugables, con su rol, tipo de daño y su Mastery (subclase). "
+"Haz clic en una para ver el detalle."
 msgstr ""
 "Every playable class, with its role, damage type and Mastery (subclass). "
 "Click one to see the details."
@@ -924,8 +928,7 @@ msgstr ""
 "one of your builds, it will show up here."
 
 #: builder/templates/builder/suggestions.html:8
-msgid ""
-"¿Encontraste un bug o tienes una idea para mejorar el sitio? Cuéntanos."
+msgid "¿Encontraste un bug o tienes una idea para mejorar el sitio? Cuéntanos."
 msgstr "Found a bug or have an idea to improve the site? Tell us."
 
 #: builder/templates/builder/suggestions.html:15
@@ -1004,8 +1007,7 @@ msgstr "Password updated!"
 
 #: builder/templates/registration/password_reset_complete.html:6
 msgid ""
-"Tu contraseña se cambió correctamente. Ya puedes iniciar sesión con la "
-"nueva."
+"Tu contraseña se cambió correctamente. Ya puedes iniciar sesión con la nueva."
 msgstr "Your password was changed. You can now log in with the new one."
 
 #: builder/templates/registration/password_reset_confirm.html:3
@@ -1186,14 +1188,12 @@ msgid ""
 "%(gem)s es una Class Gem exclusiva de %(owner)s, no se puede usar con "
 "%(cls)s."
 msgstr ""
-"%(gem)s is a Class Gem exclusive to %(owner)s; it can’t be used with "
-"%(cls)s."
+"%(gem)s is a Class Gem exclusive to %(owner)s; it can’t be used with %(cls)s."
 
 #: builder/views.py:690
 #, python-format
 msgid ""
-"%(gem)s es una gema menor (pequeña) y no cabe en un slot grande "
-"(Empoderado)."
+"%(gem)s es una gema menor (pequeña) y no cabe en un slot grande (Empoderado)."
 msgstr ""
 "%(gem)s is a lesser (small) gem and doesn’t fit in a large (Empowered) slot."
 

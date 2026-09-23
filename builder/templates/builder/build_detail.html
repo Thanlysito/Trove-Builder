@@ -109,24 +109,28 @@
         <div class="tab-panels">
 
             <div class="form-tab-panel active" id="tab-resumen">
-                {% if build.description %}<p>{{ build.description }}</p>{% else %}<p class="empty-state">{% translate "Esta build no tiene descripción todavía." %}</p>{% endif %}
+                {% if build.description %}<p>{{ build.description }}</p>
+                {% if build.language != LANGUAGE_CODE %}
+                <p class="translate-link"><a href="https://translate.google.com/?sl=auto&amp;tl={{ LANGUAGE_CODE }}&amp;op=translate&amp;text={{ build.description|truncatechars:4000|urlencode }}" target="_blank" rel="noopener">🌐 {% translate "Traducir con Google" %}</a></p>
+                {% endif %}
+                {% else %}<p class="empty-state">{% translate "Esta build no tiene descripción todavía." %}</p>{% endif %}
 
                 {% if build.subclass %}
                 <section class="detail-section">
                     <h3>{% translate "Subclase" %}</h3>
-                    <p style="margin-bottom:6px;">{{ build.subclass.name }} — {% translate "bono base:" %} {{ build.subclass.bonus_stat }} ({{ build.subclass.bonus_range }})</p>
+                    <p style="margin-bottom:6px;">{{ build.subclass.name }} — {% translate "bono base:" %} {{ build.subclass.bonus_stat }} ({{ build.subclass.bonus_range|tr_data }})</p>
                     <details>
                         <summary>{% translate "Ver progresión completa por Power Rank y nivel" %}</summary>
                         <table>
                             <tr><th>Tier</th><th>Power Rank</th><th>{% translate "Efecto" %}</th></tr>
                             {% for t in build.subclass.tier_progression %}
-                            <tr><td>{{ t.tier }}</td><td>{{ t.power_rank }}</td><td>{{ t.effect }}</td></tr>
+                            <tr><td>{{ t.tier }}</td><td>{{ t.power_rank }}</td><td>{{ t.effect|tr_data }}</td></tr>
                             {% endfor %}
                         </table>
                         <table>
                             <tr><th>{% translate "Nivel de subclase" %}</th><th>{% translate "Bono" %}</th></tr>
                             {% for l in build.subclass.level_bonus_progression %}
-                            <tr><td>{{ l.level }}</td><td>{{ l.bonus }}</td></tr>
+                            <tr><td>{{ l.level }}</td><td>{{ l.bonus|tr_data }}</td></tr>
                             {% endfor %}
                         </table>
                     </details>
@@ -231,7 +235,7 @@
                         <span class="item-name">{{ slot.gem.name }}</span>
                         <span class="item-power-rank">Slot {{ slot.slot_number }} · {% translate "Rango" %} {{ slot.rank }} / {{ slot.gem.max_rank }}</span>
                     </div>
-                    {% if slot.gem.description %}<div class="item-desc">{{ slot.gem.description }}</div>{% endif %}
+                    {% if slot.gem.description %}<div class="item-desc">{{ slot.gem.description|tr_data }}</div>{% endif %}
 
                     {% with guaranteed=slot.gem|damage_stat_for %}
                     {% if guaranteed or slot.chosen_stats or slot.gem.stat_scaling %}
@@ -250,7 +254,7 @@
 
                         {% for key, value in slot.gem.stat_scaling.items %}
                             {% if key != "rollable_stats" %}
-                            <span class="stat-chip"><span class="stat-chip-label">{{ key|humanize_key }}:</span> <span class="stat-chip-value">{{ value }}</span></span>
+                            <span class="stat-chip"><span class="stat-chip-label">{{ key|humanize_key }}:</span> <span class="stat-chip-value">{{ value|tr_data }}</span></span>
                             {% endif %}
                         {% endfor %}
                     </div>
@@ -280,7 +284,7 @@
                         <div class="item-card-header">
                             <span class="item-name">{{ eq.slot }}</span>
                         </div>
-                        {% if eq.slot.fixed_stats %}<div class="item-desc">{% translate "Fijo:" %} {{ eq.slot.fixed_stats|join:", " }}</div>{% endif %}
+                        {% if eq.slot.fixed_stats %}<div class="item-desc">{% translate "Fijo:" %} {{ eq.slot.fixed_stats|tr_data|join:", " }}</div>{% endif %}
                         {% if eq.chosen_stats %}
                         <div class="stat-chips">
                             {% for stat in eq.chosen_stats %}
@@ -295,7 +299,7 @@
                             <small style="display:block; color:var(--text-dim); margin:2px 0 6px;">{% translate "Un anillo solo puede activar UNO a la vez con el Ring Polisher." %}</small>
                             <ul class="item-stats">
                                 {% for effect in ring_hidden_effects %}
-                                <li><strong>{{ effect.name }}</strong> ({{ effect.get_availability_display }}) — {{ effect.description }}</li>
+                                <li><strong>{{ effect.name }}</strong> ({{ effect.get_availability_display }}) — {{ effect.description|tr_data }}</li>
                                 {% endfor %}
                             </ul>
                         </div>
@@ -347,6 +351,7 @@
                             <span class="comment-date">{{ c.created_at|date:"d/m/Y H:i" }}</span>
                         </div>
                         <p class="comment-text">{{ c.text }}</p>
+                        <a class="translate-link comment-translate" href="https://translate.google.com/?sl=auto&amp;tl={{ LANGUAGE_CODE }}&amp;op=translate&amp;text={{ c.text|urlencode }}" target="_blank" rel="noopener">🌐 {% translate "Traducir" %}</a>
                         {% if user.is_authenticated and c.user_id == user.id %}
                         <form method="post" action="{% url 'builder:build_delete_comment' c.id %}"
                               onsubmit="return confirm('{% filter escapejs %}{% translate "¿Eliminar tu comentario?" %}{% endfilter %}');">

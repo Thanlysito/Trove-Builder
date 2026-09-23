@@ -1,0 +1,90 @@
+# Traducciones automaticas al ingles.
+#
+# Cada vez que haces push a main con cambios en plantillas o codigo:
+#   1. Busca los textos de la interfaz marcados para traducir
+#      ({% translate %}, _("...")) y los datos del juego del seed.
+#   2. Traduce SOLO lo nuevo con Gemini (plan gratuito, necesita el secreto
+#      GEMINI_API_KEY). Si Gemini no esta disponible, usa Argos Translate.
+#   3. Compila las traducciones y las sube al repo en un commit.
+# Railway despliega ese commit y el sitio queda traducido.
+#
+# Tambien se puede correr a mano: pestaña "Actions" en GitHub ->
+# "Traducciones automaticas" -> "Run workflow".
+
+name: Traducciones automaticas
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "builder/**.py"
+      - "builder/templates/**"
+      - "trove_builder/**.py"
+      - "locale/**"
+      - "tools/auto_traducir.py"
+      - ".github/workflows/traducciones.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: traducciones
+  cancel-in-progress: false
+
+jobs:
+  traducir:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+          cache: pip
+
+      - name: Instalar gettext y dependencias
+        run: |
+          sudo apt-get update && sudo apt-get install -y gettext
+          pip install -r requirements.txt polib
+
+      - name: Guardar en cache el modelo de Argos (respaldo)
+        uses: actions/cache@v4
+        with:
+          path: ~/.local/share/argos-translate
+          key: argos-es-en-v1
+
+      - name: Cargar los datos del juego en una base temporal
+        run: |
+          python manage.py migrate --noinput
+          python manage.py seed_trove_data
+
+      - name: Buscar textos para traducir
+        run: python manage.py makemessages -l en --ignore=venv --ignore=staticfiles --no-obsolete
+
+      - name: Traducir lo nuevo
+        run: |
+          python tools/auto_traducir.py
+          # Deja el .po con el formato estandar de gettext (el diff solo
+          # muestra cambios reales).
+          python manage.py makemessages -l en --ignore=venv --ignore=staticfiles --no-obsolete
+
+      - name: Compilar y subir si hubo cambios
+        run: |
+          # makemessages siempre cambia la fecha del encabezado; si eso es lo
+          # unico que cambio, no hay nada que subir.
+          if git diff --quiet -I 'POT-Creation-Date' -- locale/ && [ -z "$(git status --porcelain -- locale/)" ]; then
+            echo "Sin traducciones nuevas."
+            git checkout -- locale/
+            exit 0
+          fi
+          python manage.py compilemessages -l en
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add locale/
+          git commit -m "Traducciones automaticas al ingles"
+          git pull --rebase
+          git push
