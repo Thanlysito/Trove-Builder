@@ -40,6 +40,10 @@ from pathlib import Path
 import polib
 import requests
 
+# En GitHub Actions la salida no es una terminal y Python la guardaria hasta
+# el final; asi cada linea aparece en el log apenas se imprime.
+sys.stdout.reconfigure(line_buffering=True)
+
 ROOT = Path(__file__).resolve().parent.parent
 PO_PATH = ROOT / "locale" / "en" / "LC_MESSAGES" / "django.po"
 GAME_DATA_PATH = ROOT / "locale" / "en" / "game_data.json"
@@ -91,55 +95,78 @@ def placeholders_ok(source, translated):
     )
 
 
+class QuotaExhausted(RuntimeError):
+    """Gemini dice que se acabo la cuota (o que este modelo no tiene cuota gratis)."""
+
+
 class Gemini:
     name = "Gemini"
 
     def __init__(self, api_key):
         self.api_key = api_key
-        self.model = os.environ.get("GEMINI_MODEL") or self._pick_model()
-        print(f"Usando Gemini, modelo: {self.model}")
+        forced = os.environ.get("GEMINI_MODEL")
+        candidates = [forced] if forced else self._candidate_models()
+        print(f"Modelos Gemini candidatos: {', '.join(candidates) or '(ninguno)'}")
+        # Prueba cada modelo con una peticion minima y se queda con el primero
+        # que responda: algunos modelos no tienen cuota en el plan gratuito.
+        for name in candidates:
+            self.model = name
+            try:
+                self._generate('Responde solo con este JSON: {"0": "ok"}', retries=0)
+                print(f"Usando Gemini, modelo: {name}")
+                return
+            except Exception as exc:
+                print(f"  {name} no disponible: {exc}")
+        raise RuntimeError("ningun modelo Gemini respondio con esta clave")
 
-    def _pick_model(self):
-        """Elige el modelo 'flash' estable mas nuevo disponible para esta clave."""
+    def _candidate_models(self):
+        """Modelos 'flash' de la clave, del mas nuevo al mas viejo; 'lite' al final."""
         resp = requests.get(
             f"{GEMINI_URL}/models", headers={"x-goog-api-key": self.api_key},
             params={"pageSize": 200}, timeout=30,
         )
-        resp.raise_for_status()
-        skip = ("lite", "image", "tts", "audio", "live", "embedding", "thinking", "exp", "preview", "latest")
-        candidates = []
+        if resp.status_code != 200:
+            raise RuntimeError(f"no se pudo listar modelos (HTTP {resp.status_code}: {resp.text[:200]})")
+        skip = ("image", "tts", "audio", "live", "embedding", "thinking", "exp", "latest")
+        found = []
         for m in resp.json().get("models", []):
             name = m.get("name", "").split("/")[-1]
             if ("flash" in name and "generateContent" in m.get("supportedGenerationMethods", [])
-                    and not any(s in name for s in skip)):
+                    and not any(x in name for x in skip)):
                 version = tuple(int(n) for n in re.findall(r"\d+", name)[:3])
-                candidates.append((version, name))
-        if not candidates:
-            raise RuntimeError("No hay un modelo Gemini 'flash' disponible para esta clave.")
-        return max(candidates)[1]
+                # Orden: estables antes que preview, normales antes que lite, mas nuevos primero.
+                found.append(("preview" in name, "lite" in name, tuple(-v for v in version), name))
+        return [name for *_, name in sorted(found)][:6]
+
+    def _generate(self, prompt, retries=2):
+        body = {
+            "contents": [{"parts": [{"text": prompt}]}],
+            "generationConfig": {"temperature": 0.2, "responseMimeType": "application/json"},
+        }
+        for attempt in range(retries + 1):
+            resp = requests.post(
+                f"{GEMINI_URL}/models/{self.model}:generateContent",
+                headers={"x-goog-api-key": self.api_key}, json=body, timeout=90,
+            )
+            if resp.status_code == 200:
+                text = resp.json()["candidates"][0]["content"]["parts"][0]["text"]
+                return json.loads(text)
+            detail = resp.text[:300].replace("\n", " ")
+            if resp.status_code == 429 and ("PerDay" in detail or "limit: 0" in detail or attempt == retries):
+                raise QuotaExhausted(f"HTTP 429: {detail}")
+            if resp.status_code in (429, 500, 503) and attempt < retries:
+                print(f"  Gemini respondio {resp.status_code}; reintento en 30s...")
+                time.sleep(30)
+                continue
+            raise RuntimeError(f"HTTP {resp.status_code}: {detail}")
+        raise RuntimeError("Gemini no respondio")
 
     def translate_batch(self, texts, kind):
         payload = {str(i): t for i, t in enumerate(texts)}
-        body = {
-            "contents": [{"parts": [{"text": PROMPT.replace("{context}", CONTEXT[kind]).replace(
-                "{payload}", json.dumps(payload, ensure_ascii=False, indent=1))}]}],
-            "generationConfig": {"temperature": 0.2, "responseMimeType": "application/json"},
-        }
-        for attempt in range(4):
-            resp = requests.post(
-                f"{GEMINI_URL}/models/{self.model}:generateContent",
-                headers={"x-goog-api-key": self.api_key}, json=body, timeout=120,
-            )
-            if resp.status_code in (429, 500, 503):
-                wait = 20 * (attempt + 1)
-                print(f"  Gemini respondio {resp.status_code}; reintento en {wait}s...")
-                time.sleep(wait)
-                continue
-            resp.raise_for_status()
-            text = resp.json()["candidates"][0]["content"]["parts"][0]["text"]
-            data = json.loads(text)
-            return {texts[int(k)]: v for k, v in data.items() if k.isdigit() and int(k) < len(texts)}
-        raise RuntimeError("Gemini no respondio despues de varios intentos.")
+        prompt = PROMPT.replace("{context}", CONTEXT[kind]).replace(
+            "{payload}", json.dumps(payload, ensure_ascii=False, indent=1))
+        data = self._generate(prompt)
+        return {texts[int(k)]: v for k, v in data.items() if k.isdigit() and int(k) < len(texts)}
 
 
 class Argos:
@@ -213,14 +240,18 @@ class Translator:
     def translate(self, texts, kind):
         """Devuelve {texto: (traduccion, motor)} para los que se pudieron traducir."""
         results, pending = {}, list(texts)
-        for engine in self.engines:
-            for start in range(0, len(pending), BATCH_SIZE):
+        for engine in list(self.engines):
+            total = (len(pending) + BATCH_SIZE - 1) // BATCH_SIZE
+            for n, start in enumerate(range(0, len(pending), BATCH_SIZE), start=1):
                 chunk = pending[start:start + BATCH_SIZE]
+                print(f"  {engine.name}: lote {n}/{total} ({len(chunk)} textos)...")
                 try:
                     got = engine.translate_batch(chunk, kind)
                 except Exception as exc:
-                    print(f"  {engine.name} fallo en un lote ({exc}).")
-                    continue
+                    # Si falla un lote, no insiste con los demas: pasa al respaldo.
+                    print(f"  {engine.name} fallo ({exc}); se deja de usar en esta ejecucion.")
+                    self.engines.remove(engine)
+                    break
                 for src, dst in got.items():
                     if placeholders_ok(src, dst):
                         results[src] = (dst.strip(), engine.name)
