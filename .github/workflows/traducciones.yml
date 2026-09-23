@@ -8,6 +8,7 @@
 #   3. Compila las traducciones y las sube al repo en un commit.
 # Railway despliega ese commit y el sitio queda traducido.
 #
+# Ademas corre solo una vez al dia para mejorar traducciones pendientes.
 # Tambien se puede correr a mano: pestaña "Actions" en GitHub ->
 # "Traducciones automaticas" -> "Run workflow".
 
@@ -23,6 +24,10 @@ on:
       - "locale/**"
       - "tools/auto_traducir.py"
       - ".github/workflows/traducciones.yml"
+  # Todos los dias a las 3 AM (hora Colombia): mejora con Gemini lo que haya
+  # quedado traducido con el respaldo (Argos) porque Gemini estaba saturado.
+  schedule:
+    - cron: "0 8 * * *"
   workflow_dispatch:
 
 permissions:

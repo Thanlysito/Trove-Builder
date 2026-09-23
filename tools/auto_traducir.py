@@ -139,7 +139,7 @@ class Gemini:
         )
         if resp.status_code != 200:
             raise RuntimeError(f"no se pudo listar modelos (HTTP {resp.status_code}: {resp.text[:200]})")
-        skip = ("image", "tts", "audio", "live", "embedding", "thinking", "exp", "latest")
+        skip = ("image", "tts", "audio", "live", "embedding", "thinking", "exp", "latest", "omni")
         found = []
         for m in resp.json().get("models", []):
             name = m.get("name", "").split("/")[-1]
