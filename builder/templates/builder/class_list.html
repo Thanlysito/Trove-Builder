@@ -1,11 +1,12 @@
 {% extends "builder/base.html" %}
-{% block title %}Clases | Trove Builder{% endblock %}
-{% block meta_description %}Catálogo de las clases jugables de Trove: rol, tipo de daño y subclase de cada una.{% endblock %}
+{% load i18n %}
+{% block title %}{% translate "Clases" %} | Trove Builder{% endblock %}
+{% block meta_description %}{% translate "Catálogo de las clases jugables de Trove: rol, tipo de daño y subclase de cada una." %}{% endblock %}
 {% block content %}
 
 <section class="hero">
-    <h1>Clases de Trove</h1>
-    <p>Todas las clases jugables, con su rol, tipo de daño y su Mastery (subclase). Haz clic en una para ver el detalle.</p>
+    <h1>{% translate "Clases de Trove" %}</h1>
+    <p>{% translate "Todas las clases jugables, con su rol, tipo de daño y su Mastery (subclase). Haz clic en una para ver el detalle." %}</p>
 </section>
 
 <div class="build-grid">
@@ -18,12 +19,12 @@
         </span>
         {% if c.subclass %}
         <div class="build-card-footer">
-            <span class="score">Subclase: {{ c.subclass.name }}</span>
+            <span class="score">{% translate "Subclase" %}: {{ c.subclass.name }}</span>
         </div>
         {% endif %}
     </a>
     {% empty %}
-    <div class="empty-state">Todavía no hay clases cargadas.</div>
+    <div class="empty-state">{% translate "Todavía no hay clases cargadas." %}</div>
     {% endfor %}
 </div>
 {% endblock %}

@@ -1,17 +1,18 @@
 {% extends "builder/base.html" %}
-{% block title %}{% if favorites_mode %}Mis favoritas{% elif mine %}Mis builds{% else %}Explorar builds{% endif %} — Trove Builder{% endblock %}
+{% load i18n %}
+{% block title %}{% if favorites_mode %}{% translate "Mis favoritas" %}{% elif mine %}{% translate "Mis builds" %}{% else %}{% translate "Explorar builds" %}{% endif %} — Trove Builder{% endblock %}
 {% block content %}
 
 <section class="hero">
     {% if favorites_mode %}
-    <h1>Mis favoritas</h1>
-    <p>Las builds (propias o de otros jugadores) que marcaste con ♥.</p>
+    <h1>{% translate "Mis favoritas" %}</h1>
+    <p>{% translate "Las builds (propias o de otros jugadores) que marcaste con ♥." %}</p>
     {% elif mine %}
-    <h1>Mis builds</h1>
-    <p>Todas tus builds, públicas y privadas, en un solo lugar.</p>
+    <h1>{% translate "Mis builds" %}</h1>
+    <p>{% translate "Todas tus builds, públicas y privadas, en un solo lugar." %}</p>
     {% else %}
-    <h1>Arma tu build de Trove</h1>
-    <p>Explora builds de la comunidad o crea la tuya: clase, subclase, gemas y equipo, con las reglas reales del juego.</p>
+    <h1>{% translate "Arma tu build de Trove" %}</h1>
+    <p>{% translate "Explora builds de la comunidad o crea la tuya: clase, subclase, gemas y equipo, con las reglas reales del juego." %}</p>
     {% endif %}
 </section>
 
@@ -19,9 +20,9 @@
     <aside class="filters">
         {% if mine or favorites_mode %}
         {% if mine %}
-        <a href="{% url 'builder:build_create' %}" class="btn" style="width:100%; display:block; text-align:center; box-sizing:border-box;">+ Nueva build</a>
+        <a href="{% url 'builder:build_create' %}" class="btn" style="width:100%; display:block; text-align:center; box-sizing:border-box;">+ {% translate "Nueva build" %}</a>
         {% endif %}
-        <h3>Ordenar</h3>
+        <h3>{% translate "Ordenar" %}</h3>
         <form method="get">
             <select name="sort" onchange="this.form.submit()">
                 {% for key, label in sort_options.items %}
@@ -31,32 +32,32 @@
         </form>
         {% else %}
         <form method="get">
-            <h3>Buscar</h3>
+            <h3>{% translate "Buscar" %}</h3>
             <label>
-                <input type="text" name="q" placeholder="Nombre de la build..." value="{{ request.GET.q }}">
+                <input type="text" name="q" placeholder="{% translate "Nombre de la build..." %}" value="{{ request.GET.q }}">
             </label>
 
-            <h3>Clase</h3>
+            <h3>{% translate "Clase" %}</h3>
             <label>
                 <select name="class">
-                    <option value="">Todas</option>
+                    <option value="">{% translate "Todas" %}</option>
                     {% for c in classes %}
                     <option value="{{ c.slug }}" {% if request.GET.class == c.slug %}selected{% endif %}>{{ c.name }}</option>
                     {% endfor %}
                 </select>
             </label>
 
-            <h3>Tag</h3>
+            <h3>{% translate "Tag" %}</h3>
             <label>
                 <select name="tag">
-                    <option value="">Todos</option>
+                    <option value="">{% translate "Todos" %}</option>
                     {% for key, label in tag_choices %}
                     <option value="{{ key }}" {% if request.GET.tag == key %}selected{% endif %}>{{ label }}</option>
                     {% endfor %}
                 </select>
             </label>
 
-            <h3>Ordenar</h3>
+            <h3>{% translate "Ordenar" %}</h3>
             <label>
                 <select name="sort">
                     {% for key, label in sort_options.items %}
@@ -65,7 +66,7 @@
                 </select>
             </label>
 
-            <button type="submit" class="btn" style="width:100%">Filtrar</button>
+            <button type="submit" class="btn" style="width:100%">{% translate "Filtrar" %}</button>
         </form>
         {% endif %}
     </aside>
@@ -75,10 +76,10 @@
             {% for build in builds %}
             <div class="build-card role-{{ build.primary_class.primary_role }}">
                 <a class="build-card-link" href="{% url 'builder:build_detail' build.slug %}">
-                    <span class="name">{{ build.name }}{% if not build.is_public %} <span class="chip" style="font-size:0.65rem; padding:2px 7px;">Privada</span>{% endif %}</span>
+                    <span class="name">{{ build.name }}{% if not build.is_public %} <span class="chip" style="font-size:0.65rem; padding:2px 7px;">{% translate "Privada" %}</span>{% endif %}</span>
                     <span class="meta">
                         {{ build.primary_class.name }}{% if build.secondary_class %} / {{ build.secondary_class.name }}{% endif %}
-                        {% if not mine %}— por <a href="{% url 'builder:user_profile' build.owner.username %}" onclick="event.stopPropagation()">{{ build.owner.username }}</a>{% endif %}
+                        {% if not mine %}— {% translate "por" %} <a href="{% url 'builder:user_profile' build.owner.username %}" onclick="event.stopPropagation()">{{ build.owner.username }}</a>{% endif %}
                     </span>
                 </a>
                 <div class="build-card-footer">
@@ -88,34 +89,35 @@
                         <form method="post" action="{% url 'builder:build_vote' build.slug %}">
                             {% csrf_token %}
                             <input type="hidden" name="value" value="1">
-                            <button type="submit" class="vote-btn up {% if build.my_vote == 1 %}active{% endif %}" title="Votar a favor">▲</button>
+                            <button type="submit" class="vote-btn up {% if build.my_vote == 1 %}active{% endif %}" title="{% translate "Votar a favor" %}">▲</button>
                         </form>
                         <form method="post" action="{% url 'builder:build_vote' build.slug %}">
                             {% csrf_token %}
                             <input type="hidden" name="value" value="-1">
-                            <button type="submit" class="vote-btn down {% if build.my_vote == -1 %}active{% endif %}" title="Votar en contra">▼</button>
+                            <button type="submit" class="vote-btn down {% if build.my_vote == -1 %}active{% endif %}" title="{% translate "Votar en contra" %}">▼</button>
                         </form>
                         <form method="post" action="{% url 'builder:build_favorite_toggle' build.slug %}">
                             {% csrf_token %}
-                            <button type="submit" class="vote-btn fav-btn {% if build.my_favorite %}active{% endif %}" title="{% if build.my_favorite %}Quitar de favoritas{% else %}Marcar como favorita{% endif %}">{% if build.my_favorite %}♥{% else %}♡{% endif %}</button>
+                            <button type="submit" class="vote-btn fav-btn {% if build.my_favorite %}active{% endif %}" title="{% if build.my_favorite %}{% translate "Quitar de favoritas" %}{% else %}{% translate "Marcar como favorita" %}{% endif %}">{% if build.my_favorite %}♥{% else %}♡{% endif %}</button>
                         </form>
                     </div>
                     {% endif %}
                     {% if user.is_authenticated and build.owner_id == user.id %}
-                    <a href="{% url 'builder:build_edit' build.slug %}" class="btn-delete btn-delete-sm" title="Editar build" style="text-decoration:none;">✎</a>
+                    <a href="{% url 'builder:build_edit' build.slug %}" class="btn-delete btn-delete-sm" title="{% translate "Editar build" %}" style="text-decoration:none;">✎</a>
+                    {% blocktranslate asvar delete_msg with name=build.name %}¿Eliminar la build «{{ name }}»? Esta acción no se puede deshacer.{% endblocktranslate %}
                     <form method="post" action="{% url 'builder:build_delete' build.slug %}"
-                          onsubmit="return confirm('¿Eliminar la build \'{{ build.name|escapejs }}\'? Esta acción no se puede deshacer.');">
+                          onsubmit="return confirm('{{ delete_msg|escapejs }}');">
                         {% csrf_token %}
-                        <button type="submit" class="btn-delete btn-delete-sm" title="Eliminar build">🗑</button>
+                        <button type="submit" class="btn-delete btn-delete-sm" title="{% translate "Eliminar build" %}">🗑</button>
                     </form>
                     {% endif %}
                 </div>
             </div>
             {% empty %}
             <div class="empty-state">
-                {% if favorites_mode %}Todavía no has marcado ninguna build como favorita.
-                {% elif mine %}Todavía no has creado ninguna build. <a href="{% url 'builder:build_create' %}">¡Crea la primera!</a>
-                {% else %}Todavía no hay builds públicas. ¡Sé el primero en crear una!{% endif %}
+                {% if favorites_mode %}{% translate "Todavía no has marcado ninguna build como favorita." %}
+                {% elif mine %}{% translate "Todavía no has creado ninguna build." %} <a href="{% url 'builder:build_create' %}">{% translate "¡Crea la primera!" %}</a>
+                {% else %}{% translate "Todavía no hay builds públicas. ¡Sé el primero en crear una!" %}{% endif %}
             </div>
             {% endfor %}
         </div>
@@ -123,11 +125,11 @@
         {% if page_obj.paginator.num_pages > 1 %}
         <div class="pagination">
             {% if page_obj.has_previous %}
-            <a href="?{% if querystring %}{{ querystring }}&{% endif %}page={{ page_obj.previous_page_number }}" class="btn-ghost btn">‹ Anterior</a>
+            <a href="?{% if querystring %}{{ querystring }}&{% endif %}page={{ page_obj.previous_page_number }}" class="btn-ghost btn">‹ {% translate "Anterior" %}</a>
             {% endif %}
-            <span class="pagination-info">Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}</span>
+            <span class="pagination-info">{% blocktranslate with n=page_obj.number total=page_obj.paginator.num_pages %}Página {{ n }} de {{ total }}{% endblocktranslate %}</span>
             {% if page_obj.has_next %}
-            <a href="?{% if querystring %}{{ querystring }}&{% endif %}page={{ page_obj.next_page_number }}" class="btn-ghost btn">Siguiente ›</a>
+            <a href="?{% if querystring %}{{ querystring }}&{% endif %}page={{ page_obj.next_page_number }}" class="btn-ghost btn">{% translate "Siguiente" %} ›</a>
             {% endif %}
         </div>
         {% endif %}

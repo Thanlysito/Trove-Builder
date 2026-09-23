@@ -1,0 +1,339 @@
+{% extends "builder/base.html" %}
+{% load static %}
+{# English version of how_it_works.html. The view picks it when the active language is English. #}
+
+{% block title %}How it works | Trove Builder{% endblock %}
+
+{% block content %}
+<section class="hero how-it-works-hero">
+    <h1>How Trove Builder works</h1>
+    <p>
+        New to Trove? This guide quickly explains the main mechanics the
+        builder uses to put your character together: classes, gems,
+        equipment, rings and dragons.
+    </p>
+</section>
+
+<nav class="item-card how-it-works-toc" aria-label="Page contents">
+    <ul>
+        <li><a href="#que-es-una-build">What is a build?</a></li>
+        <li><a href="#clases-subclases">Classes and subclasses</a></li>
+        <li><a href="#gemas">Gems</a></li>
+        <li><a href="#equipo">Equipment</a></li>
+        <li><a href="#anillos">Rings</a></li>
+        <li><a href="#dragones">Dragons</a></li>
+        <li><a href="#primera-build">Making your first build</a></li>
+        <li><a href="#glosario">Glossary</a></li>
+        <li><a href="#faq">FAQ</a></li>
+    </ul>
+</nav>
+
+<section id="que-es-una-build" class="detail-section">
+    <h2>What is a build?</h2>
+    <div class="how-it-works-gallery how-it-works-gallery-single">
+        <figure>
+            <img src="{% static 'builder/img/misc/build-concept.png' %}" alt="Build concept: a stats scroll with a gem">
+        </figure>
+    </div>
+    <p>
+        A <strong>build</strong> is the combination of every decision you make
+        about your character: which class you play, how you level your gems,
+        which equipment you use, which rings you wear and which dragon comes
+        with you. Together they define your <strong>Power Rank (PR)</strong>
+        —the number that measures how strong your character is— and also your
+        playstyle: whether you focus on dealing damage, tanking or supporting
+        your team.
+    </p>
+    <p>
+        Trove Builder lets you put these combinations together, save them,
+        share them with other players and browse the builds the community
+        makes, to get ideas or copy one that works for you.
+    </p>
+</section>
+
+<section id="clases-subclases" class="detail-section">
+    <h2>Classes and subclasses</h2>
+    <p>
+        Every character in Trove belongs to a <strong>class</strong> (Neon
+        Ninja, Shadow Hunter, Candy Barbarian, Dracolyte, etc.), and each class
+        has its own set of abilities, damage type (physical or magic) and
+        natural role in the team (damage, tank or support).
+    </p>
+    <ul>
+        <li>
+            <strong>Subclass (Mastery):</strong> from a certain level you can
+            pick a subclass, which is essentially a second class whose passive
+            abilities combine with your main class. It lets you customize how
+            your character plays beyond what the base class offers.
+        </li>
+        <li>
+            <strong>Class gem:</strong> besides the subclass, there are special
+            gems that directly change one of your class abilities (for example,
+            how your special attack behaves). They are obtained with specific
+            keys and equipped like any other gem.
+        </li>
+    </ul>
+    <div class="how-it-works-gallery">
+        <figure>
+            <img src="{% static 'builder/img/class-gems/aegis-assault.png' %}" alt="Class gem: Aegis Assault">
+            <figcaption>Example: Aegis Assault</figcaption>
+        </figure>
+        <figure>
+            <img src="{% static 'builder/img/class-gems/lunar-echo.png' %}" alt="Class gem: Lunar Echo">
+            <figcaption>Example: Lunar Echo</figcaption>
+        </figure>
+        <figure>
+            <img src="{% static 'builder/img/class-gems/blizzard-barrage.png' %}" alt="Class gem: Blizzard Barrage">
+            <figcaption>Example: Blizzard Barrage</figcaption>
+        </figure>
+        <figure>
+            <img src="{% static 'builder/img/class-gems/spirit-squire.png' %}" alt="Class gem: Spirit Squire">
+            <figcaption>Example: Spirit Squire</figcaption>
+        </figure>
+    </div>
+</section>
+
+<section id="gemas" class="detail-section">
+    <h2>Gems</h2>
+    <p>
+        Gems are the system that adds the most Power Rank to your build. They
+        go into slots on the character panel and grant stat bonuses based on
+        their rarity, their stats and their level.
+    </p>
+    <div class="how-it-works-gallery">
+        <figure>
+            <img src="{% static 'builder/img/gems/gem-fire-big.png' %}" alt="Large Fire gem (Empowered/Class)">
+            <figcaption>Large gem<br>(Empowered/Class)</figcaption>
+        </figure>
+        <figure>
+            <img src="{% static 'builder/img/gems/gem-fire-small.png' %}" alt="Small Fire gem (Lesser)">
+            <figcaption>Small gem<br>(Lesser)</figcaption>
+        </figure>
+        <figure>
+            <img src="{% static 'builder/img/gems/gem-water-big.png' %}" alt="Water element gem">
+            <figcaption>Water element</figcaption>
+        </figure>
+        <figure>
+            <img src="{% static 'builder/img/gems/gem-air-big.png' %}" alt="Air element gem">
+            <figcaption>Air element</figcaption>
+        </figure>
+        <figure>
+            <img src="{% static 'builder/img/gems/gem-cosmic-big.png' %}" alt="Cosmic element gem">
+            <figcaption>Cosmic element</figcaption>
+        </figure>
+    </div>
+    <ul>
+        <li>
+            <strong>Types:</strong> there are normal gems (found in elemental
+            worlds) and empowered gems (from special boxes), plus Water, Air,
+            Fire and Cosmic elemental variants. Stellar gems are the highest
+            quality and drop in the game's highest Uber worlds.
+        </li>
+        <li>
+            <strong>Stats and leveling:</strong> every gem starts with 1 to 3
+            random stats and levels up with materials such as Gem Dust and
+            Boosters. At levels 5, 10 and 15 it gets "large boosts" that decide
+            much of its final quality.
+        </li>
+        <li>
+            <strong>Ideal combination:</strong> for most classes, the most
+            sought-after stats are damage (physical or magic depending on your
+            class), Critical Hit and Critical Damage, plus some Max Health so
+            you don't die so easily.
+        </li>
+    </ul>
+</section>
+
+<section id="equipo" class="detail-section">
+    <h2>Equipment</h2>
+    <p>
+        Equipment is what your character wears: hat, face, main weapon and
+        secondary weapon, among others depending on the class. Each piece
+        adds its own Power Rank and stats, and many can be upgraded to
+        increase what they give.
+    </p>
+    <div class="how-it-works-gallery">
+        <figure>
+            <img src="{% static 'builder/img/equipment/equip-weapon.png' %}" alt="Weapon">
+            <figcaption>Weapon</figcaption>
+        </figure>
+        <figure>
+            <img src="{% static 'builder/img/equipment/equip-hat.png' %}" alt="Hat">
+            <figcaption>Hat</figcaption>
+        </figure>
+        <figure>
+            <img src="{% static 'builder/img/equipment/equip-face.png' %}" alt="Face">
+            <figcaption>Face</figcaption>
+        </figure>
+        <figure>
+            <img src="{% static 'builder/img/equipment/equip-ring.png' %}" alt="Ring">
+            <figcaption>Ring</figcaption>
+        </figure>
+    </div>
+    <p>
+        When you put together a build in Trove Builder, choosing your
+        equipment well matters as much as choosing your gems: both systems
+        work together to reach the Power Rank the content you want to play
+        requires.
+    </p>
+</section>
+
+<section id="anillos" class="detail-section">
+    <h2>Rings</h2>
+    <div class="how-it-works-gallery how-it-works-gallery-single">
+        <figure>
+            <img src="{% static 'builder/img/equipment/equip-ring.png' %}" alt="Ring">
+        </figure>
+    </div>
+    <p>
+        Rings are an extra piece of equipment crafted with the
+        <strong>Ringcrafting</strong> profession (unlike gems, they aren't
+        found while exploring). Each ring gives Power Rank plus two stats: a
+        guaranteed main stat and a random secondary one.
+    </p>
+    <ul>
+        <li>
+            <strong>Main stat:</strong> depends on the kind of box you use to
+            craft the ring —Physical Damage, Magic Damage, Max Health or
+            Lasermancy.
+        </li>
+        <li>
+            <strong>Secondary stat:</strong> can be Jump, Stability, Critical
+            Hit, Health Regen, Energy Regen or Magic Find, and is rolled at
+            random when you open the box.
+        </li>
+        <li>
+            <strong>How to get them:</strong> they are crafted at a
+            Ringcrafting Bench with materials such as Flux and Formstone, then
+            "cast" to open the box and get the ring.
+        </li>
+    </ul>
+</section>
+
+<section id="dragones" class="detail-section">
+    <h2>Dragons</h2>
+    <div class="how-it-works-gallery how-it-works-gallery-single">
+        <figure>
+            <img src="{% static 'builder/img/misc/dragon.png' %}" alt="Coiled dragon mount">
+        </figure>
+    </div>
+    <p>
+        Dragons are endgame mounts that, unlike most cosmetic mounts, also
+        grant permanent stat bonuses once you unlock them —which is why they
+        are part of a serious build.
+    </p>
+    <ul>
+        <li>
+            <strong>Growth stages:</strong> a dragon can go through several
+            stages (hatchling, young, adult and ancient), and each stage gains
+            new abilities such as flying or shooting block-destroying
+            projectiles.
+        </li>
+        <li>
+            <strong>Primordial dragons:</strong> the most advanced version,
+            with unique abilities and a permanent Power Rank bonus on gems of
+            the element they are attuned to. They are also the most expensive
+            to craft.
+        </li>
+        <li>
+            <strong>In your build:</strong> the dragon you pick doesn't change
+            how you play as much as your class or gems do, but it adds
+            permanent stats that Trove Builder takes into account for your
+            build.
+        </li>
+    </ul>
+</section>
+
+<section id="primera-build" class="detail-section">
+    <h2>Making your first build</h2>
+    <div class="how-it-works-gallery how-it-works-gallery-single">
+        <figure>
+            <img src="{% static 'builder/img/misc/crafting.png' %}" alt="Anvil forging equipment">
+        </figure>
+    </div>
+    <ol>
+        <li>Pick your class (and, if you already have one, your subclass).</li>
+        <li>Add the gems you plan to use, with their main stats.</li>
+        <li>Choose your equipment: hat, face, weapons and other pieces.</li>
+        <li>Add your rings and the dragon you want in the build.</li>
+        <li>Save your build and share it so other players can see it, comment and vote.</li>
+    </ol>
+    <p>
+        You don't need everything perfect from the start: you can edit your
+        build any time as you get better gems, equipment or rings.
+    </p>
+    <a href="{% url 'builder:build_create' %}" class="btn">Create my first build</a>
+</section>
+
+<section id="glosario" class="detail-section">
+    <h2>Glossary</h2>
+    <div class="how-it-works-gallery how-it-works-gallery-single">
+        <figure>
+            <img src="{% static 'builder/img/misc/glossary.png' %}" alt="Magic glossary book">
+        </figure>
+    </div>
+    <p>Terms you'll often see in the build form and may not know yet.</p>
+    <div class="item-card">
+        <strong>Power Rank (PR)</strong>
+        <p class="item-desc">The number that measures how strong your character is. It goes up with gems, equipment, rings and dragons, and decides which worlds and content you can enter.</p>
+    </div>
+    <div class="item-card">
+        <strong>Mastery / Subclass</strong>
+        <p class="item-desc">Another class's passive that you equip alongside your main class. It's chosen separately and combines with your normal abilities.</p>
+    </div>
+    <div class="item-card">
+        <strong>Lesser / Stellar / Empowered</strong>
+        <p class="item-desc">Gem quality tiers, from lowest to highest: Lesser (basic), Stellar (the best "normal" gem, from high Uber worlds) and Empowered (from special boxes, with more Power Rank per level).</p>
+    </div>
+    <div class="item-card">
+        <strong>Crystal (equipment)</strong>
+        <p class="item-desc">The highest-quality version of an equipment piece (Weapon/Hat/Face), with more stats than the non-Crystal version.</p>
+    </div>
+    <div class="item-card">
+        <strong>Signatory / Mystic Ring</strong>
+        <p class="item-desc">Ring types for your own class that, unlike simple stat rings (Power, Wisdom, Vitality, Delving), can use Hidden Effects.</p>
+    </div>
+    <div class="item-card">
+        <strong>Hidden Effect</strong>
+        <p class="item-desc">A special ring ability that changes one of your class abilities. It's activated by taking the ring to a Ring Polisher; each ring can only have one pair of effects active at a time.</p>
+    </div>
+    <div class="item-card">
+        <strong>Lasermancy</strong>
+        <p class="item-desc">It isn't combat damage — it's the stat that increases your mining speed (how fast you break blocks and ores). Delving rings give it as their main stat.</p>
+    </div>
+</section>
+
+<section id="faq" class="detail-section">
+    <h2>FAQ</h2>
+    <div class="how-it-works-gallery how-it-works-gallery-single">
+        <figure>
+            <img src="{% static 'builder/img/misc/faq.png' %}" alt="Golden question mark">
+        </figure>
+    </div>
+
+    <details>
+        <summary>Do I need everything perfect to start playing?</summary>
+        <p>No. You can create your build with what you have now and edit it later as you get better gems, equipment or rings. There's no need to wait for the "perfect" build to start.</p>
+    </details>
+
+    <details>
+        <summary>Can I change class after creating my build?</summary>
+        <p>Yes. You can edit your build any time and change the main class, secondary class or subclass — your gems and equipment stay, but check they still fit the new damage type.</p>
+    </details>
+
+    <details>
+        <summary>What should I upgrade first, gems or equipment?</summary>
+        <p>It depends on where you are, but in general the large gems (Empowered/Class) give more Power Rank per effort early on. Crystal equipment helps later, once you have a solid base of gems.</p>
+    </details>
+
+    <details>
+        <summary>Can I have several builds saved at once?</summary>
+        <p>Yes, you can create as many as you want — for example, one per class or one per playstyle (damage vs. tank) — and see them all from "My builds".</p>
+    </details>
+
+    <details>
+        <summary>What happens if I don't make my build public?</summary>
+        <p>Only you can see and edit it. Mark it as public when you want other players to see it, comment on it and vote.</p>
+    </details>
+</section>
+{% endblock %}

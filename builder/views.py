@@ -10,6 +10,7 @@ from django.utils.http import url_has_allowed_host_and_scheme
 from django.http import HttpResponseForbidden, HttpResponse
 from django.core.paginator import Paginator
 from django.urls import reverse
+from django.utils.translation import gettext as _, gettext_lazy, get_language
 from .forms import SignupForm
 from .models import (
     Build, GameClass, Gem, BuildGem, Subclass, EquipmentSlot, BuildEquipment, BuildVote,
@@ -27,7 +28,11 @@ LESSER_GEM_STAT_OPTIONS = [
 
 def how_it_works(request):
     """Página estática que explica las mecánicas del juego a alguien nuevo."""
-    return render(request, "builder/how_it_works.html")
+    # Es una pagina de texto largo: en vez de traducir parrafo por parrafo,
+    # hay una version completa en ingles (how_it_works_en.html).
+    lang = (get_language() or "es")[:2]
+    template = "builder/how_it_works_en.html" if lang == "en" else "builder/how_it_works.html"
+    return render(request, template)
 
 
 def signup(request):
@@ -39,11 +44,11 @@ def signup(request):
         form = SignupForm(request.POST)
         if form.is_valid():
             if _rate_limited_by_ip(request, "signup", seconds=15):
-                messages.warning(request, "Espera unos segundos antes de crear otra cuenta.")
+                messages.warning(request, _("Espera unos segundos antes de crear otra cuenta."))
                 return render(request, "registration/signup.html", {"form": form})
             user = form.save()
             auth_login(request, user)
-            messages.success(request, f"¡Bienvenido, {user.username}! Tu cuenta se creó correctamente.")
+            messages.success(request, _("¡Bienvenido, %(name)s! Tu cuenta se creó correctamente.") % {"name": user.username})
             return redirect("builder:build_list")
     else:
         form = SignupForm()
@@ -60,8 +65,8 @@ BIG_SLOT_COUNT = len(BIG_SLOT_NUMBERS)
 
 
 SORT_OPTIONS = {
-    "recent": "Más recientes",
-    "votes": "Más votadas",
+    "recent": gettext_lazy("Más recientes"),
+    "votes": gettext_lazy("Más votadas"),
 }
 
 
@@ -228,7 +233,7 @@ def build_favorite_toggle(request, slug):
     """Marca/desmarca una build como favorita del usuario logueado. Solo POST."""
     build = get_object_or_404(Build, slug=slug)
     if not build.is_public and build.owner_id != request.user.id:
-        return HttpResponseForbidden("No puedes marcar como favorita una build privada ajena.")
+        return HttpResponseForbidden(_("No puedes marcar como favorita una build privada ajena."))
 
     if request.method != "POST":
         return redirect(build.get_absolute_url())
@@ -347,15 +352,15 @@ def suggestions_view(request):
             category = "idea"
 
         if not title or not description:
-            messages.warning(request, "Completa el título y la descripción.")
+            messages.warning(request, _("Completa el título y la descripción."))
         elif _rate_limited(request, "suggestion", seconds=10):
-            messages.warning(request, "Espera unos segundos antes de enviar otra sugerencia.")
+            messages.warning(request, _("Espera unos segundos antes de enviar otra sugerencia."))
         else:
             Suggestion.objects.create(
                 user=request.user, category=category,
                 title=title[:120], description=description[:2000],
             )
-            messages.success(request, "¡Gracias! Tu sugerencia fue enviada.")
+            messages.success(request, _("¡Gracias! Tu sugerencia fue enviada."))
             return redirect("builder:suggestions")
 
     my_suggestions = request.user.suggestions.all()[:20]
@@ -449,7 +454,7 @@ def build_vote(request, slug):
     value = int(value)
 
     if _rate_limited(request, "vote", seconds=1):
-        messages.warning(request, "Estás votando muy rápido, espera un segundo.")
+        messages.warning(request, _("Estás votando muy rápido, espera un segundo."))
         referer = request.META.get("HTTP_REFERER")
         if referer and url_has_allowed_host_and_scheme(
             referer, allowed_hosts={request.get_host()}, require_https=request.is_secure()
@@ -491,12 +496,12 @@ def build_duplicate(request, slug):
     """
     source = get_object_or_404(Build, slug=slug)
     if not source.is_public and source.owner_id != request.user.id:
-        return HttpResponseForbidden("No puedes duplicar una build privada ajena.")
+        return HttpResponseForbidden(_("No puedes duplicar una build privada ajena."))
 
     if request.method != "POST":
         return redirect(source.get_absolute_url())
 
-    base_name = f"{source.name} (copia)"
+    base_name = _("%(name)s (copia)") % {"name": source.name}
     new_slug = _unique_build_slug(base_name, request.user.id)
 
     new_build = Build.objects.create(
@@ -530,7 +535,7 @@ def build_duplicate(request, slug):
 
     messages.success(
         request,
-        f"Se creó una copia privada: '{new_build.name}'. Edítala y publícala cuando quieras."
+        _("Se creó una copia privada: «%(name)s». Edítala y publícala cuando quieras.") % {"name": new_build.name}
     )
     return redirect(new_build.get_absolute_url())
 
@@ -543,13 +548,18 @@ def build_confirm_current(request, slug):
     """
     build = get_object_or_404(Build, slug=slug)
     if build.owner_id != request.user.id:
-        return HttpResponseForbidden("Solo el autor puede confirmar su build.")
+        return HttpResponseForbidden(_("Solo el autor puede confirmar su build."))
     if request.method != "POST":
         return redirect(build.get_absolute_url())
 
     build.confirm_up_to_date()
-    version = f" en {build.game_version.name}" if build.game_version else ""
-    messages.success(request, f"Listo: '{build.name}' quedó marcada como al día{version}.")
+    if build.game_version:
+        text = _("Listo: «%(name)s» quedó marcada como al día en %(version)s.") % {
+            "name": build.name, "version": build.game_version.name,
+        }
+    else:
+        text = _("Listo: «%(name)s» quedó marcada como al día.") % {"name": build.name}
+    messages.success(request, text)
     return redirect(build.get_absolute_url())
 
 
@@ -563,13 +573,13 @@ def build_delete(request, slug):
     build = get_object_or_404(Build, slug=slug)
 
     if build.owner_id != request.user.id:
-        return HttpResponseForbidden("No puedes eliminar la build de otro usuario.")
+        return HttpResponseForbidden(_("No puedes eliminar la build de otro usuario."))
 
     if request.method != "POST":
         return redirect(build.get_absolute_url())
 
     build.delete()
-    messages.success(request, f"Build '{build.name}' eliminada.")
+    messages.success(request, _("Build «%(name)s» eliminada.") % {"name": build.name})
     return redirect("builder:build_list")
 
 
@@ -579,7 +589,7 @@ def build_add_comment(request, slug):
     comentar en cualquier build a la que tenga acceso (publica, o la propia)."""
     build = get_object_or_404(Build, slug=slug)
     if not build.is_public and build.owner_id != request.user.id:
-        return HttpResponseForbidden("No puedes comentar en una build privada ajena.")
+        return HttpResponseForbidden(_("No puedes comentar en una build privada ajena."))
 
     if request.method != "POST":
         return redirect(build.get_absolute_url())
@@ -589,7 +599,7 @@ def build_add_comment(request, slug):
         return redirect(build.get_absolute_url())
 
     if _rate_limited(request, "comment", seconds=10):
-        messages.warning(request, "Espera unos segundos antes de comentar de nuevo.")
+        messages.warning(request, _("Espera unos segundos antes de comentar de nuevo."))
         return redirect(build.get_absolute_url())
 
     BuildComment.objects.create(build=build, user=request.user, text=text[:1000])
@@ -609,7 +619,7 @@ def build_delete_comment(request, comment_id):
     is_author = comment.user_id == request.user.id
     is_build_owner = comment.build.owner_id == request.user.id
     if not is_author and not is_build_owner:
-        return HttpResponseForbidden("No puedes eliminar este comentario.")
+        return HttpResponseForbidden(_("No puedes eliminar este comentario."))
 
     if request.method != "POST":
         return redirect(comment.build.get_absolute_url())
@@ -665,8 +675,9 @@ def _save_gems_and_equipment(build, request, errors):
         # Las gemas genéricas (lesser/empowered) se pueden equipar en cualquier clase.
         if gem.restricted_to_class_id and str(gem.restricted_to_class_id) != str(build.primary_class_id):
             errors.append(
-                f"{gem.name} es una Class Gem exclusiva de {gem.restricted_to_class.name}, "
-                f"no se puede usar con {build.primary_class.name}."
+                _("%(gem)s es una Class Gem exclusiva de %(owner)s, no se puede usar con %(cls)s.") % {
+                    "gem": gem.name, "owner": gem.restricted_to_class.name, "cls": build.primary_class.name,
+                }
             )
             continue
         # Slots 1-4 son "grandes" (Empowered/Class, universal). Slots 5-12 son
@@ -676,14 +687,12 @@ def _save_gems_and_equipment(build, request, errors):
         is_big_gem = gem.damage_variant == "universal"
         if is_big_slot and not is_big_gem:
             errors.append(
-                f"{gem.name} es una gema menor (pequeña) y no cabe en un slot "
-                f"grande (Empoderado)."
+                _("%(gem)s es una gema menor (pequeña) y no cabe en un slot grande (Empoderado).") % {"gem": gem.name}
             )
             continue
         if not is_big_slot and is_big_gem:
             errors.append(
-                f"{gem.name} es una gema Empoderada/Class (grande) y no cabe en "
-                f"un slot pequeño (Lesser)."
+                _("%(gem)s es una gema Empoderada/Class (grande) y no cabe en un slot pequeño (Lesser).") % {"gem": gem.name}
             )
             continue
 
@@ -696,11 +705,11 @@ def _save_gems_and_equipment(build, request, errors):
             invalid = [s for s in picked if s not in LESSER_GEM_STAT_OPTIONS]
             if invalid:
                 errors.append(
-                    f"{gem.name}: stat '{invalid[0]}' no es valido para una gema menor."
+                    _("%(gem)s: el stat «%(stat)s» no es válido para una gema menor.") % {"gem": gem.name, "stat": invalid[0]}
                 )
             elif len(picked) != len(set(picked)):
                 errors.append(
-                    f"{gem.name}: no puedes elegir el mismo stat dos veces en la misma gema."
+                    _("%(gem)s: no puedes elegir el mismo stat dos veces en la misma gema.") % {"gem": gem.name}
                 )
             else:
                 chosen_stats = picked
@@ -725,8 +734,7 @@ def _save_gems_and_equipment(build, request, errors):
             equip_slot = EquipmentSlot.objects.get(slot_type=slot_type, tier=tier)
         except EquipmentSlot.DoesNotExist:
             errors.append(
-                f"No se encontró la configuración de equipo para {slot_type} "
-                f"(tier '{tier}')."
+                _("No se encontró la configuración de equipo para %(slot)s (tier «%(tier)s»).") % {"slot": slot_type, "tier": tier}
             )
             continue
 
@@ -735,11 +743,11 @@ def _save_gems_and_equipment(build, request, errors):
         invalid = [s for s in picked if s not in pool]
         if invalid:
             errors.append(
-                f"{equip_slot}: '{invalid[0]}' no es un stat válido para esta pieza."
+                _("%(slot)s: «%(stat)s» no es un stat válido para esta pieza.") % {"slot": equip_slot, "stat": invalid[0]}
             )
             continue
         if len(picked) != len(set(picked)):
-            errors.append(f"{equip_slot}: no puedes elegir el mismo stat dos veces.")
+            errors.append(_("%(slot)s: no puedes elegir el mismo stat dos veces.") % {"slot": equip_slot})
             continue
 
         BuildEquipment.objects.create(build=build, slot=equip_slot, chosen_stats=picked)
@@ -755,7 +763,7 @@ def _save_gems_and_equipment(build, request, errors):
         try:
             item = EquipmentItem.objects.get(id=item_id, kind=field_name)
         except EquipmentItem.DoesNotExist:
-            errors.append(f"El {field_name} elegido no es válido.")
+            errors.append(_("El %(kind)s elegido no es válido.") % {"kind": field_name})
             setattr(build, f"{field_name}_id", None)
             continue
         setattr(build, f"{field_name}_id", item.id)
@@ -809,7 +817,7 @@ def build_create(request):
         primary_class_id = request.POST["primary_class"]
 
         if _rate_limited(request, "build_create", seconds=3):
-            messages.warning(request, "Espera unos segundos antes de crear otra build.")
+            messages.warning(request, _("Espera unos segundos antes de crear otra build."))
             return render(request, "builder/build_form.html", _build_form_context())
 
         errors = []
@@ -821,8 +829,9 @@ def build_create(request):
             subclass = Subclass.objects.get(id=subclass_id)
             if str(subclass.game_class_id) == str(primary_class_id):
                 errors.append(
-                    f"No puedes usar '{subclass.name}' como subclase: es la pasiva "
-                    f"de tu propia clase principal ({subclass.game_class.name})."
+                    _("No puedes usar «%(sub)s» como subclase: es la pasiva de tu propia clase principal (%(cls)s).") % {
+                        "sub": subclass.name, "cls": subclass.game_class.name,
+                    }
                 )
                 subclass_id = None
 
@@ -860,7 +869,7 @@ def build_edit(request, slug):
     """
     build = get_object_or_404(Build, slug=slug)
     if build.owner_id != request.user.id:
-        return HttpResponseForbidden("No puedes editar la build de otro usuario.")
+        return HttpResponseForbidden(_("No puedes editar la build de otro usuario."))
 
     if request.method == "POST":
         primary_class_id = request.POST["primary_class"]
@@ -871,8 +880,9 @@ def build_edit(request, slug):
             subclass = Subclass.objects.get(id=subclass_id)
             if str(subclass.game_class_id) == str(primary_class_id):
                 errors.append(
-                    f"No puedes usar '{subclass.name}' como subclase: es la pasiva "
-                    f"de tu propia clase principal ({subclass.game_class.name})."
+                    _("No puedes usar «%(sub)s» como subclase: es la pasiva de tu propia clase principal (%(cls)s).") % {
+                        "sub": subclass.name, "cls": subclass.game_class.name,
+                    }
                 )
                 subclass_id = None
 
@@ -892,7 +902,7 @@ def build_edit(request, slug):
         if errors:
             for e in errors:
                 messages.warning(request, e)
-        messages.success(request, "Build actualizada.")
+        messages.success(request, _("Build actualizada."))
 
         return redirect(build.get_absolute_url())
 

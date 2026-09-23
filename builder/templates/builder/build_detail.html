@@ -1,10 +1,10 @@
 {% extends "builder/base.html" %}
-{% load builder_extras static %}
+{% load i18n builder_extras static %}
 {% block title %}{{ build.name }} — Trove Builder{% endblock %}
 {% block body_class %}build-detail-page{% endblock %}
-{% block meta_description %}Build de {{ build.primary_class.name }}{% if build.subclass %} / {{ build.subclass.name }}{% endif %} para Trove — {{ build.tags|join:", " }}. Creada por {{ build.owner.username }}.{% endblock %}
+{% block meta_description %}{% blocktranslate with cls=build.primary_class.name %}Build de {{ cls }}{% endblocktranslate %}{% if build.subclass %} / {{ build.subclass.name }}{% endif %} — {{ build.tags|join:", " }}. {% blocktranslate with name=build.owner.username %}Creada por {{ name }}.{% endblocktranslate %}{% endblock %}
 {% block og_title %}{{ build.name }} — {{ build.primary_class.name }}{% endblock %}
-{% block og_description %}{{ build.description|default:"Build de Trove hecha con Trove Builder."|truncatechars:160 }}{% endblock %}
+{% block og_description %}{% if build.description %}{{ build.description|truncatechars:160 }}{% else %}{% translate "Build de Trove hecha con Trove Builder." %}{% endif %}{% endblock %}
 {% block og_image %}{% if build.primary_class.icon_url %}<meta property="og:image" content="{{ build.primary_class.icon_url }}">{% endif %}{% endblock %}
 {% block content %}
 
@@ -14,40 +14,40 @@
         <div class="class-line">
             {{ build.primary_class.name }}
             {% if build.secondary_class %}/ {{ build.secondary_class.name }}{% endif %}
-            {% if build.subclass %}— subclase: {{ build.subclass.name }} ({{ build.subclass.game_class.name }}){% endif %}
+            {% if build.subclass %}— {% translate "subclase:" %} {{ build.subclass.name }} ({{ build.subclass.game_class.name }}){% endif %}
         </div>
         <div class="build-status-line">
             <span class="chip status-chip status-{{ build.status }}{% if build.is_outdated_version %} status-review{% endif %}"
-                  title="{% if build.verified_at %}Confirmada el {{ build.verified_at|date:'d/m/Y' }}{% endif %}">
-                {% if build.is_outdated_version %}Revisar{% else %}{{ build.get_status_display }}{% endif %}
+                  title="{% if build.verified_at %}{% blocktranslate with date=build.verified_at|date:'d/m/Y' %}Confirmada el {{ date }}{% endblocktranslate %}{% endif %}">
+                {% if build.is_outdated_version %}{% translate "Revisar" %}{% else %}{{ build.get_status_display }}{% endif %}
                 {% if build.game_version %}· {{ build.game_version.name }}{% endif %}
             </span>
             <span class="chip">{{ build.get_language_display }}</span>
-            {% if revision_count > 1 %}<span class="chip">{{ revision_count }} revisiones</span>{% endif %}
+            {% if revision_count > 1 %}<span class="chip">{% blocktranslate with n=revision_count %}{{ n }} revisiones{% endblocktranslate %}</span>{% endif %}
             {% if build.remixed_from %}
                 {% if build.remixed_from.is_public or build.remixed_from.owner_id == user.id %}
-                <span class="remix-credit">Remix de <a href="{{ build.remixed_from.get_absolute_url }}">{{ build.remixed_from.name }}</a> por <a href="{% url 'builder:user_profile' build.remixed_from.owner.username %}">{{ build.remixed_from.owner.username }}</a></span>
+                <span class="remix-credit">{% translate "Remix de" %} <a href="{{ build.remixed_from.get_absolute_url }}">{{ build.remixed_from.name }}</a> {% translate "por" %} <a href="{% url 'builder:user_profile' build.remixed_from.owner.username %}">{{ build.remixed_from.owner.username }}</a></span>
                 {% else %}
-                <span class="remix-credit">Remix de una build de {{ build.remixed_from.owner.username }}</span>
+                <span class="remix-credit">{% blocktranslate with name=build.remixed_from.owner.username %}Remix de una build de {{ name }}{% endblocktranslate %}</span>
                 {% endif %}
             {% endif %}
         </div>
         {% for t in build.tags %}<span class="chip">{{ t }}</span>{% endfor %}
         {% if build.needs_review and build.owner_id == user.id %}
         <div class="review-callout">
-            <p><strong>Un parche nuevo puede haber cambiado esta build.</strong> Revísala: si sigue funcionando igual, confírmalo; si no, edítala.</p>
+            <p><strong>{% translate "Un parche nuevo puede haber cambiado esta build." %}</strong> {% translate "Revísala: si sigue funcionando igual, confírmalo; si no, edítala." %}</p>
             <div class="review-callout-actions">
                 <form method="post" action="{% url 'builder:build_confirm_current' build.slug %}">
                     {% csrf_token %}
-                    <button type="submit" class="btn">✓ Sigue al día</button>
+                    <button type="submit" class="btn">✓ {% translate "Sigue al día" %}</button>
                 </form>
-                <a href="{% url 'builder:build_edit' build.slug %}" class="btn btn-ghost">✎ Editar</a>
+                <a href="{% url 'builder:build_edit' build.slug %}" class="btn btn-ghost">✎ {% translate "Editar" %}</a>
             </div>
         </div>
         {% endif %}
     </div>
     <div>
-        <button type="button" class="btn btn-ghost share-btn" id="share-btn" title="Copiar enlace de esta build">🔗 Compartir</button>
+        <button type="button" class="btn btn-ghost share-btn" id="share-btn" title="{% translate "Copiar enlace de esta build" %}">🔗 {% translate "Compartir" %}</button>
     </div>
 </div>
 
@@ -55,26 +55,27 @@
 
     <div class="ql-sidebar-col">
         <aside class="ql-sidebar">
-            <a href="{% url 'builder:build_list' %}" class="ql-sidebar-back">‹ Volver a builds</a>
-            <button type="button" class="ql-sidebar-item active" data-tab="tab-resumen">📋 Resumen</button>
-            <button type="button" class="ql-sidebar-item" data-tab="tab-gemas">💎 Gemas</button>
-            <button type="button" class="ql-sidebar-item" data-tab="tab-equipo">🛡 Equipo</button>
+            <a href="{% url 'builder:build_list' %}" class="ql-sidebar-back">‹ {% translate "Volver a builds" %}</a>
+            <button type="button" class="ql-sidebar-item active" data-tab="tab-resumen">📋 {% translate "Resumen" %}</button>
+            <button type="button" class="ql-sidebar-item" data-tab="tab-gemas">💎 {% translate "Gemas" %}</button>
+            <button type="button" class="ql-sidebar-item" data-tab="tab-equipo">🛡 {% translate "Equipo" %}</button>
             <button type="button" class="ql-sidebar-item" data-tab="tab-extras">🎒 Ally / Emblem</button>
-            <button type="button" class="ql-sidebar-item" data-tab="tab-comentarios">💬 Comentarios <span class="count">{{ comments|length }}</span></button>
+            <button type="button" class="ql-sidebar-item" data-tab="tab-comentarios">💬 {% translate "Comentarios" %} <span class="count">{{ comments|length }}</span></button>
 
             {% if user.is_authenticated %}
             <div class="ql-sidebar-divider"></div>
             <div class="ql-sidebar-actions">
                 <form method="post" action="{% url 'builder:build_duplicate' build.slug %}">
                     {% csrf_token %}
-                    <button type="submit" class="btn-ghost btn" title="Crea una copia editable en tu cuenta, con crédito a esta build">⧉ Remezclar</button>
+                    <button type="submit" class="btn-ghost btn" title="{% translate "Crea una copia editable en tu cuenta, con crédito a esta build" %}">⧉ {% translate "Remezclar" %}</button>
                 </form>
                 {% if build.owner_id == user.id %}
-                <a href="{% url 'builder:build_edit' build.slug %}" class="btn-ghost btn">✎ Editar</a>
+                <a href="{% url 'builder:build_edit' build.slug %}" class="btn-ghost btn">✎ {% translate "Editar" %}</a>
+                {% blocktranslate asvar delete_msg with name=build.name %}¿Eliminar la build «{{ name }}»? Esta acción no se puede deshacer.{% endblocktranslate %}
                 <form method="post" action="{% url 'builder:build_delete' build.slug %}" class="delete-form"
-                      onsubmit="return confirm('¿Eliminar la build \'{{ build.name|escapejs }}\'? Esta acción no se puede deshacer.');">
+                      onsubmit="return confirm('{{ delete_msg|escapejs }}');">
                     {% csrf_token %}
-                    <button type="submit" class="btn-delete">🗑 Eliminar</button>
+                    <button type="submit" class="btn-delete">🗑 {% translate "Eliminar" %}</button>
                 </form>
                 {% endif %}
             </div>
@@ -83,10 +84,10 @@
 
         <div class="ql-builds-panel">
             <div class="ql-builds-panel-header">
-                <h4>Builds de {{ build.primary_class.name }} <span class="count">({{ sibling_builds|length }})</span></h4>
+                <h4>{% blocktranslate with cls=build.primary_class.name %}Builds de {{ cls }}{% endblocktranslate %} <span class="count">({{ sibling_builds|length }})</span></h4>
             </div>
             {% if user.is_authenticated %}
-            <a href="{% url 'builder:build_create' %}" class="btn ql-builds-panel-create">+ Nueva build</a>
+            <a href="{% url 'builder:build_create' %}" class="btn ql-builds-panel-create">+ {% translate "Nueva build" %}</a>
             {% endif %}
             <div class="ql-builds-panel-list">
                 {% for sb in sibling_builds %}
@@ -98,7 +99,7 @@
                     </span>
                 </a>
                 {% empty %}
-                <p class="ql-builds-panel-empty">Todavía no hay más builds públicas de esta clase.</p>
+                <p class="ql-builds-panel-empty">{% translate "Todavía no hay más builds públicas de esta clase." %}</p>
                 {% endfor %}
             </div>
         </div>
@@ -108,22 +109,22 @@
         <div class="tab-panels">
 
             <div class="form-tab-panel active" id="tab-resumen">
-                {% if build.description %}<p>{{ build.description }}</p>{% else %}<p class="empty-state">Esta build no tiene descripción todavía.</p>{% endif %}
+                {% if build.description %}<p>{{ build.description }}</p>{% else %}<p class="empty-state">{% translate "Esta build no tiene descripción todavía." %}</p>{% endif %}
 
                 {% if build.subclass %}
                 <section class="detail-section">
-                    <h3>Subclase</h3>
-                    <p style="margin-bottom:6px;">{{ build.subclass.name }} — bono base: {{ build.subclass.bonus_stat }} ({{ build.subclass.bonus_range }})</p>
+                    <h3>{% translate "Subclase" %}</h3>
+                    <p style="margin-bottom:6px;">{{ build.subclass.name }} — {% translate "bono base:" %} {{ build.subclass.bonus_stat }} ({{ build.subclass.bonus_range }})</p>
                     <details>
-                        <summary>Ver progresión completa por Power Rank y nivel</summary>
+                        <summary>{% translate "Ver progresión completa por Power Rank y nivel" %}</summary>
                         <table>
-                            <tr><th>Tier</th><th>Power Rank</th><th>Efecto</th></tr>
+                            <tr><th>Tier</th><th>Power Rank</th><th>{% translate "Efecto" %}</th></tr>
                             {% for t in build.subclass.tier_progression %}
                             <tr><td>{{ t.tier }}</td><td>{{ t.power_rank }}</td><td>{{ t.effect }}</td></tr>
                             {% endfor %}
                         </table>
                         <table>
-                            <tr><th>Nivel de subclase</th><th>Bono</th></tr>
+                            <tr><th>{% translate "Nivel de subclase" %}</th><th>{% translate "Bono" %}</th></tr>
                             {% for l in build.subclass.level_bonus_progression %}
                             <tr><td>{{ l.level }}</td><td>{{ l.bonus }}</td></tr>
                             {% endfor %}
@@ -132,14 +133,14 @@
                 </section>
                 {% endif %}
 
-                <p><small>Creado por <a href="{% url 'builder:user_profile' build.owner.username %}">{{ build.owner.username }}</a> el {{ build.created_at|date:"d/m/Y" }}</small></p>
+                <p><small>{% translate "Creado por" %} <a href="{% url 'builder:user_profile' build.owner.username %}">{{ build.owner.username }}</a> · {{ build.created_at|date:"d/m/Y" }}</small></p>
 
                 {% if remixes %}
                 <section class="remix-list">
-                    <h3>Remixes de la comunidad</h3>
+                    <h3>{% translate "Remixes de la comunidad" %}</h3>
                     <ul>
                         {% for r in remixes %}
-                        <li><a href="{{ r.get_absolute_url }}">{{ r.name }}</a> <small>por {{ r.owner.username }}</small></li>
+                        <li><a href="{{ r.get_absolute_url }}">{{ r.name }}</a> <small>{% translate "por" %} {{ r.owner.username }}</small></li>
                         {% endfor %}
                     </ul>
                 </section>
@@ -147,21 +148,21 @@
             </div>
 
             <div class="form-tab-panel" id="tab-gemas">
-                <div class="gem-legend">4 slots grandes (Empoderadas/Class) + 8 slots pequeños (Lesser Fierce/Arcane)</div>
+                <div class="gem-legend">{% translate "4 slots grandes (Empoderadas/Class) + 8 slots pequeños (Lesser Fierce/Arcane)" %}</div>
                 <details>
-                    <summary>Ver qué gemas grandes puede usar {{ build.primary_class.name }}</summary>
+                    <summary>{% blocktranslate with cls=build.primary_class.name %}Ver qué gemas grandes puede usar {{ cls }}{% endblocktranslate %}</summary>
                     <ul class="item-stats" style="margin-top:8px;">
                         {% if class_gem %}
-                        <li><strong style="color:var(--rarity-green);">{{ class_gem.name }}</strong> — Class Gem exclusiva de {{ build.primary_class.name }}</li>
+                        <li><strong style="color:var(--rarity-green);">{{ class_gem.name }}</strong> — {% blocktranslate with cls=build.primary_class.name %}Class Gem exclusiva de {{ cls }}{% endblocktranslate %}</li>
                         {% else %}
-                        <li>{{ build.primary_class.name }} no tiene una Class Gem exclusiva documentada todavía.</li>
+                        <li>{% blocktranslate with cls=build.primary_class.name %}{{ cls }} no tiene una Class Gem exclusiva documentada todavía.{% endblocktranslate %}</li>
                         {% endif %}
                         {% for g in universal_big_gems %}
-                        <li>{{ g.name }} — Empowered universal (sirve para cualquier clase)</li>
+                        <li>{{ g.name }} — {% translate "Empowered universal (sirve para cualquier clase)" %}</li>
                         {% endfor %}
                     </ul>
                     <p style="font-size:0.75rem; color:var(--text-dim); margin-top:6px;">
-                        Cualquier otra Class Gem (de otra clase) no se puede usar con {{ build.primary_class.name }}.
+                        {% blocktranslate with cls=build.primary_class.name %}Cualquier otra Class Gem (de otra clase) no se puede usar con {{ cls }}.{% endblocktranslate %}
                     </p>
                 </details>
                 <div class="gem-grid">
@@ -178,7 +179,7 @@
                                 {% endwith %}
                                 {% if slot %}<span class="slot-rank">{{ slot.rank }}</span>{% endif %}
                             </div>
-                            <span class="gem-label">{% if slot %}{{ slot.gem.name }}{% else %}Vacío{% endif %}</span>
+                            <span class="gem-label">{% if slot %}{{ slot.gem.name }}{% else %}{% translate "Vacío" %}{% endif %}</span>
                             {% if slot %}
                             <div class="gem-tooltip">
                                 <span class="tt-name">{{ slot.gem.name }}</span>
@@ -203,7 +204,7 @@
                                 {% if slot %}<span class="slot-rank">{{ slot.rank }}</span>{% endif %}
                                 {% if mismatch %}<span class="slot-warn">⚠</span>{% endif %}
                             </div>
-                            <span class="gem-label">{% if slot %}{{ slot.gem.name }}{% else %}Vacío{% endif %}</span>
+                            <span class="gem-label">{% if slot %}{{ slot.gem.name }}{% else %}{% translate "Vacío" %}{% endif %}</span>
                             {% if slot %}
                             <div class="gem-tooltip">
                                 <span class="tt-name">{{ slot.gem.name }}</span>
@@ -213,9 +214,9 @@
                                 {% if slot.chosen_stats %}
                                 <span class="tt-guaranteed">{{ slot.chosen_stats|join:", " }}</span>
                                 {% else %}
-                                <span class="tt-stats">Sin elegir — posibles: {{ slot.gem|gem_tooltip_stats }}</span>
+                                <span class="tt-stats">{% translate "Sin elegir — posibles:" %} {{ slot.gem|gem_tooltip_stats }}</span>
                                 {% endif %}
-                                {% if mismatch %}<br><span class="tt-warn">⚠ {{ mismatch }} no le sirve a {{ build.primary_class.name }}</span>{% endif %}
+                                {% if mismatch %}<br><span class="tt-warn">⚠ {% blocktranslate with stat=mismatch cls=build.primary_class.name %}{{ stat }} no le sirve a {{ cls }}{% endblocktranslate %}</span>{% endif %}
                             </div>
                             {% endif %}
                         </div>
@@ -228,7 +229,7 @@
                 <div class="item-card">
                     <div class="item-card-header">
                         <span class="item-name">{{ slot.gem.name }}</span>
-                        <span class="item-power-rank">Slot {{ slot.slot_number }} · Rango {{ slot.rank }} / {{ slot.gem.max_rank }}</span>
+                        <span class="item-power-rank">Slot {{ slot.slot_number }} · {% translate "Rango" %} {{ slot.rank }} / {{ slot.gem.max_rank }}</span>
                     </div>
                     {% if slot.gem.description %}<div class="item-desc">{{ slot.gem.description }}</div>{% endif %}
 
@@ -236,15 +237,15 @@
                     {% if guaranteed or slot.chosen_stats or slot.gem.stat_scaling %}
                     <div class="stat-chips">
                         {% if guaranteed %}
-                        <span class="stat-chip guaranteed">{{ guaranteed }} <span class="stat-chip-label">(garantizado)</span></span>
+                        <span class="stat-chip guaranteed">{{ guaranteed }} <span class="stat-chip-label">({% translate "garantizado" %})</span></span>
                         {% endif %}
 
                         {% if slot.chosen_stats %}
                         {% for stat in slot.chosen_stats %}
-                        <span class="stat-chip guaranteed">{{ stat }} <span class="stat-chip-label">(elegido)</span></span>
+                        <span class="stat-chip guaranteed">{{ stat }} <span class="stat-chip-label">({% translate "elegido" %})</span></span>
                         {% endfor %}
                         {% elif slot.gem.stat_scaling.rollable_stats %}
-                        <span class="stat-chip" style="opacity:0.6;">Sin stats elegidos todavía — posibles: {{ slot.gem.stat_scaling.rollable_stats|join:", " }}</span>
+                        <span class="stat-chip" style="opacity:0.6;">{% translate "Sin stats elegidos todavía — posibles:" %} {{ slot.gem.stat_scaling.rollable_stats|join:", " }}</span>
                         {% endif %}
 
                         {% for key, value in slot.gem.stat_scaling.items %}
@@ -256,13 +257,13 @@
                     {% endif %}
                     {% with mismatch=slot.gem|gem_damage_mismatch:build.primary_class %}
                     {% if mismatch %}
-                    <div class="warn">⚠ {{ mismatch }} no le sirve a {{ build.primary_class.name }} ({{ build.primary_class.get_damage_type_display }})</div>
+                    <div class="warn">⚠ {% blocktranslate with stat=mismatch cls=build.primary_class.name %}{{ stat }} no le sirve a {{ cls }}{% endblocktranslate %} ({{ build.primary_class.get_damage_type_display }})</div>
                     {% endif %}
                     {% endwith %}
                     {% endwith %}
                 </div>
                 {% empty %}
-                <div class="empty-state">Sin gemas configuradas.</div>
+                <div class="empty-state">{% translate "Sin gemas configuradas." %}</div>
                 {% endfor %}
             </div>
 
@@ -279,19 +280,19 @@
                         <div class="item-card-header">
                             <span class="item-name">{{ eq.slot }}</span>
                         </div>
-                        {% if eq.slot.fixed_stats %}<div class="item-desc">Fijo: {{ eq.slot.fixed_stats|join:", " }}</div>{% endif %}
+                        {% if eq.slot.fixed_stats %}<div class="item-desc">{% translate "Fijo:" %} {{ eq.slot.fixed_stats|join:", " }}</div>{% endif %}
                         {% if eq.chosen_stats %}
                         <div class="stat-chips">
                             {% for stat in eq.chosen_stats %}
-                            <span class="stat-chip guaranteed">{{ stat }} <span class="stat-chip-label">(elegido)</span></span>
+                            <span class="stat-chip guaranteed">{{ stat }} <span class="stat-chip-label">({% translate "elegido" %})</span></span>
                             {% endfor %}
                         </div>
                         {% endif %}
-                        {% if bad %}<div class="warn">⚠ {{ bad }} no le sirve a {{ build.primary_class.name }}</div>{% endif %}
+                        {% if bad %}<div class="warn">⚠ {% blocktranslate with stat=bad cls=build.primary_class.name %}{{ stat }} no le sirve a {{ cls }}{% endblocktranslate %}</div>{% endif %}
                         {% if eq.slot.slot_type == "ring" and ring_hidden_effects %}
                         <div class="item-desc" style="margin-top:8px; padding-top:8px; border-top:1px dashed var(--border);">
-                            <strong style="color:var(--rarity-green);">Hidden Effects disponibles ({{ build.primary_class.name }}):</strong>
-                            <small style="display:block; color:var(--text-dim); margin:2px 0 6px;">Un anillo solo puede activar UNO a la vez con el Ring Polisher.</small>
+                            <strong style="color:var(--rarity-green);">{% blocktranslate with cls=build.primary_class.name %}Hidden Effects disponibles ({{ cls }}):{% endblocktranslate %}</strong>
+                            <small style="display:block; color:var(--text-dim); margin:2px 0 6px;">{% translate "Un anillo solo puede activar UNO a la vez con el Ring Polisher." %}</small>
                             <ul class="item-stats">
                                 {% for effect in ring_hidden_effects %}
                                 <li><strong>{{ effect.name }}</strong> ({{ effect.get_availability_display }}) — {{ effect.description }}</li>
@@ -303,7 +304,7 @@
                 </div>
                 {% endwith %}
                 {% empty %}
-                <div class="empty-state">Sin equipo configurado.</div>
+                <div class="empty-state">{% translate "Sin equipo configurado." %}</div>
                 {% endfor %}
             </div>
 
@@ -325,19 +326,19 @@
                                 {% endfor %}
                             </div>
                             {% endif %}
-                            {% if mismatch %}<div class="warn">⚠ {{ mismatch }} no le sirve a {{ build.primary_class.name }}</div>{% endif %}
+                            {% if mismatch %}<div class="warn">⚠ {% blocktranslate with stat=mismatch cls=build.primary_class.name %}{{ stat }} no le sirve a {{ cls }}{% endblocktranslate %}</div>{% endif %}
                         </div>
                     </div>
                     {% endwith %}
                     {% empty %}
-                    <div class="empty-state">Sin Ally, Emblem, Flask ni Banner elegidos.</div>
+                    <div class="empty-state">{% translate "Sin Ally, Emblem, Flask ni Banner elegidos." %}</div>
                     {% endfor %}
                 </div>
             </div>
 
             <div class="form-tab-panel" id="tab-comentarios">
                 <section>
-                    <h3>Comentarios ({{ comments|length }})</h3>
+                    <h3>{% translate "Comentarios" %} ({{ comments|length }})</h3>
 
                     {% for c in comments %}
                     <div class="comment">
@@ -348,30 +349,30 @@
                         <p class="comment-text">{{ c.text }}</p>
                         {% if user.is_authenticated and c.user_id == user.id %}
                         <form method="post" action="{% url 'builder:build_delete_comment' c.id %}"
-                              onsubmit="return confirm('¿Eliminar tu comentario?');">
+                              onsubmit="return confirm('{% filter escapejs %}{% translate "¿Eliminar tu comentario?" %}{% endfilter %}');">
                             {% csrf_token %}
-                            <button type="submit" class="comment-delete">🗑 Eliminar</button>
+                            <button type="submit" class="comment-delete">🗑 {% translate "Eliminar" %}</button>
                         </form>
                         {% elif user.is_authenticated and build.owner_id == user.id %}
                         <form method="post" action="{% url 'builder:build_delete_comment' c.id %}"
-                              onsubmit="return confirm('¿Eliminar este comentario de tu build? Es una acción de moderación.');">
+                              onsubmit="return confirm('{% filter escapejs %}{% translate "¿Eliminar este comentario de tu build? Es una acción de moderación." %}{% endfilter %}');">
                             {% csrf_token %}
-                            <button type="submit" class="comment-delete" title="Moderar: eliminar comentario ajeno de tu build">🛡 Moderar</button>
+                            <button type="submit" class="comment-delete" title="{% translate "Moderar: eliminar comentario ajeno de tu build" %}">🛡 {% translate "Moderar" %}</button>
                         </form>
                         {% endif %}
                     </div>
                     {% empty %}
-                    <div class="empty-state">Todavía no hay comentarios. ¡Sé el primero!</div>
+                    <div class="empty-state">{% translate "Todavía no hay comentarios. ¡Sé el primero!" %}</div>
                     {% endfor %}
 
                     {% if user.is_authenticated %}
                     <form method="post" action="{% url 'builder:build_add_comment' build.slug %}" class="comment-form">
                         {% csrf_token %}
-                        <textarea name="text" placeholder="Escribe un comentario..." maxlength="1000" required></textarea>
-                        <button type="submit" class="btn">Comentar</button>
+                        <textarea name="text" placeholder="{% translate "Escribe un comentario..." %}" maxlength="1000" required></textarea>
+                        <button type="submit" class="btn">{% translate "Comentar" %}</button>
                     </form>
                     {% else %}
-                    <p><a href="{% url 'login' %}">Inicia sesión</a> para comentar.</p>
+                    <p><a href="{% url 'login' %}">{% translate "Inicia sesión" %}</a> {% translate "para comentar." %}</p>
                     {% endif %}
                 </section>
             </div>
@@ -391,36 +392,36 @@
                 <form method="post" action="{% url 'builder:build_vote' build.slug %}">
                     {% csrf_token %}
                     <input type="hidden" name="value" value="1">
-                    <button type="submit" class="vote-btn up {% if user_vote == 1 %}active{% endif %}" title="Votar a favor">▲ {{ upvotes }}</button>
+                    <button type="submit" class="vote-btn up {% if user_vote == 1 %}active{% endif %}" title="{% translate "Votar a favor" %}">▲ {{ upvotes }}</button>
                 </form>
                 <form method="post" action="{% url 'builder:build_vote' build.slug %}">
                     {% csrf_token %}
                     <input type="hidden" name="value" value="-1">
-                    <button type="submit" class="vote-btn down {% if user_vote == -1 %}active{% endif %}" title="Votar en contra">▼ {{ downvotes }}</button>
+                    <button type="submit" class="vote-btn down {% if user_vote == -1 %}active{% endif %}" title="{% translate "Votar en contra" %}">▼ {{ downvotes }}</button>
                 </form>
                 <form method="post" action="{% url 'builder:build_favorite_toggle' build.slug %}">
                     {% csrf_token %}
-                    <button type="submit" class="vote-btn fav-btn {% if is_favorited %}active{% endif %}" title="{% if is_favorited %}Quitar de favoritas{% else %}Marcar como favorita{% endif %}">{% if is_favorited %}♥{% else %}♡{% endif %} Favorita</button>
+                    <button type="submit" class="vote-btn fav-btn {% if is_favorited %}active{% endif %}" title="{% if is_favorited %}{% translate "Quitar de favoritas" %}{% else %}{% translate "Marcar como favorita" %}{% endif %}">{% if is_favorited %}♥{% else %}♡{% endif %} {% translate "Favorita" %}</button>
                 </form>
                 {% else %}
-                <a href="{% url 'login' %}" style="font-size:0.78rem; color:var(--text-dim);">Inicia sesión para votar</a>
+                <a href="{% url 'login' %}" style="font-size:0.78rem; color:var(--text-dim);">{% translate "Inicia sesión para votar" %}</a>
                 {% endif %}
             </div>
 
             <div class="stats-info">
                 <div class="stats-info-row">
-                    <span class="k">Clase</span>
+                    <span class="k">{% translate "Clase" %}</span>
                     <span class="v">{{ build.primary_class.name }}</span>
                 </div>
                 {% if build.secondary_class %}
                 <div class="stats-info-row">
-                    <span class="k">Clase secundaria</span>
+                    <span class="k">{% translate "Clase secundaria" %}</span>
                     <span class="v">{{ build.secondary_class.name }}</span>
                 </div>
                 {% endif %}
                 {% if build.subclass %}
                 <div class="stats-info-row">
-                    <span class="k">Subclase</span>
+                    <span class="k">{% translate "Subclase" %}</span>
                     <span class="v">{{ build.subclass.name }}</span>
                 </div>
                 {% endif %}
@@ -431,11 +432,11 @@
                 </div>
                 {% endif %}
                 <div class="stats-info-row">
-                    <span class="k">Autor</span>
+                    <span class="k">{% translate "Autor" %}</span>
                     <span class="v"><a href="{% url 'builder:user_profile' build.owner.username %}">{{ build.owner.username }}</a></span>
                 </div>
                 <div class="stats-info-row">
-                    <span class="k">Creada</span>
+                    <span class="k">{% translate "Creada" %}</span>
                     <span class="v">{{ build.created_at|date:"d/m/Y" }}</span>
                 </div>
             </div>

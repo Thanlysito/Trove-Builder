@@ -1,6 +1,7 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
+from django.utils.translation import gettext_lazy as _
 
 
 class SignupForm(UserCreationForm):
@@ -9,7 +10,7 @@ class SignupForm(UserCreationForm):
     (requerido) para que la recuperacion de contraseña tenga a donde enviar
     el link de reseteo.
     """
-    email = forms.EmailField(required=True, help_text="Necesario para poder recuperar tu contraseña.")
+    email = forms.EmailField(required=True, help_text=_("Necesario para poder recuperar tu contraseña."))
 
     class Meta(UserCreationForm.Meta):
         model = User

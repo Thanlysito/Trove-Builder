@@ -1,0 +1,1259 @@
+# English translations for Trove Builder.
+# Source texts are in Spanish (LANGUAGE_CODE = "es").
+msgid ""
+msgstr ""
+"Project-Id-Version: Trove Builder\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-09-23 19:14+0000\n"
+"PO-Revision-Date: 2026-09-23 14:20-0500\n"
+"Last-Translator: Juan Jose Parra Florez\n"
+"Language-Team: English\n"
+"Language: en\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: builder/forms.py:13
+msgid "Necesario para poder recuperar tu contraseña."
+msgstr "Needed so you can recover your password."
+
+#: builder/models.py:141
+msgid "Ofensiva"
+msgstr "Offense"
+
+#: builder/models.py:142
+msgid "Defensiva"
+msgstr "Defense"
+
+#: builder/models.py:143
+msgid "Utilidad"
+msgstr "Utility"
+
+#: builder/models.py:144
+msgid "Gema de Clase"
+msgstr "Class Gem"
+
+#: builder/models.py:153
+msgid "Fierce (solo Physical Damage)"
+msgstr "Fierce (Physical Damage only)"
+
+#: builder/models.py:154
+msgid "Arcane (solo Magic Damage)"
+msgstr "Arcane (Magic Damage only)"
+
+#: builder/models.py:155
+msgid "Universal (Empowered/Class, cualquier tipo de daño)"
+msgstr "Universal (Empowered/Class, any damage type)"
+
+#: builder/models.py:207
+msgid "No-Crystal (Shadow/Radiant/Stellar)"
+msgstr "Non-Crystal (Shadow/Radiant/Stellar)"
+
+#: builder/models.py:267
+msgid "Signatory o Mystic Ring"
+msgstr "Signatory or Mystic Ring"
+
+#: builder/models.py:268
+msgid "Solo en Mystic Ring"
+msgstr "Mystic Ring only"
+
+#: builder/models.py:269
+msgid "Efecto compartido de esquive (Mystic Ring)"
+msgstr "Shared dodge effect (Mystic Ring)"
+
+#: builder/models.py:317
+msgid "Dragón normal"
+msgstr "Regular dragon"
+
+#: builder/models.py:318
+msgid "Dragón Primordial (de gemas)"
+msgstr "Primordial dragon (gem)"
+
+#: builder/models.py:344
+msgid "Beginner Friendly"
+msgstr "Beginner Friendly"
+
+#: builder/models.py:395
+msgid "Al día"
+msgstr "Up to date"
+
+#: builder/models.py:396 builder/templates/builder/build_detail.html:22
+msgid "Revisar"
+msgstr "Needs review"
+
+#: builder/models.py:397
+msgid "Obsoleto"
+msgstr "Outdated"
+
+#: builder/models.py:625
+msgid "comentó en tu build"
+msgstr "commented on your build"
+
+#: builder/models.py:626
+msgid "votó tu build"
+msgstr "voted on your build"
+
+#: builder/models.py:627
+msgid "El nuevo parche puede afectar tu build"
+msgstr "The new patch may affect your build"
+
+#: builder/models.py:647
+msgid "Reportar un problema"
+msgstr "Report a problem"
+
+#: builder/models.py:648
+msgid "Sugerir una idea"
+msgstr "Suggest an idea"
+
+#: builder/models.py:649
+msgid "Otro"
+msgstr "Other"
+
+#: builder/models.py:652
+msgid "Nueva"
+msgstr "New"
+
+#: builder/models.py:653
+msgid "Revisada"
+msgstr "Reviewed"
+
+#: builder/models.py:654
+msgid "Hecha"
+msgstr "Done"
+
+#: builder/templates/builder/base.html:8
+#: builder/templates/builder/base.html:12
+msgid ""
+"Arma y comparte builds de personaje para Trove: clases, gemas, equipo, "
+"anillos y dragones."
+msgstr ""
+"Create and share Trove character builds: classes, gems, equipment, rings and"
+" dragons."
+
+#: builder/templates/builder/base.html:31
+#: builder/templates/builder/class_list.html:3
+msgid "Clases"
+msgstr "Classes"
+
+#: builder/templates/builder/base.html:32
+msgid "Cómo funciona"
+msgstr "How it works"
+
+#: builder/templates/builder/base.html:33
+#: builder/templates/builder/suggestions.html:3
+#: builder/templates/builder/suggestions.html:7
+msgid "Sugerencias"
+msgstr "Suggestions"
+
+#: builder/templates/builder/base.html:36
+#: builder/templates/builder/build_detail.html:90
+#: builder/templates/builder/build_list.html:23
+msgid "Nueva build"
+msgstr "New build"
+
+#: builder/templates/builder/base.html:38
+#: builder/templates/builder/notifications.html:3
+#: builder/templates/builder/notifications.html:7
+msgid "Notificaciones"
+msgstr "Notifications"
+
+#: builder/templates/builder/base.html:44
+msgid "Mi perfil"
+msgstr "My profile"
+
+#: builder/templates/builder/base.html:45
+#: builder/templates/builder/build_list.html:3
+#: builder/templates/builder/build_list.html:11
+msgid "Mis builds"
+msgstr "My builds"
+
+#: builder/templates/builder/base.html:46
+msgid "Favoritas"
+msgstr "Favorites"
+
+#: builder/templates/builder/base.html:48
+msgid "Salir"
+msgstr "Log out"
+
+#: builder/templates/builder/base.html:52
+#: builder/templates/registration/signup.html:3
+#: builder/templates/registration/signup.html:5
+#: builder/templates/registration/signup.html:9
+msgid "Crear cuenta"
+msgstr "Sign up"
+
+#: builder/templates/builder/base.html:53
+#: builder/templates/registration/login.html:3
+#: builder/templates/registration/login.html:5
+#: builder/templates/registration/password_reset_complete.html:7
+msgid "Iniciar sesión"
+msgstr "Log in"
+
+#: builder/templates/builder/base.html:56
+msgid "Idioma"
+msgstr "Language"
+
+#: builder/templates/builder/base.html:75
+msgid "proyecto de comunidad, no afiliado a Gamigo / Trion Worlds."
+msgstr "a community project, not affiliated with Gamigo / Trion Worlds."
+
+#: builder/templates/builder/build_detail.html:5
+#, python-format
+msgid "Build de %(cls)s"
+msgstr "%(cls)s build"
+
+#: builder/templates/builder/build_detail.html:5
+#, python-format
+msgid "Creada por %(name)s."
+msgstr "Made by %(name)s."
+
+#: builder/templates/builder/build_detail.html:7
+msgid "Build de Trove hecha con Trove Builder."
+msgstr "Trove build made with Trove Builder."
+
+#: builder/templates/builder/build_detail.html:17
+msgid "subclase:"
+msgstr "subclass:"
+
+#: builder/templates/builder/build_detail.html:21
+#, python-format
+msgid "Confirmada el %(date)s"
+msgstr "Confirmed on %(date)s"
+
+#: builder/templates/builder/build_detail.html:26
+#, python-format
+msgid "%(n)s revisiones"
+msgstr "%(n)s revisions"
+
+#: builder/templates/builder/build_detail.html:29
+msgid "Remix de"
+msgstr "Remix of"
+
+#: builder/templates/builder/build_detail.html:29
+#: builder/templates/builder/build_detail.html:143
+#: builder/templates/builder/build_list.html:82
+#: builder/templates/builder/class_detail.html:78
+msgid "por"
+msgstr "by"
+
+#: builder/templates/builder/build_detail.html:31
+#, python-format
+msgid "Remix de una build de %(name)s"
+msgstr "Remix of a build by %(name)s"
+
+#: builder/templates/builder/build_detail.html:38
+msgid "Un parche nuevo puede haber cambiado esta build."
+msgstr "A new patch may have changed this build."
+
+#: builder/templates/builder/build_detail.html:38
+msgid "Revísala: si sigue funcionando igual, confírmalo; si no, edítala."
+msgstr "Check it: if it still works the same, confirm it; if not, edit it."
+
+#: builder/templates/builder/build_detail.html:42
+msgid "Sigue al día"
+msgstr "Still up to date"
+
+#: builder/templates/builder/build_detail.html:44
+#: builder/templates/builder/build_detail.html:73
+msgid "Editar"
+msgstr "Edit"
+
+#: builder/templates/builder/build_detail.html:50
+msgid "Copiar enlace de esta build"
+msgstr "Copy link to this build"
+
+#: builder/templates/builder/build_detail.html:50
+msgid "Compartir"
+msgstr "Share"
+
+#: builder/templates/builder/build_detail.html:58
+msgid "Volver a builds"
+msgstr "Back to builds"
+
+#: builder/templates/builder/build_detail.html:59
+msgid "Resumen"
+msgstr "Overview"
+
+#: builder/templates/builder/build_detail.html:60
+#: builder/templates/builder/build_form.html:10
+msgid "Gemas"
+msgstr "Gems"
+
+#: builder/templates/builder/build_detail.html:61
+#: builder/templates/builder/build_form.html:11
+msgid "Equipo"
+msgstr "Equipment"
+
+#: builder/templates/builder/build_detail.html:63
+#: builder/templates/builder/build_detail.html:341
+msgid "Comentarios"
+msgstr "Comments"
+
+#: builder/templates/builder/build_detail.html:70
+msgid "Crea una copia editable en tu cuenta, con crédito a esta build"
+msgstr "Creates an editable copy in your account, crediting this build"
+
+#: builder/templates/builder/build_detail.html:70
+msgid "Remezclar"
+msgstr "Remix"
+
+#: builder/templates/builder/build_detail.html:74
+#: builder/templates/builder/build_list.html:107
+#, python-format
+msgid "¿Eliminar la build «%(name)s»? Esta acción no se puede deshacer."
+msgstr "Delete the build “%(name)s”? This cannot be undone."
+
+#: builder/templates/builder/build_detail.html:78
+#: builder/templates/builder/build_detail.html:354
+msgid "Eliminar"
+msgstr "Delete"
+
+#: builder/templates/builder/build_detail.html:87
+#, python-format
+msgid "Builds de %(cls)s"
+msgstr "%(cls)s builds"
+
+#: builder/templates/builder/build_detail.html:102
+msgid "Todavía no hay más builds públicas de esta clase."
+msgstr "There are no other public builds for this class yet."
+
+#: builder/templates/builder/build_detail.html:112
+msgid "Esta build no tiene descripción todavía."
+msgstr "This build has no description yet."
+
+#: builder/templates/builder/build_detail.html:116
+#: builder/templates/builder/build_detail.html:424
+#: builder/templates/builder/class_list.html:22
+msgid "Subclase"
+msgstr "Subclass"
+
+#: builder/templates/builder/build_detail.html:117
+msgid "bono base:"
+msgstr "base bonus:"
+
+#: builder/templates/builder/build_detail.html:119
+msgid "Ver progresión completa por Power Rank y nivel"
+msgstr "See full progression by Power Rank and level"
+
+#: builder/templates/builder/build_detail.html:121
+msgid "Efecto"
+msgstr "Effect"
+
+#: builder/templates/builder/build_detail.html:127
+msgid "Nivel de subclase"
+msgstr "Subclass level"
+
+#: builder/templates/builder/build_detail.html:127
+msgid "Bono"
+msgstr "Bonus"
+
+#: builder/templates/builder/build_detail.html:136
+msgid "Creado por"
+msgstr "Created by"
+
+#: builder/templates/builder/build_detail.html:140
+msgid "Remixes de la comunidad"
+msgstr "Community remixes"
+
+#: builder/templates/builder/build_detail.html:151
+msgid ""
+"4 slots grandes (Empoderadas/Class) + 8 slots pequeños (Lesser "
+"Fierce/Arcane)"
+msgstr ""
+"4 large slots (Empowered/Class) + 8 small slots (Lesser Fierce/Arcane)"
+
+#: builder/templates/builder/build_detail.html:153
+#, python-format
+msgid "Ver qué gemas grandes puede usar %(cls)s"
+msgstr "See which large gems %(cls)s can use"
+
+#: builder/templates/builder/build_detail.html:156
+#, python-format
+msgid "Class Gem exclusiva de %(cls)s"
+msgstr "Class Gem exclusive to %(cls)s"
+
+#: builder/templates/builder/build_detail.html:158
+#, python-format
+msgid "%(cls)s no tiene una Class Gem exclusiva documentada todavía."
+msgstr "%(cls)s has no documented exclusive Class Gem yet."
+
+#: builder/templates/builder/build_detail.html:161
+msgid "Empowered universal (sirve para cualquier clase)"
+msgstr "Universal Empowered (works for any class)"
+
+#: builder/templates/builder/build_detail.html:165
+#, python-format
+msgid "Cualquier otra Class Gem (de otra clase) no se puede usar con %(cls)s."
+msgstr "Any other Class Gem (from another class) can’t be used with %(cls)s."
+
+#: builder/templates/builder/build_detail.html:182
+#: builder/templates/builder/build_detail.html:207
+msgid "Vacío"
+msgstr "Empty"
+
+#: builder/templates/builder/build_detail.html:217
+msgid "Sin elegir — posibles:"
+msgstr "Not chosen — possible:"
+
+#: builder/templates/builder/build_detail.html:219
+#: builder/templates/builder/build_detail.html:260
+#: builder/templates/builder/build_detail.html:291
+#: builder/templates/builder/build_detail.html:329
+#, python-format
+msgid "%(stat)s no le sirve a %(cls)s"
+msgstr "%(stat)s doesn’t help %(cls)s"
+
+#: builder/templates/builder/build_detail.html:232
+msgid "Rango"
+msgstr "Rank"
+
+#: builder/templates/builder/build_detail.html:240
+msgid "garantizado"
+msgstr "guaranteed"
+
+#: builder/templates/builder/build_detail.html:245
+#: builder/templates/builder/build_detail.html:287
+msgid "elegido"
+msgstr "chosen"
+
+#: builder/templates/builder/build_detail.html:248
+msgid "Sin stats elegidos todavía — posibles:"
+msgstr "No stats chosen yet — possible:"
+
+#: builder/templates/builder/build_detail.html:266
+msgid "Sin gemas configuradas."
+msgstr "No gems set up."
+
+#: builder/templates/builder/build_detail.html:283
+msgid "Fijo:"
+msgstr "Fixed:"
+
+#: builder/templates/builder/build_detail.html:294
+#, python-format
+msgid "Hidden Effects disponibles (%(cls)s):"
+msgstr "Available Hidden Effects (%(cls)s):"
+
+#: builder/templates/builder/build_detail.html:295
+msgid "Un anillo solo puede activar UNO a la vez con el Ring Polisher."
+msgstr "A ring can only activate ONE at a time with the Ring Polisher."
+
+#: builder/templates/builder/build_detail.html:307
+msgid "Sin equipo configurado."
+msgstr "No equipment set up."
+
+#: builder/templates/builder/build_detail.html:334
+msgid "Sin Ally, Emblem, Flask ni Banner elegidos."
+msgstr "No Ally, Emblem, Flask or Banner chosen."
+
+#: builder/templates/builder/build_detail.html:352
+msgid "¿Eliminar tu comentario?"
+msgstr "Delete your comment?"
+
+#: builder/templates/builder/build_detail.html:358
+msgid "¿Eliminar este comentario de tu build? Es una acción de moderación."
+msgstr "Delete this comment from your build? This is a moderation action."
+
+#: builder/templates/builder/build_detail.html:360
+msgid "Moderar: eliminar comentario ajeno de tu build"
+msgstr "Moderate: remove someone else’s comment from your build"
+
+#: builder/templates/builder/build_detail.html:360
+msgid "Moderar"
+msgstr "Moderate"
+
+#: builder/templates/builder/build_detail.html:365
+msgid "Todavía no hay comentarios. ¡Sé el primero!"
+msgstr "No comments yet. Be the first!"
+
+#: builder/templates/builder/build_detail.html:371
+msgid "Escribe un comentario..."
+msgstr "Write a comment..."
+
+#: builder/templates/builder/build_detail.html:372
+msgid "Comentar"
+msgstr "Comment"
+
+#: builder/templates/builder/build_detail.html:375
+#: builder/templates/registration/signup.html:11
+msgid "Inicia sesión"
+msgstr "Log in"
+
+#: builder/templates/builder/build_detail.html:375
+msgid "para comentar."
+msgstr "to comment."
+
+#: builder/templates/builder/build_detail.html:395
+#: builder/templates/builder/build_list.html:92
+#: builder/templates/builder/user_profile.html:45
+msgid "Votar a favor"
+msgstr "Upvote"
+
+#: builder/templates/builder/build_detail.html:400
+#: builder/templates/builder/build_list.html:97
+#: builder/templates/builder/user_profile.html:50
+msgid "Votar en contra"
+msgstr "Downvote"
+
+#: builder/templates/builder/build_detail.html:404
+#: builder/templates/builder/build_list.html:101
+#: builder/templates/builder/user_profile.html:54
+msgid "Quitar de favoritas"
+msgstr "Remove from favorites"
+
+#: builder/templates/builder/build_detail.html:404
+#: builder/templates/builder/build_list.html:101
+#: builder/templates/builder/user_profile.html:54
+msgid "Marcar como favorita"
+msgstr "Add to favorites"
+
+#: builder/templates/builder/build_detail.html:404
+msgid "Favorita"
+msgstr "Favorite"
+
+#: builder/templates/builder/build_detail.html:407
+msgid "Inicia sesión para votar"
+msgstr "Log in to vote"
+
+#: builder/templates/builder/build_detail.html:413
+#: builder/templates/builder/build_form.html:9
+#: builder/templates/builder/build_list.html:40
+msgid "Clase"
+msgstr "Class"
+
+#: builder/templates/builder/build_detail.html:418
+msgid "Clase secundaria"
+msgstr "Secondary class"
+
+#: builder/templates/builder/build_detail.html:435
+msgid "Autor"
+msgstr "Author"
+
+#: builder/templates/builder/build_detail.html:439
+msgid "Creada"
+msgstr "Created"
+
+#: builder/templates/builder/build_form.html:3
+#, python-format
+msgid "Editar %(name)s"
+msgstr "Edit %(name)s"
+
+#: builder/templates/builder/build_form.html:3
+msgid "Crear build"
+msgstr "Create build"
+
+#: builder/templates/builder/build_form.html:5
+#: builder/templates/builder/build_list.html:106
+msgid "Editar build"
+msgstr "Edit build"
+
+#: builder/templates/builder/build_form.html:5
+msgid "Crear nueva build"
+msgstr "Create a new build"
+
+#: builder/templates/builder/build_form.html:8
+msgid "Información"
+msgstr "Info"
+
+#: builder/templates/builder/build_form.html:18
+msgid "Nombre"
+msgstr "Name"
+
+#: builder/templates/builder/build_form.html:22
+msgid "Idioma de la guía"
+msgstr "Guide language"
+
+#: builder/templates/builder/build_form.html:29
+#: builder/templates/builder/suggestions.html:29
+msgid "Descripción"
+msgstr "Description"
+
+#: builder/templates/builder/build_form.html:44
+msgid "Clase principal"
+msgstr "Main class"
+
+#: builder/templates/builder/build_form.html:44
+msgid "¿Cómo funcionan las clases y subclases?"
+msgstr "How do classes and subclasses work?"
+
+#: builder/templates/builder/build_form.html:52
+msgid "Clase secundaria (opcional)"
+msgstr "Secondary class (optional)"
+
+#: builder/templates/builder/build_form.html:54
+#: builder/templates/builder/build_form.html:63
+#: builder/templates/builder/build_form.html:84
+#: builder/templates/builder/build_form.html:112
+msgid "Ninguna"
+msgstr "None"
+
+#: builder/templates/builder/build_form.html:61
+msgid "Subclase (pasiva de otra clase, opcional)"
+msgstr "Subclass (another class’s passive, optional)"
+
+#: builder/templates/builder/build_form.html:61
+msgid "¿Cómo funciona la subclase (Mastery)?"
+msgstr "How does the subclass (Mastery) work?"
+
+#: builder/templates/builder/build_form.html:74
+msgid "Gemas grandes (Empoderadas/Class) — 4 slots"
+msgstr "Large gems (Empowered/Class) — 4 slots"
+
+#: builder/templates/builder/build_form.html:74
+#: builder/templates/builder/build_form.html:101
+msgid "¿Cómo funcionan las gemas?"
+msgstr "How do gems work?"
+
+#: builder/templates/builder/build_form.html:76
+msgid ""
+"✓ = Class Gem de tu clase o Empowered universal (válida). ✗ = Class Gem de "
+"otra clase (no se puede usar de verdad, por eso aparece deshabilitada)."
+msgstr ""
+"✓ = Class Gem for your class or universal Empowered (valid). ✗ = Class Gem "
+"for another class (can’t actually be used, so it’s disabled)."
+
+#: builder/templates/builder/build_form.html:90
+#: builder/templates/builder/build_form.html:118
+msgid "rango"
+msgstr "rank"
+
+#: builder/templates/builder/build_form.html:101
+msgid "Gemas pequeñas (Lesser Fierce/Arcane) — 8 slots"
+msgstr "Small gems (Lesser Fierce/Arcane) — 8 slots"
+
+#: builder/templates/builder/build_form.html:103
+msgid ""
+"El 3er stat (Physical o Magic Damage) viene garantizado por ser "
+"Fierce/Arcane. Elige los otros 2."
+msgstr ""
+"The 3rd stat (Physical or Magic Damage) is guaranteed because the gem is "
+"Fierce/Arcane. Pick the other 2."
+
+#: builder/templates/builder/build_form.html:104
+msgid ""
+"✓ = combina con tu tipo de daño. — = sigue siendo válida, pero el 3er stat "
+"no te beneficia tanto."
+msgstr ""
+"✓ = matches your damage type. — = still valid, but the 3rd stat doesn’t help"
+" you as much."
+
+#: builder/templates/builder/build_form.html:141
+msgid ""
+"El primer stat (Max Health en Hat/Face, Physical o Magic Damage en Weapon) "
+"ya viene fijo según la pieza y tu clase — aquí eliges los stats variables."
+msgstr ""
+"The first stat (Max Health on Hat/Face, Physical or Magic Damage on Weapon) "
+"is fixed by the piece and your class — here you pick the variable stats."
+
+#: builder/templates/builder/build_form.html:142
+msgid "¿Cómo funciona el equipo?"
+msgstr "How does equipment work?"
+
+#: builder/templates/builder/build_form.html:193
+msgid "¿Cómo funcionan los anillos?"
+msgstr "How do rings work?"
+
+#: builder/templates/builder/build_form.html:195
+msgid "Signatory (de tu clase — da Light y Hidden Effects)"
+msgstr "Signatory (your class — gives Light and Hidden Effects)"
+
+#: builder/templates/builder/build_form.html:209
+msgid ""
+"Ally, Emblem, Flask y Banner: cada uno viene con sus propios stats fijos (no"
+" se eligen aquí, ya vienen del juego). En Banner, ✓ significa que combina "
+"con el tipo de daño de tu clase; — significa que da el tipo de daño "
+"contrario (Physical/Magic) y no te va a servir tanto."
+msgstr ""
+"Ally, Emblem, Flask and Banner: each one comes with its own fixed stats (you"
+" don’t pick them here, they come from the game). For Banners, ✓ means it "
+"matches your class’s damage type; — means it gives the opposite damage type "
+"(Physical/Magic) and won’t help you as much."
+
+#: builder/templates/builder/build_form.html:215
+#: builder/templates/builder/build_form.html:225
+#: builder/templates/builder/build_form.html:235
+#: builder/templates/builder/build_form.html:245
+msgid "Ninguno"
+msgstr "None"
+
+#: builder/templates/builder/build_form.html:255
+msgid "Hacer pública"
+msgstr "Make public"
+
+#: builder/templates/builder/build_form.html:256
+msgid "Guardar cambios"
+msgstr "Save changes"
+
+#: builder/templates/builder/build_form.html:256
+msgid "Guardar build"
+msgstr "Save build"
+
+#: builder/templates/builder/build_form.html:359
+#, python-brace-format
+msgid ""
+"Puedes usar la subclase de cualquier otra clase (no la tuya). Las marcadas "
+"con ✓ combinan con tu tipo de daño ({type} Damage); las demás siguen siendo "
+"válidas, solo que su bono no te beneficia tanto."
+msgstr ""
+"You can use the subclass of any other class (not your own). Those marked ✓ "
+"match your damage type ({type} Damage); the rest are still valid, their "
+"bonus just doesn’t help you as much."
+
+#: builder/templates/builder/build_list.html:3
+#: builder/templates/builder/build_list.html:8
+msgid "Mis favoritas"
+msgstr "My favorites"
+
+#: builder/templates/builder/build_list.html:3
+msgid "Explorar builds"
+msgstr "Browse builds"
+
+#: builder/templates/builder/build_list.html:9
+msgid "Las builds (propias o de otros jugadores) que marcaste con ♥."
+msgstr "Builds (yours or other players’) you marked with ♥."
+
+#: builder/templates/builder/build_list.html:12
+msgid "Todas tus builds, públicas y privadas, en un solo lugar."
+msgstr "All your builds, public and private, in one place."
+
+#: builder/templates/builder/build_list.html:14
+msgid "Arma tu build de Trove"
+msgstr "Build your Trove character"
+
+#: builder/templates/builder/build_list.html:15
+msgid ""
+"Explora builds de la comunidad o crea la tuya: clase, subclase, gemas y "
+"equipo, con las reglas reales del juego."
+msgstr ""
+"Browse community builds or make your own: class, subclass, gems and "
+"equipment, following the game’s real rules."
+
+#: builder/templates/builder/build_list.html:25
+#: builder/templates/builder/build_list.html:60
+#: builder/templates/builder/user_profile.html:18
+msgid "Ordenar"
+msgstr "Sort"
+
+#: builder/templates/builder/build_list.html:35
+msgid "Buscar"
+msgstr "Search"
+
+#: builder/templates/builder/build_list.html:37
+msgid "Nombre de la build..."
+msgstr "Build name..."
+
+#: builder/templates/builder/build_list.html:43
+msgid "Todas"
+msgstr "All"
+
+#: builder/templates/builder/build_list.html:50
+msgid "Tag"
+msgstr "Tag"
+
+#: builder/templates/builder/build_list.html:53
+msgid "Todos"
+msgstr "All"
+
+#: builder/templates/builder/build_list.html:69
+msgid "Filtrar"
+msgstr "Filter"
+
+#: builder/templates/builder/build_list.html:79
+#: builder/templates/builder/user_profile.html:33
+msgid "Privada"
+msgstr "Private"
+
+#: builder/templates/builder/build_list.html:111
+msgid "Eliminar build"
+msgstr "Delete build"
+
+#: builder/templates/builder/build_list.html:118
+msgid "Todavía no has marcado ninguna build como favorita."
+msgstr "You haven’t added any build to your favorites yet."
+
+#: builder/templates/builder/build_list.html:119
+#: builder/templates/builder/user_profile.html:62
+msgid "Todavía no has creado ninguna build."
+msgstr "You haven’t created any builds yet."
+
+#: builder/templates/builder/build_list.html:119
+#: builder/templates/builder/user_profile.html:62
+msgid "¡Crea la primera!"
+msgstr "Create the first one!"
+
+#: builder/templates/builder/build_list.html:120
+msgid "Todavía no hay builds públicas. ¡Sé el primero en crear una!"
+msgstr "There are no public builds yet. Be the first to create one!"
+
+#: builder/templates/builder/build_list.html:128
+#: builder/templates/builder/user_profile.html:71
+msgid "Anterior"
+msgstr "Previous"
+
+#: builder/templates/builder/build_list.html:130
+#: builder/templates/builder/user_profile.html:73
+#, python-format
+msgid "Página %(n)s de %(total)s"
+msgstr "Page %(n)s of %(total)s"
+
+#: builder/templates/builder/build_list.html:132
+#: builder/templates/builder/user_profile.html:75
+msgid "Siguiente"
+msgstr "Next"
+
+#: builder/templates/builder/class_detail.html:4
+#, python-format
+msgid ""
+"Guía de %(name)s en Trove: rol, tipo de daño, subclase (Mastery), gemas de "
+"clase y Efectos Ocultos de anillo."
+msgstr ""
+"%(name)s guide for Trove: role, damage type, subclass (Mastery), class gems "
+"and ring Hidden Effects."
+
+#: builder/templates/builder/class_detail.html:17
+msgid "Crear build con esta clase"
+msgstr "Create a build with this class"
+
+#: builder/templates/builder/class_detail.html:24
+msgid "Mastery (subclase propia)"
+msgstr "Mastery (own subclass)"
+
+#: builder/templates/builder/class_detail.html:29
+msgid "Bono de stat al equiparla como subclase:"
+msgstr "Stat bonus when equipped as a subclass:"
+
+#: builder/templates/builder/class_detail.html:32
+#, python-format
+msgid ""
+"Cualquier otra clase puede equipar \"%(sub)s\" como su subclase (Mastery) — "
+"%(cls)s en cambio, nunca puede usar la suya propia."
+msgstr ""
+"Any other class can equip \"%(sub)s\" as its subclass (Mastery) — %(cls)s, "
+"however, can never use its own."
+
+#: builder/templates/builder/class_detail.html:35
+msgid "Sin información de subclase cargada."
+msgstr "No subclass information loaded."
+
+#: builder/templates/builder/class_detail.html:40
+msgid "Gema de clase"
+msgstr "Class gem"
+
+#: builder/templates/builder/class_detail.html:49
+msgid "Sin gema de clase cargada todavía."
+msgstr "No class gem loaded yet."
+
+#: builder/templates/builder/class_detail.html:54
+msgid "Efectos Ocultos de anillo"
+msgstr "Ring Hidden Effects"
+
+#: builder/templates/builder/class_detail.html:56
+msgid ""
+"Se activan llevando un anillo Signatory o Mystic de esta clase a un Ring "
+"Polisher."
+msgstr ""
+"They’re activated by taking a Signatory or Mystic ring for this class to a "
+"Ring Polisher."
+
+#: builder/templates/builder/class_detail.html:67
+msgid "Sin Efectos Ocultos cargados para esta clase."
+msgstr "No Hidden Effects loaded for this class."
+
+#: builder/templates/builder/class_detail.html:72
+#, python-format
+msgid "Builds públicas recientes con %(name)s"
+msgstr "Recent public %(name)s builds"
+
+#: builder/templates/builder/class_detail.html:86
+msgid "Todavía no hay builds públicas con esta clase. ¡Crea la primera!"
+msgstr "There are no public builds for this class yet. Create the first one!"
+
+#: builder/templates/builder/class_list.html:4
+msgid ""
+"Catálogo de las clases jugables de Trove: rol, tipo de daño y subclase de "
+"cada una."
+msgstr ""
+"Catalog of Trove’s playable classes: role, damage type and subclass for "
+"each."
+
+#: builder/templates/builder/class_list.html:8
+msgid "Clases de Trove"
+msgstr "Trove classes"
+
+#: builder/templates/builder/class_list.html:9
+msgid ""
+"Todas las clases jugables, con su rol, tipo de daño y su Mastery (subclase)."
+" Haz clic en una para ver el detalle."
+msgstr ""
+"Every playable class, with its role, damage type and Mastery (subclass). "
+"Click one to see the details."
+
+#: builder/templates/builder/class_list.html:27
+msgid "Todavía no hay clases cargadas."
+msgstr "No classes loaded yet."
+
+#: builder/templates/builder/not_found.html:3
+#: builder/templates/builder/not_found.html:7
+msgid "No encontrado"
+msgstr "Not found"
+
+#: builder/templates/builder/not_found.html:8
+msgid "Esta build no existe, o es privada y no tienes permiso para verla."
+msgstr ""
+"This build doesn’t exist, or it’s private and you don’t have permission to "
+"see it."
+
+#: builder/templates/builder/not_found.html:9
+msgid "Volver a explorar builds"
+msgstr "Back to browsing builds"
+
+#: builder/templates/builder/notifications.html:8
+msgid "Avisos de comentarios, votos y parches que afectan tus builds."
+msgstr "Alerts about comments, votes and patches that affect your builds."
+
+#: builder/templates/builder/notifications.html:19
+msgid "Alguien"
+msgstr "Someone"
+
+#: builder/templates/builder/notifications.html:25
+msgid ""
+"Todavía no tienes notificaciones. Cuando alguien comente o vote una de tus "
+"builds, aparecerá aquí."
+msgstr ""
+"You don’t have any notifications yet. When someone comments on or votes for "
+"one of your builds, it will show up here."
+
+#: builder/templates/builder/suggestions.html:8
+msgid ""
+"¿Encontraste un bug o tienes una idea para mejorar el sitio? Cuéntanos."
+msgstr "Found a bug or have an idea to improve the site? Tell us."
+
+#: builder/templates/builder/suggestions.html:15
+msgid "Categoría"
+msgstr "Category"
+
+#: builder/templates/builder/suggestions.html:24
+msgid "Título"
+msgstr "Title"
+
+#: builder/templates/builder/suggestions.html:26
+msgid "Resumen corto..."
+msgstr "Short summary..."
+
+#: builder/templates/builder/suggestions.html:31
+msgid "Cuéntanos con detalle..."
+msgstr "Tell us the details..."
+
+#: builder/templates/builder/suggestions.html:34
+msgid "Enviar"
+msgstr "Send"
+
+#: builder/templates/builder/suggestions.html:39
+msgid "Tus sugerencias enviadas"
+msgstr "Your submitted suggestions"
+
+#: builder/templates/builder/suggestions.html:47
+msgid "Todavía no has enviado ninguna sugerencia."
+msgstr "You haven’t sent any suggestions yet."
+
+#: builder/templates/builder/user_profile.html:4
+#, python-format
+msgid "Builds de Trove creadas por %(name)s en Trove Builder."
+msgstr "Trove builds made by %(name)s on Trove Builder."
+
+#: builder/templates/builder/user_profile.html:11
+#, python-format
+msgid "%(counter)s build pública"
+msgid_plural "%(counter)s builds públicas"
+msgstr[0] "%(counter)s public build"
+msgstr[1] "%(counter)s public builds"
+
+#: builder/templates/builder/user_profile.html:12
+#, python-format
+msgid "en Trove Builder desde %(date)s"
+msgstr "on Trove Builder since %(date)s"
+
+#: builder/templates/builder/user_profile.html:63
+#, python-format
+msgid "%(name)s todavía no tiene builds públicas."
+msgstr "%(name)s has no public builds yet."
+
+#: builder/templates/registration/login.html:9
+msgid "Entrar"
+msgstr "Log in"
+
+#: builder/templates/registration/login.html:11
+msgid "¿No tienes cuenta?"
+msgstr "Don’t have an account?"
+
+#: builder/templates/registration/login.html:11
+msgid "Crear una"
+msgstr "Create one"
+
+#: builder/templates/registration/login.html:12
+msgid "¿Olvidaste tu contraseña?"
+msgstr "Forgot your password?"
+
+#: builder/templates/registration/password_reset_complete.html:3
+msgid "Contraseña actualizada"
+msgstr "Password updated"
+
+#: builder/templates/registration/password_reset_complete.html:5
+msgid "¡Contraseña actualizada!"
+msgstr "Password updated!"
+
+#: builder/templates/registration/password_reset_complete.html:6
+msgid ""
+"Tu contraseña se cambió correctamente. Ya puedes iniciar sesión con la "
+"nueva."
+msgstr "Your password was changed. You can now log in with the new one."
+
+#: builder/templates/registration/password_reset_confirm.html:3
+#: builder/templates/registration/password_reset_confirm.html:5
+msgid "Elegir nueva contraseña"
+msgstr "Choose a new password"
+
+#: builder/templates/registration/password_reset_confirm.html:10
+msgid "Cambiar contraseña"
+msgstr "Change password"
+
+#: builder/templates/registration/password_reset_confirm.html:13
+msgid ""
+"Este link para restablecer tu contraseña ya no es válido — puede que ya se "
+"haya usado, o haya expirado. Pide uno nuevo."
+msgstr ""
+"This password reset link is no longer valid — it may have been used already "
+"or expired. Request a new one."
+
+#: builder/templates/registration/password_reset_confirm.html:14
+msgid "Pedir un link nuevo"
+msgstr "Request a new link"
+
+#: builder/templates/registration/password_reset_done.html:3
+#: builder/templates/registration/password_reset_done.html:5
+msgid "Revisa tu email"
+msgstr "Check your email"
+
+#: builder/templates/registration/password_reset_done.html:6
+msgid ""
+"Si existe una cuenta con ese email, te enviamos un link para restablecer tu "
+"contraseña. Revisa tu bandeja de entrada (y la carpeta de spam, por si "
+"acaso)."
+msgstr ""
+"If an account exists with that email, we’ve sent you a link to reset your "
+"password. Check your inbox (and your spam folder, just in case)."
+
+#: builder/templates/registration/password_reset_done.html:7
+#: builder/templates/registration/password_reset_form.html:12
+msgid "Volver a iniciar sesión"
+msgstr "Back to log in"
+
+#: builder/templates/registration/password_reset_email.html:1
+#, python-format
+msgid "Hola %(name)s,"
+msgstr "Hi %(name)s,"
+
+#: builder/templates/registration/password_reset_email.html:3
+msgid ""
+"Recibimos una solicitud para restablecer tu contraseña en Trove Builder."
+msgstr "We received a request to reset your Trove Builder password."
+
+#: builder/templates/registration/password_reset_email.html:4
+msgid "Si fuiste tú, entra a este link para elegir una nueva contraseña:"
+msgstr "If it was you, open this link to choose a new password:"
+
+#: builder/templates/registration/password_reset_email.html:8
+msgid ""
+"Si no pediste esto, puedes ignorar este correo — tu contraseña no va a "
+"cambiar."
+msgstr ""
+"If you didn’t ask for this, you can ignore this email — your password won’t "
+"change."
+
+#: builder/templates/registration/password_reset_form.html:3
+#: builder/templates/registration/password_reset_form.html:5
+msgid "Recuperar contraseña"
+msgstr "Reset password"
+
+#: builder/templates/registration/password_reset_form.html:6
+msgid ""
+"Escribe el email con el que te registraste y te enviaremos un link para "
+"restablecer tu contraseña."
+msgstr ""
+"Enter the email you signed up with and we’ll send you a link to reset your "
+"password."
+
+#: builder/templates/registration/password_reset_form.html:10
+msgid "Enviar link"
+msgstr "Send link"
+
+#: builder/templates/registration/signup.html:11
+msgid "¿Ya tienes cuenta?"
+msgstr "Already have an account?"
+
+#: builder/views.py:47
+msgid "Espera unos segundos antes de crear otra cuenta."
+msgstr "Wait a few seconds before creating another account."
+
+#: builder/views.py:51
+#, python-format
+msgid "¡Bienvenido, %(name)s! Tu cuenta se creó correctamente."
+msgstr "Welcome, %(name)s! Your account was created."
+
+#: builder/views.py:68
+msgid "Más recientes"
+msgstr "Newest"
+
+#: builder/views.py:69
+msgid "Más votadas"
+msgstr "Most voted"
+
+#: builder/views.py:236
+msgid "No puedes marcar como favorita una build privada ajena."
+msgstr "You can’t favorite someone else’s private build."
+
+#: builder/views.py:355
+msgid "Completa el título y la descripción."
+msgstr "Fill in the title and description."
+
+#: builder/views.py:357
+msgid "Espera unos segundos antes de enviar otra sugerencia."
+msgstr "Wait a few seconds before sending another suggestion."
+
+#: builder/views.py:363
+msgid "¡Gracias! Tu sugerencia fue enviada."
+msgstr "Thanks! Your suggestion was sent."
+
+#: builder/views.py:457
+msgid "Estás votando muy rápido, espera un segundo."
+msgstr "You’re voting too fast, wait a second."
+
+#: builder/views.py:499
+msgid "No puedes duplicar una build privada ajena."
+msgstr "You can’t copy someone else’s private build."
+
+#: builder/views.py:504
+#, python-format
+msgid "%(name)s (copia)"
+msgstr "%(name)s (copy)"
+
+#: builder/views.py:538
+#, python-format
+msgid ""
+"Se creó una copia privada: «%(name)s». Edítala y publícala cuando quieras."
+msgstr ""
+"A private copy was created: “%(name)s”. Edit it and publish it whenever you "
+"want."
+
+#: builder/views.py:551
+msgid "Solo el autor puede confirmar su build."
+msgstr "Only the author can confirm their build."
+
+#: builder/views.py:557
+#, python-format
+msgid "Listo: «%(name)s» quedó marcada como al día en %(version)s."
+msgstr "Done: “%(name)s” is now marked as up to date for %(version)s."
+
+#: builder/views.py:561
+#, python-format
+msgid "Listo: «%(name)s» quedó marcada como al día."
+msgstr "Done: “%(name)s” is now marked as up to date."
+
+#: builder/views.py:576
+msgid "No puedes eliminar la build de otro usuario."
+msgstr "You can’t delete another user’s build."
+
+#: builder/views.py:582
+#, python-format
+msgid "Build «%(name)s» eliminada."
+msgstr "Build “%(name)s” deleted."
+
+#: builder/views.py:592
+msgid "No puedes comentar en una build privada ajena."
+msgstr "You can’t comment on someone else’s private build."
+
+#: builder/views.py:602
+msgid "Espera unos segundos antes de comentar de nuevo."
+msgstr "Wait a few seconds before commenting again."
+
+#: builder/views.py:622
+msgid "No puedes eliminar este comentario."
+msgstr "You can’t delete this comment."
+
+#: builder/views.py:678
+#, python-format
+msgid ""
+"%(gem)s es una Class Gem exclusiva de %(owner)s, no se puede usar con "
+"%(cls)s."
+msgstr ""
+"%(gem)s is a Class Gem exclusive to %(owner)s; it can’t be used with "
+"%(cls)s."
+
+#: builder/views.py:690
+#, python-format
+msgid ""
+"%(gem)s es una gema menor (pequeña) y no cabe en un slot grande "
+"(Empoderado)."
+msgstr ""
+"%(gem)s is a lesser (small) gem and doesn’t fit in a large (Empowered) slot."
+
+#: builder/views.py:695
+#, python-format
+msgid ""
+"%(gem)s es una gema Empoderada/Class (grande) y no cabe en un slot pequeño "
+"(Lesser)."
+msgstr ""
+"%(gem)s is an Empowered/Class (large) gem and doesn’t fit in a small "
+"(Lesser) slot."
+
+#: builder/views.py:708
+#, python-format
+msgid "%(gem)s: el stat «%(stat)s» no es válido para una gema menor."
+msgstr "%(gem)s: the stat “%(stat)s” isn’t valid for a lesser gem."
+
+#: builder/views.py:712
+#, python-format
+msgid "%(gem)s: no puedes elegir el mismo stat dos veces en la misma gema."
+msgstr "%(gem)s: you can’t pick the same stat twice on one gem."
+
+#: builder/views.py:737
+#, python-format
+msgid ""
+"No se encontró la configuración de equipo para %(slot)s (tier «%(tier)s»)."
+msgstr "No equipment configuration found for %(slot)s (tier “%(tier)s”)."
+
+#: builder/views.py:746
+#, python-format
+msgid "%(slot)s: «%(stat)s» no es un stat válido para esta pieza."
+msgstr "%(slot)s: “%(stat)s” isn’t a valid stat for this piece."
+
+#: builder/views.py:750
+#, python-format
+msgid "%(slot)s: no puedes elegir el mismo stat dos veces."
+msgstr "%(slot)s: you can’t pick the same stat twice."
+
+#: builder/views.py:766
+#, python-format
+msgid "El %(kind)s elegido no es válido."
+msgstr "The chosen %(kind)s isn’t valid."
+
+#: builder/views.py:820
+msgid "Espera unos segundos antes de crear otra build."
+msgstr "Wait a few seconds before creating another build."
+
+#: builder/views.py:832 builder/views.py:883
+#, python-format
+msgid ""
+"No puedes usar «%(sub)s» como subclase: es la pasiva de tu propia clase "
+"principal (%(cls)s)."
+msgstr ""
+"You can’t use “%(sub)s” as a subclass: it’s the passive of your own main "
+"class (%(cls)s)."
+
+#: builder/views.py:872
+msgid "No puedes editar la build de otro usuario."
+msgstr "You can’t edit another user’s build."
+
+#: builder/views.py:905
+msgid "Build actualizada."
+msgstr "Build updated."

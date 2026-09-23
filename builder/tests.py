@@ -466,3 +466,42 @@ class PatchReviewTests(BaseBuilderTestCase):
         self.assertEqual(response.status_code, 302)
         self.affected_build.refresh_from_db()
         self.assertEqual(self.affected_build.status, "review")
+
+
+class LanguageTests(BaseBuilderTestCase):
+    """Selector ES/EN: español por defecto, inglés al elegirlo o por el navegador."""
+
+    def test_spanish_is_default(self):
+        response = self.client.get(reverse("builder:build_list"))
+        self.assertContains(response, "Arma tu build de Trove")
+        self.assertContains(response, '<html lang="es">')
+
+    def test_browser_in_english_gets_english(self):
+        response = self.client.get(reverse("builder:build_list"), HTTP_ACCEPT_LANGUAGE="en-US,en;q=0.9")
+        self.assertContains(response, "Build your Trove character")
+        self.assertContains(response, '<html lang="en">')
+
+    def test_switcher_changes_language_and_remembers_it(self):
+        response = self.client.post(
+            reverse("set_language"), {"language": "en", "next": reverse("builder:class_list")},
+        )
+        self.assertRedirects(response, reverse("builder:class_list"), fetch_redirect_response=False)
+        response = self.client.get(reverse("builder:class_list"))
+        self.assertContains(response, "Trove classes")
+        self.client.post(reverse("set_language"), {"language": "es", "next": "/"})
+        self.assertContains(self.client.get(reverse("builder:class_list")), "Clases de Trove")
+
+    def test_how_it_works_has_english_version(self):
+        self.client.post(reverse("set_language"), {"language": "en", "next": "/"})
+        self.assertContains(self.client.get(reverse("builder:how_it_works")), "How Trove Builder works")
+
+    def test_messages_are_translated(self):
+        self.client.post(reverse("set_language"), {"language": "en", "next": "/"})
+        build = self.make_build(owner=self.owner, name="Mi build")
+        self.client.login(username="owner", password="testpass123")
+        response = self.client.post(
+            reverse("builder:build_edit", args=[build.slug]),
+            {"name": "Mi build", "primary_class": self.game_class.id}, follow=True,
+        )
+        self.assertContains(response, "Build updated.")
+        self.assertContains(response, "Up to date")

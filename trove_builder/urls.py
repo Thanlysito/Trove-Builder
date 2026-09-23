@@ -20,6 +20,8 @@ from builder import views as builder_views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    # /i18n/setlang/ — lo usa el selector ES/EN de la barra de navegacion.
+    path('i18n/', include('django.conf.urls.i18n')),
     path('accounts/signup/', builder_views.signup, name='signup'),
     path('accounts/', include('django.contrib.auth.urls')),
     path('', include('builder.urls')),

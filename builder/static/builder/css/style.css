@@ -1763,3 +1763,28 @@ body.build-detail-page main {
 @media (prefers-reduced-motion: reduce) {
   * { transition: none !important; animation: none !important; }
 }
+
+/* ---------- selector de idioma ES / EN ---------- */
+
+.lang-switch {
+  display: inline-flex;
+  margin: 0;
+  border: 1px solid var(--border-strong);
+  border-radius: 8px;
+  overflow: hidden;
+}
+.lang-switch button {
+  background: transparent;
+  border: 0;
+  color: var(--text-muted);
+  font: inherit;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  padding: 6px 9px;
+  cursor: pointer;
+}
+.lang-switch button + button { border-left: 1px solid var(--border-strong); }
+.lang-switch button:hover { color: var(--text); background: var(--surface-hover); }
+.lang-switch button.active { color: var(--text); background: var(--accent-dim); }
+.lang-switch button:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }

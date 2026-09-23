@@ -1,10 +1,11 @@
 {% extends "builder/base.html" %}
-{% block title %}Notificaciones | Trove Builder{% endblock %}
+{% load i18n %}
+{% block title %}{% translate "Notificaciones" %} | Trove Builder{% endblock %}
 {% block content %}
 
 <section class="hero">
-    <h1>Notificaciones</h1>
-    <p>Avisos de comentarios, votos y parches que afectan tus builds.</p>
+    <h1>{% translate "Notificaciones" %}</h1>
+    <p>{% translate "Avisos de comentarios, votos y parches que afectan tus builds." %}</p>
 </section>
 
 <div class="build-grid">
@@ -15,13 +16,13 @@
             ⚠ {{ n.get_verb_display }}
             {% else %}
             {% if n.verb == "comment" %}💬{% else %}▲{% endif %}
-            {{ n.actor.username|default:"Alguien" }} {{ n.get_verb_display }}
+            {% if n.actor %}{{ n.actor.username }}{% else %}{% translate "Alguien" %}{% endif %} {{ n.get_verb_display }}
             {% endif %}
         </span>
         <span class="meta">"{{ n.build.name }}" — {{ n.created_at|date:"d/m/Y H:i" }}</span>
     </a>
     {% empty %}
-    <div class="empty-state">Todavía no tienes notificaciones. Cuando alguien comente o vote una de tus builds, aparecerá aquí.</div>
+    <div class="empty-state">{% translate "Todavía no tienes notificaciones. Cuando alguien comente o vote una de tus builds, aparecerá aquí." %}</div>
     {% endfor %}
 </div>
 {% endblock %}

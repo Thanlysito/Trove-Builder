@@ -2,6 +2,7 @@ from django.db import models, transaction
 from django.contrib.auth.models import User
 from django.urls import reverse
 from django.utils import timezone
+from django.utils.translation import gettext_lazy as _
 import uuid
 
 
@@ -137,10 +138,10 @@ class Subclass(models.Model):
 class Gem(models.Model):
     """Una gema equipable, con stats que escalan por rango."""
     TYPE_CHOICES = [
-        ("offense", "Ofensiva"),
-        ("defense", "Defensiva"),
-        ("utility", "Utilidad"),
-        ("class", "Gema de Clase"),
+        ("offense", _("Ofensiva")),
+        ("defense", _("Defensiva")),
+        ("utility", _("Utilidad")),
+        ("class", _("Gema de Clase")),
     ]
     ELEMENT_CHOICES = [
         ("water", "Water"),
@@ -149,9 +150,9 @@ class Gem(models.Model):
         ("cosmic", "Cosmic"),
     ]
     DAMAGE_VARIANT_CHOICES = [
-        ("fierce", "Fierce (solo Physical Damage)"),
-        ("arcane", "Arcane (solo Magic Damage)"),
-        ("universal", "Universal (Empowered/Class, cualquier tipo de daño)"),
+        ("fierce", _("Fierce (solo Physical Damage)")),
+        ("arcane", _("Arcane (solo Magic Damage)")),
+        ("universal", _("Universal (Empowered/Class, cualquier tipo de daño)")),
     ]
     name = models.CharField(max_length=80, unique=True)
     slug = models.SlugField(max_length=80, unique=True)
@@ -203,7 +204,7 @@ class EquipmentSlot(models.Model):
         ("ring", "Ring"),
     ]
     TIER_CHOICES = [
-        ("non_crystal", "No-Crystal (Shadow/Radiant/Stellar)"),
+        ("non_crystal", _("No-Crystal (Shadow/Radiant/Stellar)")),
         ("crystal", "Crystal"),
         ("signatory", "Signatory"),
         ("wisdom", "Wisdom"),
@@ -263,9 +264,9 @@ class RingHiddenEffect(models.Model):
     efecto de esquive compartido ("Rushed Escape"/"Casual Escape").
     """
     AVAILABILITY_CHOICES = [
-        ("signatory_or_mystic", "Signatory o Mystic Ring"),
-        ("mystic_only", "Solo en Mystic Ring"),
-        ("shared_dodge", "Efecto compartido de esquive (Mystic Ring)"),
+        ("signatory_or_mystic", _("Signatory o Mystic Ring")),
+        ("mystic_only", _("Solo en Mystic Ring")),
+        ("shared_dodge", _("Efecto compartido de esquive (Mystic Ring)")),
     ]
     game_class = models.ForeignKey(
         GameClass, on_delete=models.CASCADE, related_name="ring_hidden_effects",
@@ -313,8 +314,8 @@ class Dragon(models.Model):
     Fuente: PDF "Guía de Power Rank" (Mystic Cave / zexy1).
     """
     DRAGON_TYPE_CHOICES = [
-        ("normal", "Dragón normal"),
-        ("primordial", "Dragón Primordial (de gemas)"),
+        ("normal", _("Dragón normal")),
+        ("primordial", _("Dragón Primordial (de gemas)")),
     ]
     name = models.CharField(max_length=100, unique=True)
     slug = models.SlugField(max_length=100, unique=True)
@@ -340,7 +341,7 @@ class Build(models.Model):
         ("pvp", "PvP"),
         ("dungeon", "Dungeon"),
         ("farming", "Farming"),
-        ("beginner", "Beginner Friendly"),
+        ("beginner", _("Beginner Friendly")),
         ("endgame", "Endgame"),
         ("tank", "Tank"),
         ("dps", "DPS"),
@@ -391,9 +392,9 @@ class Build(models.Model):
 
     # --- Builds vivos (Fase 0 del plan) ---
     STATUS_CHOICES = [
-        ("current", "Al día"),
-        ("review", "Revisar"),
-        ("stale", "Obsoleto"),
+        ("current", _("Al día")),
+        ("review", _("Revisar")),
+        ("stale", _("Obsoleto")),
     ]
     LANGUAGE_CHOICES = [
         ("es", "Español"),
@@ -621,9 +622,9 @@ class Notification(models.Model):
     build.
     """
     VERB_CHOICES = [
-        ("comment", "comentó en tu build"),
-        ("vote", "votó tu build"),
-        ("review", "El nuevo parche puede afectar tu build"),
+        ("comment", _("comentó en tu build")),
+        ("vote", _("votó tu build")),
+        ("review", _("El nuevo parche puede afectar tu build")),
     ]
     recipient = models.ForeignKey(User, on_delete=models.CASCADE, related_name="notifications")
     actor = models.ForeignKey(User, on_delete=models.CASCADE, related_name="+", null=True, blank=True)
@@ -643,14 +644,14 @@ class Notification(models.Model):
 class Suggestion(models.Model):
     """Sugerencia o reporte de bug que un usuario manda sobre el sitio."""
     CATEGORY_CHOICES = [
-        ("bug", "Reportar un problema"),
-        ("idea", "Sugerir una idea"),
-        ("other", "Otro"),
+        ("bug", _("Reportar un problema")),
+        ("idea", _("Sugerir una idea")),
+        ("other", _("Otro")),
     ]
     STATUS_CHOICES = [
-        ("new", "Nueva"),
-        ("reviewed", "Revisada"),
-        ("done", "Hecha"),
+        ("new", _("Nueva")),
+        ("reviewed", _("Revisada")),
+        ("done", _("Hecha")),
     ]
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="suggestions")
     category = models.CharField(max_length=10, choices=CATEGORY_CHOICES, default="idea")

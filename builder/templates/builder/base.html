@@ -1,15 +1,15 @@
-{% load static builder_extras %}
+{% load static i18n builder_extras %}
 <!DOCTYPE html>
-<html lang="es">
+<html lang="{{ LANGUAGE_CODE|default:'es' }}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{% block title %}Trove Builder{% endblock %}</title>
-    <meta name="description" content="{% block meta_description %}Arma y comparte builds de personaje para Trove: clases, gemas, equipo, anillos y dragones.{% endblock %}">
+    <meta name="description" content="{% block meta_description %}{% translate "Arma y comparte builds de personaje para Trove: clases, gemas, equipo, anillos y dragones." %}{% endblock %}">
     <meta property="og:type" content="website">
     <meta property="og:site_name" content="Trove Builder">
     <meta property="og:title" content="{% block og_title %}Trove Builder{% endblock %}">
-    <meta property="og:description" content="{% block og_description %}Arma y comparte builds de personaje para Trove: clases, gemas, equipo, anillos y dragones.{% endblock %}">
+    <meta property="og:description" content="{% block og_description %}{% translate "Arma y comparte builds de personaje para Trove: clases, gemas, equipo, anillos y dragones." %}{% endblock %}">
     <meta property="og:url" content="{{ request.build_absolute_uri }}">
     {% block og_image %}{% endblock %}
     <meta name="twitter:card" content="summary">
@@ -28,30 +28,37 @@
     <header class="site-header">
         <a class="logo" href="/"><img src="{% static 'builder/img/logo.png' %}" alt="Trove Builder" class="logo-img"> Trove Builder</a>
         <nav class="site-nav">
-            <a href="{% url 'builder:class_list' %}" class="nav-link">Clases</a>
-            <a href="{% url 'builder:how_it_works' %}" class="nav-link">Cómo funciona</a>
-            <a href="{% url 'builder:suggestions' %}" class="nav-link">💡 Sugerencias</a>
+            <a href="{% url 'builder:class_list' %}" class="nav-link">{% translate "Clases" %}</a>
+            <a href="{% url 'builder:how_it_works' %}" class="nav-link">{% translate "Cómo funciona" %}</a>
+            <a href="{% url 'builder:suggestions' %}" class="nav-link">💡 {% translate "Sugerencias" %}</a>
 
             {% if user.is_authenticated %}
-                <a href="{% url 'builder:build_create' %}" class="btn">+ Nueva build</a>
+                <a href="{% url 'builder:build_create' %}" class="btn">+ {% translate "Nueva build" %}</a>
                 {% unread_notification_count user as unread_count %}
-                <a href="{% url 'builder:notifications' %}" class="nav-bell" title="Notificaciones">
+                <a href="{% url 'builder:notifications' %}" class="nav-bell" title="{% translate "Notificaciones" %}">
                     🔔{% if unread_count %}<span class="nav-bell-badge">{{ unread_count }}</span>{% endif %}
                 </a>
                 <details class="account-menu">
                     <summary>👤 {{ user.username }}</summary>
                     <div class="account-menu-panel">
-                        <a href="{% url 'builder:user_profile' user.username %}">Mi perfil</a>
-                        <a href="{% url 'builder:my_builds' %}">Mis builds</a>
-                        <a href="{% url 'builder:my_favorites' %}">Favoritas</a>
+                        <a href="{% url 'builder:user_profile' user.username %}">{% translate "Mi perfil" %}</a>
+                        <a href="{% url 'builder:my_builds' %}">{% translate "Mis builds" %}</a>
+                        <a href="{% url 'builder:my_favorites' %}">{% translate "Favoritas" %}</a>
                         <hr>
-                        <form method="post" action="{% url 'logout' %}">{% csrf_token %}<button type="submit">Salir</button></form>
+                        <form method="post" action="{% url 'logout' %}">{% csrf_token %}<button type="submit">{% translate "Salir" %}</button></form>
                     </div>
                 </details>
             {% else %}
-                <a href="{% url 'signup' %}" class="btn">Crear cuenta</a>
-                <a href="{% url 'login' %}" class="nav-link">Iniciar sesión</a>
+                <a href="{% url 'signup' %}" class="btn">{% translate "Crear cuenta" %}</a>
+                <a href="{% url 'login' %}" class="nav-link">{% translate "Iniciar sesión" %}</a>
             {% endif %}
+
+            <form action="{% url 'set_language' %}" method="post" class="lang-switch" aria-label="{% translate "Idioma" %}">
+                {% csrf_token %}
+                <input type="hidden" name="next" value="{{ request.get_full_path }}">
+                <button type="submit" name="language" value="es" class="{% if LANGUAGE_CODE == 'es' %}active{% endif %}" title="Español">ES</button>
+                <button type="submit" name="language" value="en" class="{% if LANGUAGE_CODE == 'en' %}active{% endif %}" title="English">EN</button>
+            </form>
         </nav>
     </header>
     <main>
@@ -65,7 +72,7 @@
         {% block content %}{% endblock %}
     </main>
     <footer class="site-footer">
-        Trove Builder — proyecto de comunidad, no afiliado a Gamigo / Trion Worlds.
+        Trove Builder — {% translate "proyecto de comunidad, no afiliado a Gamigo / Trion Worlds." %}
     </footer>
     <script>
     document.addEventListener('click', function (e) {

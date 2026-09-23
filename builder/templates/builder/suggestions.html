@@ -1,17 +1,18 @@
 {% extends "builder/base.html" %}
-{% block title %}Sugerencias | Trove Builder{% endblock %}
+{% load i18n %}
+{% block title %}{% translate "Sugerencias" %} | Trove Builder{% endblock %}
 {% block content %}
 
 <section class="hero">
-    <h1>Sugerencias</h1>
-    <p>¿Encontraste un bug o tienes una idea para mejorar el sitio? Cuéntanos.</p>
+    <h1>{% translate "Sugerencias" %}</h1>
+    <p>{% translate "¿Encontraste un bug o tienes una idea para mejorar el sitio? Cuéntanos." %}</p>
 </section>
 
 <div class="explorer">
     <aside class="filters">
         <form method="post">
             {% csrf_token %}
-            <h3>Categoría</h3>
+            <h3>{% translate "Categoría" %}</h3>
             <label>
                 <select name="category">
                     {% for key, label in category_choices %}
@@ -20,22 +21,22 @@
                 </select>
             </label>
 
-            <h3>Título</h3>
+            <h3>{% translate "Título" %}</h3>
             <label>
-                <input type="text" name="title" maxlength="120" placeholder="Resumen corto..." required>
+                <input type="text" name="title" maxlength="120" placeholder="{% translate "Resumen corto..." %}" required>
             </label>
 
-            <h3>Descripción</h3>
+            <h3>{% translate "Descripción" %}</h3>
             <label>
-                <textarea name="description" maxlength="2000" placeholder="Cuéntanos con detalle..." required></textarea>
+                <textarea name="description" maxlength="2000" placeholder="{% translate "Cuéntanos con detalle..." %}" required></textarea>
             </label>
 
-            <button type="submit" class="btn" style="width:100%">Enviar</button>
+            <button type="submit" class="btn" style="width:100%">{% translate "Enviar" %}</button>
         </form>
     </aside>
 
     <section>
-        <h3 style="margin-top:0;">Tus sugerencias enviadas</h3>
+        <h3 style="margin-top:0;">{% translate "Tus sugerencias enviadas" %}</h3>
         <div class="build-grid">
             {% for s in my_suggestions %}
             <div class="build-card">
@@ -43,7 +44,7 @@
                 <span class="meta">{{ s.get_category_display }} — {{ s.created_at|date:"d/m/Y" }}</span>
             </div>
             {% empty %}
-            <div class="empty-state">Todavía no has enviado ninguna sugerencia.</div>
+            <div class="empty-state">{% translate "Todavía no has enviado ninguna sugerencia." %}</div>
             {% endfor %}
         </div>
     </section>

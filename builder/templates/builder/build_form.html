@@ -1,32 +1,32 @@
 {% extends "builder/base.html" %}
-{% load builder_extras %}
-{% block title %}{% if editing %}Editar {{ build.name }}{% else %}Crear build{% endif %} — Trove Builder{% endblock %}
+{% load i18n builder_extras %}
+{% block title %}{% if editing %}{% blocktranslate with name=build.name %}Editar {{ name }}{% endblocktranslate %}{% else %}{% translate "Crear build" %}{% endif %} — Trove Builder{% endblock %}
 {% block content %}
-<h1>{% if editing %}Editar build{% else %}Crear nueva build{% endif %}</h1>
+<h1>{% if editing %}{% translate "Editar build" %}{% else %}{% translate "Crear nueva build" %}{% endif %}</h1>
 
 <div class="form-tabs">
-    <button type="button" class="form-tab-btn active" data-tab="tab-info">📝 Información</button>
-    <button type="button" class="form-tab-btn" data-tab="tab-clase">⚔ Clase</button>
-    <button type="button" class="form-tab-btn" data-tab="tab-gemas">💎 Gemas</button>
-    <button type="button" class="form-tab-btn" data-tab="tab-equipo">🛡 Equipo</button>
+    <button type="button" class="form-tab-btn active" data-tab="tab-info">📝 {% translate "Información" %}</button>
+    <button type="button" class="form-tab-btn" data-tab="tab-clase">⚔ {% translate "Clase" %}</button>
+    <button type="button" class="form-tab-btn" data-tab="tab-gemas">💎 {% translate "Gemas" %}</button>
+    <button type="button" class="form-tab-btn" data-tab="tab-equipo">🛡 {% translate "Equipo" %}</button>
 </div>
 
 <form method="post" action="{% if editing %}{% url 'builder:build_edit' build.slug %}{% else %}{% url 'builder:build_create' %}{% endif %}" id="build-form">
     {% csrf_token %}
 
     <div class="form-tab-panel active" id="tab-info">
-        <label>Nombre
+        <label>{% translate "Nombre" %}
             <input type="text" name="name" required value="{% if editing %}{{ build.name }}{% endif %}" style="width:100%; margin-top:5px;">
         </label>
 
-        <label>Idioma de la guía
+        <label>{% translate "Idioma de la guía" %}
             <select name="language" id="build-language" style="margin-top:5px;">
                 <option value="es" {% if not editing or build.language == "es" %}selected{% endif %}>Español</option>
                 <option value="en" {% if editing and build.language == "en" %}selected{% endif %}>English</option>
             </select>
         </label>
 
-        <label>Descripción
+        <label>{% translate "Descripción" %}
             <textarea name="description">{% if editing %}{{ build.description }}{% endif %}</textarea>
         </label>
 
@@ -41,7 +41,7 @@
     </div>
 
     <div class="form-tab-panel" id="tab-clase">
-        <label>Clase principal <a href="{% url 'builder:how_it_works' %}#clases-subclases" class="help-link" title="¿Cómo funcionan las clases y subclases?" target="_blank">?</a>
+        <label>{% translate "Clase principal" %} <a href="{% url 'builder:how_it_works' %}#clases-subclases" class="help-link" title="{% translate "¿Cómo funcionan las clases y subclases?" %}" target="_blank">?</a>
             <select name="primary_class" id="id_primary_class" required style="width:100%; margin-top:5px;">
                 {% for c in classes %}
                 <option value="{{ c.id }}" data-damage-type="{{ c.damage_type }}" {% if editing and build.primary_class_id == c.id %}selected{% endif %}>{{ c.name }}</option>
@@ -49,18 +49,18 @@
             </select>
         </label>
 
-        <label>Clase secundaria (opcional)
+        <label>{% translate "Clase secundaria (opcional)" %}
             <select name="secondary_class" style="width:100%; margin-top:5px;">
-                <option value="">-- Ninguna --</option>
+                <option value="">-- {% translate "Ninguna" %} --</option>
                 {% for c in classes %}
                 <option value="{{ c.id }}" {% if editing and build.secondary_class_id == c.id %}selected{% endif %}>{{ c.name }}</option>
                 {% endfor %}
             </select>
         </label>
 
-        <label>Subclase (pasiva de otra clase, opcional) <a href="{% url 'builder:how_it_works' %}#clases-subclases" class="help-link" title="¿Cómo funciona la subclase (Mastery)?" target="_blank">?</a>
+        <label>{% translate "Subclase (pasiva de otra clase, opcional)" %} <a href="{% url 'builder:how_it_works' %}#clases-subclases" class="help-link" title="{% translate "¿Cómo funciona la subclase (Mastery)?" %}" target="_blank">?</a>
             <select name="subclass" id="id_subclass" style="width:100%; margin-top:5px;">
-                <option value="">-- Ninguna --</option>
+                <option value="">-- {% translate "Ninguna" %} --</option>
                 {% for s in subclasses %}
                 <option value="{{ s.id }}" data-class="{{ s.game_class_id }}" data-bonus-damage-type="{{ s|subclass_bonus_damage_type }}" {% if editing and build.subclass_id == s.id %}selected{% endif %}>{{ s.name }} ({{ s.game_class.name }} — {{ s.bonus_stat }})</option>
                 {% endfor %}
@@ -71,10 +71,9 @@
 
     <div class="form-tab-panel" id="tab-gemas">
         <fieldset>
-            <legend>Gemas grandes (Empoderadas/Class) — 4 slots <a href="{% url 'builder:how_it_works' %}#gemas" class="help-link" title="¿Cómo funcionan las gemas?" target="_blank">?</a></legend>
+            <legend>{% translate "Gemas grandes (Empoderadas/Class) — 4 slots" %} <a href="{% url 'builder:how_it_works' %}#gemas" class="help-link" title="{% translate "¿Cómo funcionan las gemas?" %}" target="_blank">?</a></legend>
             <p class="tab-hint">
-                ✓ = Class Gem de tu clase o Empowered universal (válida). ✗ = Class Gem de
-                otra clase (no se puede usar de verdad, por eso aparece deshabilitada).
+                {% translate "✓ = Class Gem de tu clase o Empowered universal (válida). ✗ = Class Gem de otra clase (no se puede usar de verdad, por eso aparece deshabilitada)." %}
             </p>
             <div class="slot-grid">
                 {% for i in big_slot_numbers %}
@@ -82,13 +81,13 @@
                 <div class="slot-card">
                     <div class="slot-card-head"><span class="slot-badge">Slot {{ i }}</span></div>
                     <select name="gem_id" class="big-gem-select">
-                        <option value="">-- Ninguna --</option>
+                        <option value="">-- {% translate "Ninguna" %} --</option>
                         {% for g in big_gems %}
                         <option value="{{ g.id }}" data-restricted-class="{{ g.restricted_to_class_id|default:'' }}" {% if eg and eg.gem_id == g.id %}selected{% endif %}>{{ g.name }}{% if g.restricted_to_class %} ({{ g.restricted_to_class.name }} only){% endif %}</option>
                         {% endfor %}
                     </select>
                     <div class="slot-card-row cols-1">
-                        <input type="number" name="gem_rank" min="1" max="30" value="{% if eg %}{{ eg.rank }}{% else %}1{% endif %}" placeholder="rango">
+                        <input type="number" name="gem_rank" min="1" max="30" value="{% if eg %}{{ eg.rank }}{% else %}1{% endif %}" placeholder="{% translate "rango" %}">
                     </div>
                     <input type="hidden" name="gem_stat1" value="">
                     <input type="hidden" name="gem_stat2" value="">
@@ -99,10 +98,10 @@
         </fieldset>
 
         <fieldset style="margin-top:18px;">
-            <legend>Gemas pequeñas (Lesser Fierce/Arcane) — 8 slots <a href="{% url 'builder:how_it_works' %}#gemas" class="help-link" title="¿Cómo funcionan las gemas?" target="_blank">?</a></legend>
+            <legend>{% translate "Gemas pequeñas (Lesser Fierce/Arcane) — 8 slots" %} <a href="{% url 'builder:how_it_works' %}#gemas" class="help-link" title="{% translate "¿Cómo funcionan las gemas?" %}" target="_blank">?</a></legend>
             <p class="tab-hint">
-                El 3er stat (Physical o Magic Damage) viene garantizado por ser Fierce/Arcane. Elige los otros 2.
-                ✓ = combina con tu tipo de daño. — = sigue siendo válida, pero el 3er stat no te beneficia tanto.
+                {% translate "El 3er stat (Physical o Magic Damage) viene garantizado por ser Fierce/Arcane. Elige los otros 2." %}
+                {% translate "✓ = combina con tu tipo de daño. — = sigue siendo válida, pero el 3er stat no te beneficia tanto." %}
             </p>
             <div class="slot-grid">
                 {% for i in small_slot_numbers %}
@@ -110,13 +109,13 @@
                 <div class="slot-card">
                     <div class="slot-card-head"><span class="slot-badge">Slot {{ i }}</span></div>
                     <select name="gem_id" class="small-gem-select" id="small_gem_{{ i }}">
-                        <option value="">-- Ninguna --</option>
+                        <option value="">-- {% translate "Ninguna" %} --</option>
                         {% for g in small_gems %}
                         <option value="{{ g.id }}" data-variant="{{ g.damage_variant }}" {% if eg and eg.gem_id == g.id %}selected{% endif %}>{{ g.name }}</option>
                         {% endfor %}
                     </select>
                     <div class="slot-card-row cols-3">
-                        <input type="number" name="gem_rank" min="1" max="30" value="{% if eg %}{{ eg.rank }}{% else %}1{% endif %}" placeholder="rango">
+                        <input type="number" name="gem_rank" min="1" max="30" value="{% if eg %}{{ eg.rank }}{% else %}1{% endif %}" placeholder="{% translate "rango" %}">
                         <select name="gem_stat1">
                             <option value="">-- Stat 1 --</option>
                             {% for s in lesser_gem_stat_options %}
@@ -139,9 +138,8 @@
 
     <div class="form-tab-panel" id="tab-equipo">
         <p class="tab-hint" style="margin-top:0;">
-            El primer stat (Max Health en Hat/Face, Physical o Magic Damage en Weapon) ya viene
-            fijo según la pieza y tu clase — aquí eliges los stats variables.
-            <a href="{% url 'builder:how_it_works' %}#equipo" class="help-link" title="¿Cómo funciona el equipo?" target="_blank">?</a>
+            {% translate "El primer stat (Max Health en Hat/Face, Physical o Magic Damage en Weapon) ya viene fijo según la pieza y tu clase — aquí eliges los stats variables." %}
+            <a href="{% url 'builder:how_it_works' %}#equipo" class="help-link" title="{% translate "¿Cómo funciona el equipo?" %}" target="_blank">?</a>
         </p>
 
         <div class="slot-grid slot-grid-equip">
@@ -192,9 +190,9 @@
 
             {% with eq=existing_equipment|dict_get:"ring" %}
             <div class="slot-card">
-                <div class="slot-card-head">Ring <a href="{% url 'builder:how_it_works' %}#anillos" class="help-link" title="¿Cómo funcionan los anillos?" target="_blank">?</a></div>
+                <div class="slot-card-head">Ring <a href="{% url 'builder:how_it_works' %}#anillos" class="help-link" title="{% translate "¿Cómo funcionan los anillos?" %}" target="_blank">?</a></div>
                 <select name="equip_tier_ring" class="equip-tier" data-slot="ring">
-                    <option value="signatory" {% if eq and eq.slot.tier == "signatory" %}selected{% endif %}>Signatory (de tu clase — da Light y Hidden Effects)</option>
+                    <option value="signatory" {% if eq and eq.slot.tier == "signatory" %}selected{% endif %}>{% translate "Signatory (de tu clase — da Light y Hidden Effects)" %}</option>
                     <option value="wisdom" {% if eq and eq.slot.tier == "wisdom" %}selected{% endif %}>Wisdom (Magic Damage)</option>
                     <option value="power" {% if eq and eq.slot.tier == "power" %}selected{% endif %}>Power (Physical Damage)</option>
                     <option value="vitality" {% if eq and eq.slot.tier == "vitality" %}selected{% endif %}>Vitality (Max Health)</option>
@@ -208,16 +206,13 @@
         </div>
 
         <p class="tab-hint">
-            Ally, Emblem, Flask y Banner: cada uno viene con sus propios stats fijos
-            (no se eligen aquí, ya vienen del juego). En Banner, ✓ significa que
-            combina con el damage_type de tu clase; — significa que da el tipo de
-            daño contrario (Physical/Magic) y no te va a servir tanto.
+            {% translate "Ally, Emblem, Flask y Banner: cada uno viene con sus propios stats fijos (no se eligen aquí, ya vienen del juego). En Banner, ✓ significa que combina con el tipo de daño de tu clase; — significa que da el tipo de daño contrario (Physical/Magic) y no te va a servir tanto." %}
         </p>
         <div class="slot-grid slot-grid-equip">
             <div class="slot-card">
                 <div class="slot-card-head">Ally</div>
                 <select name="ally_id" id="id_ally">
-                    <option value="">-- Ninguno --</option>
+                    <option value="">-- {% translate "Ninguno" %} --</option>
                     {% for a in allies %}
                     <option value="{{ a.id }}" {% if build and build.ally_id == a.id %}selected{% endif %}>{{ a.name }}</option>
                     {% endfor %}
@@ -227,7 +222,7 @@
             <div class="slot-card">
                 <div class="slot-card-head">Emblem</div>
                 <select name="emblem_id" id="id_emblem">
-                    <option value="">-- Ninguno --</option>
+                    <option value="">-- {% translate "Ninguno" %} --</option>
                     {% for e in emblems %}
                     <option value="{{ e.id }}" {% if build and build.emblem_id == e.id %}selected{% endif %}>{{ e.name }}</option>
                     {% endfor %}
@@ -237,7 +232,7 @@
             <div class="slot-card">
                 <div class="slot-card-head">Flask</div>
                 <select name="flask_id" id="id_flask">
-                    <option value="">-- Ninguno --</option>
+                    <option value="">-- {% translate "Ninguno" %} --</option>
                     {% for f in flasks %}
                     <option value="{{ f.id }}" {% if build and build.flask_id == f.id %}selected{% endif %}>{{ f.name }}</option>
                     {% endfor %}
@@ -247,7 +242,7 @@
             <div class="slot-card">
                 <div class="slot-card-head">Banner</div>
                 <select name="banner_id" id="id_banner" class="banner-select">
-                    <option value="">-- Ninguno --</option>
+                    <option value="">-- {% translate "Ninguno" %} --</option>
                     {% for b in banners %}
                     <option value="{{ b.id }}" data-damage="{{ b.damage_type_hint }}" {% if build and build.banner_id == b.id %}selected{% endif %}>{{ b.name }}</option>
                     {% endfor %}
@@ -257,8 +252,8 @@
     </div>
 
     <div class="form-footer">
-        <label class="tag-checkbox"><input type="checkbox" name="is_public" {% if not editing or build.is_public %}checked{% endif %}> Hacer pública</label>
-        <button type="submit" class="btn">{% if editing %}Guardar cambios{% else %}Guardar build{% endif %}</button>
+        <label class="tag-checkbox"><input type="checkbox" name="is_public" {% if not editing or build.is_public %}checked{% endif %}> {% translate "Hacer pública" %}</label>
+        <button type="submit" class="btn">{% if editing %}{% translate "Guardar cambios" %}{% else %}{% translate "Guardar build" %}{% endif %}</button>
     </div>
 </form>
 
@@ -361,7 +356,8 @@
             subclassSelect.value = '';
         }
 
-        hint.textContent = 'Puedes usar la subclase de cualquier otra clase (no la tuya). Las marcadas con ✓ combinan con tu tipo de daño (' + (currentDamageType === 'physical' ? 'Physical' : 'Magic') + ' Damage); las demás siguen siendo válidas, solo que su bono no te beneficia tanto.';
+        var hintTemplate = '{% filter escapejs %}{% translate "Puedes usar la subclase de cualquier otra clase (no la tuya). Las marcadas con ✓ combinan con tu tipo de daño ({type} Damage); las demás siguen siendo válidas, solo que su bono no te beneficia tanto." %}{% endfilter %}';
+        hint.textContent = hintTemplate.replace('{type}', currentDamageType === 'physical' ? 'Physical' : 'Magic');
     }
 
     classSelect.addEventListener('change', filterSubclasses);
