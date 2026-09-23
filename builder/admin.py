@@ -12,6 +12,36 @@ class GameVersionAdmin(admin.ModelAdmin):
     list_filter = ("is_current",)
     search_fields = ("name",)
     filter_horizontal = ("affected_classes",)
+    actions = ["publish_version"]
+
+    def save_model(self, request, obj, form, change):
+        # Si en este guardado se marco "is_current", se publica despues de
+        # guardar las clases afectadas (save_related), no antes.
+        request._publish_version_after_save = "is_current" in form.changed_data and obj.is_current
+        super().save_model(request, obj, form, change)
+
+    def save_related(self, request, form, formsets, change):
+        super().save_related(request, form, formsets, change)
+        if getattr(request, "_publish_version_after_save", False):
+            flagged = form.instance.publish()
+            self.message_user(
+                request,
+                f"{form.instance.name} es ahora la versión actual. "
+                f"{flagged} build(s) quedaron para revisar y sus autores fueron notificados.",
+            )
+
+    @admin.action(description="Publicar como versión actual (marca builds afectadas)")
+    def publish_version(self, request, queryset):
+        if queryset.count() != 1:
+            self.message_user(request, "Elige exactamente una versión.", level="error")
+            return
+        version = queryset.first()
+        flagged = version.publish()
+        self.message_user(
+            request,
+            f"{version.name} es ahora la versión actual. "
+            f"{flagged} build(s) quedaron para revisar y sus autores fueron notificados.",
+        )
 
     @admin.display(description="Builds atadas")
     def build_count(self, obj):

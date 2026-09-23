@@ -720,6 +720,17 @@ form p, form > label { margin-bottom: 14px; display: block; }
 .status-chip.status-review { border-color: var(--gold); color: var(--gold); }
 .status-chip.status-stale { border-color: var(--el-fire); color: var(--el-fire); }
 .remix-credit { font-size: 0.85rem; color: var(--text-muted); }
+.review-callout {
+  margin-top: 12px;
+  padding: 12px 14px;
+  border: 1px solid var(--gold);
+  border-radius: 8px;
+  background: var(--surface-raised);
+  max-width: 640px;
+}
+.review-callout p { margin: 0 0 10px; color: var(--text); font-size: 0.9rem; }
+.review-callout-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.review-callout-actions form { margin: 0; }
 .remix-list { margin-top: 18px; }
 .remix-list h3 { font-size: 1rem; margin: 0 0 6px; }
 .remix-list ul { margin: 0; padding-left: 18px; }

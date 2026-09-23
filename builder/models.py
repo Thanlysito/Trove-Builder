@@ -38,6 +38,32 @@ class GameVersion(models.Model):
     def current(cls):
         return cls.objects.filter(is_current=True).first()
 
+    def publish(self):
+        """
+        Convierte esta version en la actual y pone al dia las builds:
+        - Builds cuya clase principal esta en `affected_classes` -> "Revisar",
+          y su autor recibe una notificacion.
+        - El resto de builds al dia -> pasan a esta version sin tocar nada,
+          porque el parche no las afecta.
+        Devuelve cuantas builds quedaron para revisar.
+        """
+        with transaction.atomic():
+            self.is_current = True
+            self.save()
+            affected_ids = list(self.affected_classes.values_list("id", flat=True))
+            older = Build.objects.exclude(game_version=self)
+            to_review = older.filter(primary_class_id__in=affected_ids, status="current")
+            flagged = list(to_review.values_list("id", "owner_id"))
+            to_review.update(status="review")
+            older.exclude(primary_class_id__in=affected_ids).filter(
+                status="current"
+            ).update(game_version=self)
+            Notification.objects.bulk_create([
+                Notification(recipient_id=owner_id, verb="review", build_id=build_id)
+                for build_id, owner_id in flagged
+            ])
+        return len(flagged)
+
 
 class GameClass(models.Model):
     """Una clase jugable de Trove (Knight, Pirate Captain, Dracolyte, etc.)"""
@@ -458,6 +484,20 @@ class Build(models.Model):
             data=data,
         )
 
+    def confirm_up_to_date(self):
+        """El autor confirma (sin editar) que la build sigue funcionando en la
+        version actual del juego. No crea revision nueva: la build no cambio."""
+        now = timezone.now()
+        version = GameVersion.current()
+        Build.objects.filter(pk=self.pk).update(
+            game_version=version, status="current", verified_at=now,
+        )
+        self.game_version, self.status, self.verified_at = version, "current", now
+
+    @property
+    def needs_review(self):
+        return self.status != "current" or self.is_outdated_version
+
     @property
     def is_outdated_version(self):
         """True si la build se confirmo en una version anterior a la actual."""
@@ -583,6 +623,7 @@ class Notification(models.Model):
     VERB_CHOICES = [
         ("comment", "comentó en tu build"),
         ("vote", "votó tu build"),
+        ("review", "El nuevo parche puede afectar tu build"),
     ]
     recipient = models.ForeignKey(User, on_delete=models.CASCADE, related_name="notifications")
     actor = models.ForeignKey(User, on_delete=models.CASCADE, related_name="+", null=True, blank=True)

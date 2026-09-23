@@ -377,3 +377,92 @@ class BuildSlugTests(BaseBuilderTestCase):
         self.assertEqual(build.slug, f"build-{self.owner.id}")
         response = self.client.get(build.get_absolute_url())
         self.assertEqual(response.status_code, 200)
+
+
+class PatchReviewTests(BaseBuilderTestCase):
+    """Fase 1: publicar un parche marca builds afectadas y el autor confirma."""
+
+    def setUp(self):
+        super().setUp()
+        import datetime
+        from .models import GameVersion
+        GameVersion.objects.all().delete()
+        self.old = GameVersion.objects.create(
+            name="Viejo", released_on=datetime.date(2026, 1, 1), is_current=True,
+        )
+        self.other_class = GameClass.objects.create(
+            name="Otra Clase", slug="otra-clase", primary_role="tank", damage_type="magic",
+        )
+        self.affected_build = self.make_build(name="Afectada")
+        self.safe_build = self.make_build(name="Segura")
+        self.safe_build.primary_class = self.other_class
+        self.safe_build.save()
+        Build.objects.update(game_version=self.old, status="current")
+        self.new = GameVersion.objects.create(name="Nuevo", released_on=datetime.date(2026, 9, 15))
+        self.new.affected_classes.add(self.game_class)
+
+    def test_publish_flags_only_affected_builds_and_notifies(self):
+        from .models import Notification, GameVersion
+        flagged = self.new.publish()
+        self.assertEqual(flagged, 1)
+        self.affected_build.refresh_from_db()
+        self.safe_build.refresh_from_db()
+        self.assertEqual(self.affected_build.status, "review")
+        self.assertEqual(self.affected_build.game_version, self.old)
+        self.assertEqual(self.safe_build.status, "current")
+        self.assertEqual(self.safe_build.game_version, self.new)
+        self.assertEqual(GameVersion.current(), self.new)
+        note = Notification.objects.get(verb="review")
+        self.assertEqual(note.recipient, self.owner)
+        self.assertEqual(note.build, self.affected_build)
+
+    def test_publish_twice_does_not_duplicate_notifications(self):
+        from .models import Notification
+        self.new.publish()
+        self.new.publish()
+        self.assertEqual(Notification.objects.filter(verb="review").count(), 1)
+
+    def test_owner_sees_callout_and_confirms(self):
+        self.new.publish()
+        self.client.login(username="owner", password="testpass123")
+        url = reverse("builder:build_detail", args=[self.affected_build.slug])
+        self.assertContains(self.client.get(url), "Sigue al día")
+        response = self.client.post(
+            reverse("builder:build_confirm_current", args=[self.affected_build.slug])
+        )
+        self.assertEqual(response.status_code, 302)
+        self.affected_build.refresh_from_db()
+        self.assertEqual(self.affected_build.status, "current")
+        self.assertEqual(self.affected_build.game_version, self.new)
+        self.assertEqual(self.affected_build.revisions.count(), 0)  # confirmar no crea revision
+        self.assertNotContains(self.client.get(url), "review-callout")
+
+    def test_other_user_cannot_confirm_or_see_callout(self):
+        self.new.publish()
+        self.client.login(username="other", password="testpass123")
+        url = reverse("builder:build_detail", args=[self.affected_build.slug])
+        self.assertNotContains(self.client.get(url), "review-callout")
+        response = self.client.post(
+            reverse("builder:build_confirm_current", args=[self.affected_build.slug])
+        )
+        self.assertEqual(response.status_code, 403)
+        self.affected_build.refresh_from_db()
+        self.assertEqual(self.affected_build.status, "review")
+
+    def test_review_notification_page_renders(self):
+        self.new.publish()
+        self.client.login(username="owner", password="testpass123")
+        response = self.client.get(reverse("builder:notifications"))
+        self.assertContains(response, "El nuevo parche puede afectar tu build")
+
+    def test_admin_marking_current_publishes(self):
+        User.objects.filter(pk=self.owner.pk).update(is_staff=True, is_superuser=True)
+        self.client.login(username="owner", password="testpass123")
+        url = reverse("admin:builder_gameversion_change", args=[self.new.pk])
+        response = self.client.post(url, {
+            "name": "Nuevo", "released_on": "2026-09-15", "patch_notes_url": "",
+            "is_current": "on", "affected_classes": [self.game_class.pk], "notes": "",
+        })
+        self.assertEqual(response.status_code, 302)
+        self.affected_build.refresh_from_db()
+        self.assertEqual(self.affected_build.status, "review")

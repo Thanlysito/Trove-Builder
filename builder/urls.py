@@ -20,6 +20,7 @@ urlpatterns = [
     path("<slug:slug>/vote/", views.build_vote, name="build_vote"),
     path("<slug:slug>/favorite/", views.build_favorite_toggle, name="build_favorite_toggle"),
     path("<slug:slug>/delete/", views.build_delete, name="build_delete"),
+    path("<slug:slug>/confirmar/", views.build_confirm_current, name="build_confirm_current"),
     path("<slug:slug>/edit/", views.build_edit, name="build_edit"),
     path("<slug:slug>/duplicate/", views.build_duplicate, name="build_duplicate"),
     path("<slug:slug>/comment/", views.build_add_comment, name="build_add_comment"),

@@ -536,6 +536,24 @@ def build_duplicate(request, slug):
 
 
 @login_required
+def build_confirm_current(request, slug):
+    """
+    El dueño confirma que su build sigue funcionando en la version actual
+    del juego, sin tener que editarla. Solo el dueño, y solo por POST.
+    """
+    build = get_object_or_404(Build, slug=slug)
+    if build.owner_id != request.user.id:
+        return HttpResponseForbidden("Solo el autor puede confirmar su build.")
+    if request.method != "POST":
+        return redirect(build.get_absolute_url())
+
+    build.confirm_up_to_date()
+    version = f" en {build.game_version.name}" if build.game_version else ""
+    messages.success(request, f"Listo: '{build.name}' quedó marcada como al día{version}.")
+    return redirect(build.get_absolute_url())
+
+
+@login_required
 def build_delete(request, slug):
     """
     Elimina una build. SOLO el dueño puede borrarla — esto se valida en el

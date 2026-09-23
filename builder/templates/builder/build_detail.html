@@ -33,6 +33,18 @@
             {% endif %}
         </div>
         {% for t in build.tags %}<span class="chip">{{ t }}</span>{% endfor %}
+        {% if build.needs_review and build.owner_id == user.id %}
+        <div class="review-callout">
+            <p><strong>Un parche nuevo puede haber cambiado esta build.</strong> Revísala: si sigue funcionando igual, confírmalo; si no, edítala.</p>
+            <div class="review-callout-actions">
+                <form method="post" action="{% url 'builder:build_confirm_current' build.slug %}">
+                    {% csrf_token %}
+                    <button type="submit" class="btn">✓ Sigue al día</button>
+                </form>
+                <a href="{% url 'builder:build_edit' build.slug %}" class="btn btn-ghost">✎ Editar</a>
+            </div>
+        </div>
+        {% endif %}
     </div>
     <div>
         <button type="button" class="btn btn-ghost share-btn" id="share-btn" title="Copiar enlace de esta build">🔗 Compartir</button>
