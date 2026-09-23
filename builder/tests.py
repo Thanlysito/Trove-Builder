@@ -353,3 +353,27 @@ class BuildVersioningTests(BaseBuilderTestCase):
         self.assertContains(response, "Original")
         response = self.client.get(reverse("builder:build_detail", args=[build.slug]))
         self.assertContains(response, "Remixes de la comunidad")
+
+
+class BuildSlugTests(BaseBuilderTestCase):
+    def _create(self, name):
+        self.client.login(username="owner", password="testpass123")
+        return self.client.post(reverse("builder:build_create"), {
+            "name": name, "primary_class": self.game_class.id, "is_public": "on",
+        })
+
+    def test_same_user_same_name_gets_unique_slugs(self):
+        first = self._create("Mi build")
+        cache.clear()  # el antispam bloquea 2 creaciones en menos de 3 segundos
+        second = self._create("Mi build")
+        self.assertEqual(first.status_code, 302)
+        self.assertEqual(second.status_code, 302)
+        slugs = sorted(Build.objects.filter(owner=self.owner).values_list("slug", flat=True))
+        self.assertEqual(slugs, [f"mi-build-{self.owner.id}", f"mi-build-{self.owner.id}-2"])
+
+    def test_name_without_letters_still_gets_slug(self):
+        self._create("???")
+        build = Build.objects.get(owner=self.owner)
+        self.assertEqual(build.slug, f"build-{self.owner.id}")
+        response = self.client.get(build.get_absolute_url())
+        self.assertEqual(response.status_code, 200)

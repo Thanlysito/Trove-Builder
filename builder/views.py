@@ -497,12 +497,7 @@ def build_duplicate(request, slug):
         return redirect(source.get_absolute_url())
 
     base_name = f"{source.name} (copia)"
-    base_slug = slugify(base_name) + "-" + str(request.user.id)
-    new_slug = base_slug
-    suffix = 2
-    while Build.objects.filter(slug=new_slug).exists():
-        new_slug = f"{base_slug}-{suffix}"
-        suffix += 1
+    new_slug = _unique_build_slug(base_name, request.user.id)
 
     new_build = Build.objects.create(
         owner=request.user,
@@ -607,6 +602,20 @@ def build_delete_comment(request, comment_id):
 
 
 EQUIPMENT_SLOT_TYPES = ["weapon", "hat", "face", "ring"]
+
+
+def _unique_build_slug(name, user_id):
+    """
+    Slug unico para una build nueva: "<nombre>-<id del usuario>", y si ya
+    existe (el mismo usuario reusando un nombre) agrega -2, -3, ... Si el
+    nombre no tiene letras ni numeros (ej: "???"), usa "build" como base.
+    """
+    base = f"{slugify(name) or 'build'}-{user_id}"
+    slug, suffix = base, 2
+    while Build.objects.filter(slug=slug).exists():
+        slug = f"{base}-{suffix}"
+        suffix += 1
+    return slug
 
 
 def _language_from_post(request):
@@ -802,7 +811,7 @@ def build_create(request):
         build = Build.objects.create(
             owner=request.user,
             name=name,
-            slug=slugify(name) + "-" + str(request.user.id),
+            slug=_unique_build_slug(name, request.user.id),
             primary_class_id=primary_class_id,
             secondary_class_id=request.POST.get("secondary_class") or None,
             subclass_id=subclass_id,
