@@ -16,6 +16,22 @@
             {% if build.secondary_class %}/ {{ build.secondary_class.name }}{% endif %}
             {% if build.subclass %}— subclase: {{ build.subclass.name }} ({{ build.subclass.game_class.name }}){% endif %}
         </div>
+        <div class="build-status-line">
+            <span class="chip status-chip status-{{ build.status }}{% if build.is_outdated_version %} status-review{% endif %}"
+                  title="{% if build.verified_at %}Confirmada el {{ build.verified_at|date:'d/m/Y' }}{% endif %}">
+                {% if build.is_outdated_version %}Revisar{% else %}{{ build.get_status_display }}{% endif %}
+                {% if build.game_version %}· {{ build.game_version.name }}{% endif %}
+            </span>
+            <span class="chip">{{ build.get_language_display }}</span>
+            {% if revision_count > 1 %}<span class="chip">{{ revision_count }} revisiones</span>{% endif %}
+            {% if build.remixed_from %}
+                {% if build.remixed_from.is_public or build.remixed_from.owner_id == user.id %}
+                <span class="remix-credit">Remix de <a href="{{ build.remixed_from.get_absolute_url }}">{{ build.remixed_from.name }}</a> por <a href="{% url 'builder:user_profile' build.remixed_from.owner.username %}">{{ build.remixed_from.owner.username }}</a></span>
+                {% else %}
+                <span class="remix-credit">Remix de una build de {{ build.remixed_from.owner.username }}</span>
+                {% endif %}
+            {% endif %}
+        </div>
         {% for t in build.tags %}<span class="chip">{{ t }}</span>{% endfor %}
     </div>
     <div>
@@ -39,7 +55,7 @@
             <div class="ql-sidebar-actions">
                 <form method="post" action="{% url 'builder:build_duplicate' build.slug %}">
                     {% csrf_token %}
-                    <button type="submit" class="btn-ghost btn" title="Crea una copia editable en tu cuenta">⧉ Duplicar</button>
+                    <button type="submit" class="btn-ghost btn" title="Crea una copia editable en tu cuenta, con crédito a esta build">⧉ Remezclar</button>
                 </form>
                 {% if build.owner_id == user.id %}
                 <a href="{% url 'builder:build_edit' build.slug %}" class="btn-ghost btn">✎ Editar</a>
@@ -105,6 +121,17 @@
                 {% endif %}
 
                 <p><small>Creado por <a href="{% url 'builder:user_profile' build.owner.username %}">{{ build.owner.username }}</a> el {{ build.created_at|date:"d/m/Y" }}</small></p>
+
+                {% if remixes %}
+                <section class="remix-list">
+                    <h3>Remixes de la comunidad</h3>
+                    <ul>
+                        {% for r in remixes %}
+                        <li><a href="{{ r.get_absolute_url }}">{{ r.name }}</a> <small>por {{ r.owner.username }}</small></li>
+                        {% endfor %}
+                    </ul>
+                </section>
+                {% endif %}
             </div>
 
             <div class="form-tab-panel" id="tab-gemas">

@@ -1,7 +1,42 @@
-from django.db import models
+from django.db import models, transaction
 from django.contrib.auth.models import User
 from django.urls import reverse
+from django.utils import timezone
 import uuid
+
+
+class GameVersion(models.Model):
+    """
+    Una version (parche) del juego, ej: "Rematch". Cada build queda atada a la
+    version en la que se creo o se confirmo por ultima vez, para saber si
+    sigue al dia cuando sale un parche nuevo (pilar "builds vivos" del plan).
+    Solo UNA version puede ser la actual (is_current) a la vez.
+    """
+    name = models.CharField(max_length=80, unique=True)
+    released_on = models.DateField()
+    patch_notes_url = models.URLField(blank=True)
+    is_current = models.BooleanField(default=False)
+    affected_classes = models.ManyToManyField(
+        "GameClass", blank=True, related_name="affected_by_versions",
+        help_text="Clases que este parche cambio. Sus builds se marcaran para revisar."
+    )
+    notes = models.TextField(blank=True)
+
+    class Meta:
+        ordering = ["-released_on"]
+
+    def __str__(self):
+        return self.name
+
+    def save(self, *args, **kwargs):
+        with transaction.atomic():
+            if self.is_current:
+                GameVersion.objects.exclude(pk=self.pk).filter(is_current=True).update(is_current=False)
+            super().save(*args, **kwargs)
+
+    @classmethod
+    def current(cls):
+        return cls.objects.filter(is_current=True).first()
 
 
 class GameClass(models.Model):
@@ -328,6 +363,33 @@ class Build(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     share_token = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
 
+    # --- Builds vivos (Fase 0 del plan) ---
+    STATUS_CHOICES = [
+        ("current", "Al día"),
+        ("review", "Revisar"),
+        ("stale", "Obsoleto"),
+    ]
+    LANGUAGE_CHOICES = [
+        ("es", "Español"),
+        ("en", "English"),
+    ]
+    game_version = models.ForeignKey(
+        GameVersion, on_delete=models.SET_NULL, null=True, blank=True,
+        related_name="builds",
+        help_text="Version del juego en la que se creo o confirmo por ultima vez."
+    )
+    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default="current")
+    verified_at = models.DateTimeField(
+        null=True, blank=True,
+        help_text="Ultima vez que el autor guardo o confirmo que la build sigue al dia."
+    )
+    remixed_from = models.ForeignKey(
+        "self", on_delete=models.SET_NULL, null=True, blank=True,
+        related_name="remixes",
+        help_text="Build original de la que se hizo este remix (se conserva el credito)."
+    )
+    language = models.CharField(max_length=2, choices=LANGUAGE_CHOICES, default="es")
+
     class Meta:
         ordering = ["-created_at"]
 
@@ -336,6 +398,71 @@ class Build(models.Model):
 
     def get_absolute_url(self):
         return reverse("builder:build_detail", kwargs={"slug": self.slug})
+
+    def snapshot(self):
+        """
+        Foto completa del estado actual de la build, en JSON. Usa slugs y
+        nombres en vez de ids para que siga siendo legible aunque se
+        re-siembren los datos del juego.
+        """
+        return {
+            "name": self.name,
+            "primary_class": self.primary_class.slug if self.primary_class_id else None,
+            "secondary_class": self.secondary_class.slug if self.secondary_class_id else None,
+            "subclass": self.subclass.name if self.subclass_id else None,
+            "description": self.description,
+            "tags": list(self.tags or []),
+            "language": self.language,
+            "gems": [
+                {"slot": bg.slot_number, "gem": bg.gem.slug, "rank": bg.rank,
+                 "stats": list(bg.chosen_stats or [])}
+                for bg in self.gem_slots.select_related("gem").order_by("slot_number")
+            ],
+            "equipment": [
+                {"slot_type": eq.slot.slot_type, "tier": eq.slot.tier,
+                 "stats": list(eq.chosen_stats or [])}
+                for eq in self.equipment.select_related("slot").order_by("slot__slot_type")
+            ],
+            "items": {
+                kind: (getattr(self, kind).source_path if getattr(self, f"{kind}_id") else None)
+                for kind in ("ally", "emblem", "flask", "banner")
+            },
+        }
+
+    def latest_revision(self):
+        return self.revisions.order_by("-number").first()
+
+    def record_revision(self, author=None):
+        """
+        Guarda una revision nueva SOLO si la build cambio desde la ultima.
+        Tambien deja la build atada a la version actual del juego y al dia.
+        Devuelve la revision creada, o None si no hubo cambios.
+        """
+        data = self.snapshot()
+        version = GameVersion.current()
+        last = self.latest_revision()
+        now = timezone.now()
+
+        Build.objects.filter(pk=self.pk).update(
+            game_version=version, status="current", verified_at=now,
+        )
+        self.game_version, self.status, self.verified_at = version, "current", now
+
+        if last is not None and last.data == data:
+            return None
+        return BuildRevision.objects.create(
+            build=self,
+            number=(last.number + 1) if last else 1,
+            game_version=version,
+            author=author,
+            data=data,
+        )
+
+    @property
+    def is_outdated_version(self):
+        """True si la build se confirmo en una version anterior a la actual."""
+        current = GameVersion.current()
+        return bool(current and self.game_version_id and self.game_version_id != current.id)
 
     @property
     def score(self):
@@ -346,6 +473,34 @@ class Build(models.Model):
     def equipment_items_list(self):
         """Ally/Emblem/Flask/Banner elegidos, solo los que estan seteados."""
         return [i for i in (self.ally, self.emblem, self.flask, self.banner) if i]
+
+
+class BuildRevision(models.Model):
+    """
+    Revision inmutable de una build: una foto en JSON de como estaba al
+    guardarse, atada a la version del juego de ese momento. Las tablas
+    BuildGem/BuildEquipment siguen siendo el estado "vivo" que usa el editor;
+    las revisiones son el historial.
+    """
+    build = models.ForeignKey(Build, on_delete=models.CASCADE, related_name="revisions")
+    number = models.PositiveIntegerField()
+    game_version = models.ForeignKey(
+        GameVersion, on_delete=models.SET_NULL, null=True, blank=True, related_name="revisions"
+    )
+    author = models.ForeignKey(
+        User, on_delete=models.SET_NULL, null=True, blank=True, related_name="+"
+    )
+    data = models.JSONField(default=dict)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["-number"]
+        constraints = [
+            models.UniqueConstraint(fields=["build", "number"], name="unique_revision_number_per_build")
+        ]
+
+    def __str__(self):
+        return f"{self.build.name} · rev {self.number}"
 
 
 class BuildGem(models.Model):

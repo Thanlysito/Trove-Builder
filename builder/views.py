@@ -427,6 +427,8 @@ def build_detail(request, slug):
         "downvotes": build.votes.filter(value=-1).count(),
         "comments": build.comments.select_related("user"),
         "sibling_builds": sibling_builds,
+        "revision_count": build.revisions.count(),
+        "remixes": build.remixes.filter(is_public=True).select_related("owner")[:10],
     })
 
 
@@ -481,10 +483,11 @@ def build_vote(request, slug):
 @login_required
 def build_duplicate(request, slug):
     """
-    Crea una copia editable de una build (propia o de otro usuario) en la
-    cuenta del usuario logueado: copia clase(s), subclase, tags, gemas y
-    equipo. La copia siempre nace privada, para que el dueño la revise y
-    ajuste antes de decidir si la hace pública.
+    Crea un remix: una copia editable de una build (propia o de otro usuario)
+    en la cuenta del usuario logueado, que guarda en `remixed_from` de que
+    build salio para conservar el credito. Copia clase(s), subclase, tags,
+    idioma, gemas, equipo y Ally/Emblem/Flask/Banner. La copia siempre nace
+    privada, para que el dueño la revise antes de decidir si la hace pública.
     """
     source = get_object_or_404(Build, slug=slug)
     if not source.is_public and source.owner_id != request.user.id:
@@ -511,6 +514,12 @@ def build_duplicate(request, slug):
         description=source.description,
         tags=source.tags,
         is_public=False,
+        language=source.language,
+        remixed_from=source,
+        ally_id=source.ally_id,
+        emblem_id=source.emblem_id,
+        flask_id=source.flask_id,
+        banner_id=source.banner_id,
     )
 
     for bg in source.gem_slots.all():
@@ -522,6 +531,7 @@ def build_duplicate(request, slug):
         BuildEquipment.objects.create(
             build=new_build, slot_id=eq.slot_id, chosen_stats=eq.chosen_stats,
         )
+    new_build.record_revision(author=request.user)
 
     messages.success(
         request,
@@ -597,6 +607,12 @@ def build_delete_comment(request, comment_id):
 
 
 EQUIPMENT_SLOT_TYPES = ["weapon", "hat", "face", "ring"]
+
+
+def _language_from_post(request):
+    """Idioma de la build desde el formulario; si llega algo raro, español."""
+    lang = request.POST.get("language", "es")
+    return lang if lang in dict(Build.LANGUAGE_CHOICES) else "es"
 
 
 def _save_gems_and_equipment(build, request, errors):
@@ -793,9 +809,11 @@ def build_create(request):
             description=request.POST.get("description", ""),
             tags=request.POST.getlist("tags"),
             is_public=bool(request.POST.get("is_public")),
+            language=_language_from_post(request),
         )
 
         _save_gems_and_equipment(build, request, errors)
+        build.record_revision(author=request.user)
 
         if errors:
             for e in errors:
@@ -838,9 +856,11 @@ def build_edit(request, slug):
         build.description = request.POST.get("description", "")
         build.tags = request.POST.getlist("tags")
         build.is_public = bool(request.POST.get("is_public"))
+        build.language = _language_from_post(request)
         build.save()
 
         _save_gems_and_equipment(build, request, errors)
+        build.record_revision(author=request.user)
 
         if errors:
             for e in errors:

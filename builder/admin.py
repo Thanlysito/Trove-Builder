@@ -2,8 +2,20 @@ from django.contrib import admin
 from .models import (
     GameClass, Gem, Build, BuildGem, BuildVote, EquipmentSlot, BuildEquipment,
     Subclass, Dragon, RingHiddenEffect, BuildComment, BuildFavorite, Notification, Suggestion,
-    EquipmentItem,
+    EquipmentItem, GameVersion, BuildRevision,
 )
+
+
+@admin.register(GameVersion)
+class GameVersionAdmin(admin.ModelAdmin):
+    list_display = ("name", "released_on", "is_current", "build_count")
+    list_filter = ("is_current",)
+    search_fields = ("name",)
+    filter_horizontal = ("affected_classes",)
+
+    @admin.display(description="Builds atadas")
+    def build_count(self, obj):
+        return obj.builds.count()
 
 
 @admin.register(GameClass)
@@ -32,6 +44,26 @@ class BuildEquipmentInline(admin.TabularInline):
     extra = 1
 
 
+class BuildRevisionInline(admin.TabularInline):
+    model = BuildRevision
+    extra = 0
+    can_delete = False
+    fields = ("number", "game_version", "author", "created_at")
+    readonly_fields = fields
+    show_change_link = True
+
+    def has_add_permission(self, request, obj=None):
+        return False
+
+
+@admin.register(BuildRevision)
+class BuildRevisionAdmin(admin.ModelAdmin):
+    list_display = ("build", "number", "game_version", "author", "created_at")
+    list_filter = ("game_version",)
+    search_fields = ("build__name",)
+    readonly_fields = ("build", "number", "game_version", "author", "data", "created_at")
+
+
 class BuildCommentInline(admin.TabularInline):
     model = BuildComment
     extra = 0
@@ -42,15 +74,16 @@ class BuildCommentInline(admin.TabularInline):
 @admin.register(Build)
 class BuildAdmin(admin.ModelAdmin):
     list_display = (
-        "name", "owner", "primary_class", "is_public", "vote_score",
-        "comment_count", "created_at",
+        "name", "owner", "primary_class", "is_public", "status", "game_version",
+        "language", "vote_score", "comment_count", "created_at",
     )
-    list_filter = ("is_public", "primary_class", "tags", "created_at")
+    list_filter = ("is_public", "status", "game_version", "language", "primary_class", "tags", "created_at")
     search_fields = ("name", "owner__username", "description")
     date_hierarchy = "created_at"
     list_per_page = 50
     prepopulated_fields = {"slug": ("name",)}
-    inlines = [BuildGemInline, BuildEquipmentInline, BuildCommentInline]
+    raw_id_fields = ("remixed_from",)
+    inlines = [BuildGemInline, BuildEquipmentInline, BuildRevisionInline, BuildCommentInline]
 
     @admin.display(description="Score")
     def vote_score(self, obj):

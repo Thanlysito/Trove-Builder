@@ -251,3 +251,105 @@ class NotificationTests(BaseBuilderTestCase):
         self.client.login(username="owner", password="testpass123")
         self.client.get(reverse("builder:notifications"))
         self.assertEqual(self.owner.notifications.filter(is_read=False).count(), 0)
+
+
+class BuildVersioningTests(BaseBuilderTestCase):
+    """Builds vivos: versiones del juego, revisiones, remix e idioma."""
+
+    def setUp(self):
+        super().setUp()
+        from .models import GameVersion
+        import datetime
+        GameVersion.objects.all().delete()  # la migracion de datos crea "Rematch"
+        self.v1 = GameVersion.objects.create(
+            name="Parche viejo", released_on=datetime.date(2026, 1, 1), is_current=True,
+        )
+
+    def _post_create(self, name="Build nueva", **extra):
+        self.client.login(username="owner", password="testpass123")
+        data = {"name": name, "primary_class": self.game_class.id, "is_public": "on"}
+        data.update(extra)
+        self.client.post(reverse("builder:build_create"), data)
+        return Build.objects.get(owner=self.owner, name=name)
+
+    def test_only_one_current_version(self):
+        from .models import GameVersion
+        import datetime
+        v2 = GameVersion.objects.create(
+            name="Parche nuevo", released_on=datetime.date(2026, 9, 15), is_current=True,
+        )
+        self.v1.refresh_from_db()
+        self.assertFalse(self.v1.is_current)
+        self.assertEqual(GameVersion.current(), v2)
+
+    def test_create_records_first_revision_with_current_version(self):
+        build = self._post_create(language="en")
+        self.assertEqual(build.revisions.count(), 1)
+        rev = build.latest_revision()
+        self.assertEqual(rev.number, 1)
+        self.assertEqual(rev.game_version, self.v1)
+        self.assertEqual(rev.data["name"], "Build nueva")
+        self.assertEqual(build.game_version, self.v1)
+        self.assertEqual(build.language, "en")
+        self.assertIsNotNone(build.verified_at)
+
+    def test_invalid_language_falls_back_to_spanish(self):
+        build = self._post_create(language="xx")
+        self.assertEqual(build.language, "es")
+
+    def test_edit_without_changes_does_not_add_revision(self):
+        build = self._post_create()
+        url = reverse("builder:build_edit", args=[build.slug])
+        self.client.post(url, {"name": "Build nueva", "primary_class": self.game_class.id, "is_public": "on"})
+        self.assertEqual(build.revisions.count(), 1)
+
+    def test_edit_with_changes_adds_revision(self):
+        build = self._post_create()
+        url = reverse("builder:build_edit", args=[build.slug])
+        self.client.post(url, {
+            "name": "Build renombrada", "primary_class": self.game_class.id,
+            "description": "Nueva guía", "is_public": "on",
+        })
+        self.assertEqual(build.revisions.count(), 2)
+        self.assertEqual(build.latest_revision().data["name"], "Build renombrada")
+
+    def test_build_from_older_version_is_flagged(self):
+        from .models import GameVersion
+        import datetime
+        build = self._post_create()
+        GameVersion.objects.create(
+            name="Parche nuevo", released_on=datetime.date(2026, 9, 15), is_current=True,
+        )
+        build.refresh_from_db()
+        self.assertTrue(build.is_outdated_version)
+        response = self.client.get(reverse("builder:build_detail", args=[build.slug]))
+        self.assertContains(response, "Revisar")
+
+    def test_remix_keeps_credit_and_items(self):
+        from .models import EquipmentItem
+        ally = EquipmentItem.objects.create(
+            kind="ally", name="Aliado", slug="aliado", source_path="item/ally/test",
+        )
+        build = self.make_build(owner=self.owner)
+        build.ally = ally
+        build.language = "en"
+        build.save()
+        self.client.login(username="other", password="testpass123")
+        self.client.post(reverse("builder:build_duplicate", args=[build.slug]))
+        remix = Build.objects.get(owner=self.other)
+        self.assertEqual(remix.remixed_from, build)
+        self.assertEqual(remix.ally, ally)
+        self.assertEqual(remix.language, "en")
+        self.assertEqual(remix.revisions.count(), 1)
+        self.assertIn(remix, build.remixes.all())
+
+    def test_detail_shows_remix_credit(self):
+        build = self.make_build(owner=self.owner, name="Original")
+        remix = self.make_build(owner=self.other, name="Mi remix")
+        remix.remixed_from = build
+        remix.save()
+        response = self.client.get(reverse("builder:build_detail", args=[remix.slug]))
+        self.assertContains(response, "Remix de")
+        self.assertContains(response, "Original")
+        response = self.client.get(reverse("builder:build_detail", args=[build.slug]))
+        self.assertContains(response, "Remixes de la comunidad")

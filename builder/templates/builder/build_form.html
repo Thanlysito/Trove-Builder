@@ -19,6 +19,13 @@
             <input type="text" name="name" required value="{% if editing %}{{ build.name }}{% endif %}" style="width:100%; margin-top:5px;">
         </label>
 
+        <label>Idioma de la guía
+            <select name="language" id="build-language" style="margin-top:5px;">
+                <option value="es" {% if not editing or build.language == "es" %}selected{% endif %}>Español</option>
+                <option value="en" {% if editing and build.language == "en" %}selected{% endif %}>English</option>
+            </select>
+        </label>
+
         <label>Descripción
             <textarea name="description">{% if editing %}{{ build.description }}{% endif %}</textarea>
         </label>

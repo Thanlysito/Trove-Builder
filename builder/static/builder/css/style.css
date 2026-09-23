@@ -706,6 +706,24 @@ form p, form > label { margin-bottom: 14px; display: block; }
 .chip.element-air { border-color: var(--el-air); color: var(--el-air); }
 .chip.element-cosmic { border-color: var(--el-cosmic); color: var(--el-cosmic); }
 
+/* ---------- estado de build (builds vivos) ---------- */
+
+.build-status-line {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 8px;
+  margin: 8px 0 6px;
+}
+.status-chip { font-weight: 600; }
+.status-chip.status-current { border-color: var(--rarity-green); color: var(--rarity-green); }
+.status-chip.status-review { border-color: var(--gold); color: var(--gold); }
+.status-chip.status-stale { border-color: var(--el-fire); color: var(--el-fire); }
+.remix-credit { font-size: 0.85rem; color: var(--text-muted); }
+.remix-list { margin-top: 18px; }
+.remix-list h3 { font-size: 1rem; margin: 0 0 6px; }
+.remix-list ul { margin: 0; padding-left: 18px; }
+
 /* ---------- build detail page ---------- */
 
 .detail-header {
