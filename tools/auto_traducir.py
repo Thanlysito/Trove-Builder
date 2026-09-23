@@ -47,6 +47,9 @@ sys.stdout.reconfigure(line_buffering=True)
 ROOT = Path(__file__).resolve().parent.parent
 PO_PATH = ROOT / "locale" / "en" / "LC_MESSAGES" / "django.po"
 GAME_DATA_PATH = ROOT / "locale" / "en" / "game_data.json"
+# Textos del juego que se tradujeron con Argos (respaldo): se vuelven a
+# traducir con Gemini la proxima vez que Gemini este disponible.
+GAME_DATA_ARGOS_PATH = ROOT / "locale" / "en" / "game_data_argos.json"
 
 PLACEHOLDER = re.compile(r"%\(\w+\)[sd]|\{\w+\}")
 # Para decidir que datos del juego estan en español (los que ya estan en
@@ -105,19 +108,28 @@ class Gemini:
     def __init__(self, api_key):
         self.api_key = api_key
         forced = os.environ.get("GEMINI_MODEL")
-        candidates = [forced] if forced else self._candidate_models()
-        print(f"Modelos Gemini candidatos: {', '.join(candidates) or '(ninguno)'}")
-        # Prueba cada modelo con una peticion minima y se queda con el primero
-        # que responda: algunos modelos no tienen cuota en el plan gratuito.
-        for name in candidates:
+        self.candidates = [forced] if forced else self._candidate_models()
+        self.model = None
+        print(f"Modelos Gemini candidatos: {', '.join(self.candidates) or '(ninguno)'}")
+        if not self.switch_model():
+            raise RuntimeError("ningun modelo Gemini respondio con esta clave")
+
+    def switch_model(self):
+        """
+        Pasa al siguiente modelo candidato que responda (el primero, si aun no
+        hay ninguno). Algunos modelos no tienen cuota en el plan gratuito o
+        estan saturados; en ese caso se prueba el siguiente.
+        """
+        start = self.candidates.index(self.model) + 1 if self.model in self.candidates else 0
+        for name in self.candidates[start:]:
             self.model = name
             try:
                 self._generate('Responde solo con este JSON: {"0": "ok"}', retries=0)
                 print(f"Usando Gemini, modelo: {name}")
-                return
+                return True
             except Exception as exc:
                 print(f"  {name} no disponible: {exc}")
-        raise RuntimeError("ningun modelo Gemini respondio con esta clave")
+        return False
 
     def _candidate_models(self):
         """Modelos 'flash' de la clave, del mas nuevo al mas viejo; 'lite' al final."""
@@ -228,6 +240,10 @@ class Translator:
             print("Sin GEMINI_API_KEY; se usara Argos.")
         self._argos = None
 
+    @property
+    def has_gemini(self):
+        return any(e.name == "Gemini" for e in self.engines)
+
     def _get_argos(self):
         if self._argos is None:
             try:
@@ -248,10 +264,19 @@ class Translator:
                 try:
                     got = engine.translate_batch(chunk, kind)
                 except Exception as exc:
-                    # Si falla un lote, no insiste con los demas: pasa al respaldo.
-                    print(f"  {engine.name} fallo ({exc}); se deja de usar en esta ejecucion.")
-                    self.engines.remove(engine)
-                    break
+                    print(f"  {engine.name} fallo con este lote ({exc}).")
+                    # Si el modelo esta saturado o sin cuota, prueba el siguiente
+                    # modelo; si ninguno responde, pasa al respaldo.
+                    got = None
+                    while got is None and hasattr(engine, "switch_model") and engine.switch_model():
+                        try:
+                            got = engine.translate_batch(chunk, kind)
+                        except Exception as exc2:
+                            print(f"  {engine.name} fallo con este lote ({exc2}).")
+                    if got is None:
+                        print(f"  {engine.name} no disponible; lo que falte se traduce con el respaldo.")
+                        self.engines.remove(engine)
+                        break
                 for src, dst in got.items():
                     if placeholders_ok(src, dst):
                         results[src] = (dst.strip(), engine.name)
@@ -275,6 +300,13 @@ class Translator:
 def translate_po(translator):
     po = polib.pofile(str(PO_PATH))
     pending = [e for e in po if not e.obsolete and ("fuzzy" in e.flags or not e.translated())]
+    upgrade = []
+    if translator.has_gemini:
+        # Mejora con Gemini lo que antes se tradujo con el respaldo.
+        upgrade = [e for e in po if not e.obsolete and e.translated() and "fuzzy" not in e.flags
+                   and "auto (Argos)" in (e.tcomment or "")]
+        pending += upgrade
+    upgrade_ids = {id(e) for e in upgrade}
     if not pending:
         print("Interfaz: no hay textos nuevos.")
         return
@@ -288,6 +320,8 @@ def translate_po(translator):
 
     ok, failed = 0, []
     for e in pending:
+        if id(e) in upgrade_ids and done.get(e.msgid, ("", "Argos"))[1] == "Argos":
+            continue  # sigue con la traduccion anterior del respaldo
         if e.msgid_plural:
             if e.msgid in done and e.msgid_plural in done:
                 e.msgstr_plural = {0: done[e.msgid][0], 1: done[e.msgid_plural][0]}
@@ -329,16 +363,31 @@ def translate_game_data(translator):
     existing = {}
     if GAME_DATA_PATH.exists():
         existing = json.loads(GAME_DATA_PATH.read_text(encoding="utf-8"))
+    argos_before = set()
+    if GAME_DATA_ARGOS_PATH.exists():
+        argos_before = set(json.loads(GAME_DATA_ARGOS_PATH.read_text(encoding="utf-8")))
 
     # Conserva las traducciones existentes (incluidas las corregidas a mano) y
     # descarta las de textos que ya no existen en el juego.
     data = {k: v for k, v in existing.items() if k in texts}
-    pending = sorted(texts - data.keys())
+    argos = {k for k in argos_before if k in data}
+    new = texts - data.keys()
+    upgrade = argos if translator.has_gemini else set()
+    pending = sorted(new | upgrade)
     if pending:
         done = translator.translate(pending, "game")
-        for src, (dst, _engine) in done.items():
+        improved = 0
+        for src, (dst, engine) in done.items():
+            if src in upgrade and engine == "Argos":
+                continue  # sigue con la traduccion anterior del respaldo
             data[src] = dst
-        print(f"Datos del juego: {len(done)} de {len(pending)} textos nuevos traducidos.")
+            if engine == "Argos":
+                argos.add(src)
+            else:
+                improved += src in argos
+                argos.discard(src)
+        print(f"Datos del juego: {sum(1 for t in new if t in data)} de {len(new)} textos nuevos "
+              f"traducidos; {improved} mejorados con Gemini; {len(argos)} quedan con Argos.")
     else:
         print("Datos del juego: no hay textos nuevos.")
 
@@ -347,6 +396,12 @@ def translate_game_data(translator):
             json.dumps(dict(sorted(data.items())), ensure_ascii=False, indent=1) + "\n",
             encoding="utf-8",
         )
+    if argos != argos_before:
+        if argos:
+            GAME_DATA_ARGOS_PATH.write_text(
+                json.dumps(sorted(argos), ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
+        elif GAME_DATA_ARGOS_PATH.exists():
+            GAME_DATA_ARGOS_PATH.unlink()
 
 
 def main():
